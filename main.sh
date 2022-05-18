@@ -1,14 +1,11 @@
 #!/bin/bash
 
-for i in "applications/luci-app-softethervpn" "applications/luci-app-vlmcsd" "applications/luci-app-turboacc"; do
+for i in "applications/luci-app-softethervpn" "applications/luci-app-vlmcsd"; do
   svn export --force "https://github.com/coolsnowwolf/luci/trunk/$i"
 done
 
 svn export --force https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh ddns-scripts-aliyun/files/
 
-for i in "package/lean/shortcut-fe"; do
-  svn export --force "https://github.com/coolsnowwolf/lede/trunk/$i"
-done
 
 for i in "net/dns2socks" "net/microsocks" "net/ipt2socks" "net/pdnsd-alt" "net/redsocks2"; do
   svn export --force "https://github.com/immortalwrt/packages/trunk/$i"
