@@ -15,3 +15,4 @@ for i in "net/vlmcsd"; do
 done
 
 find -name Makefile -exec sed -i "s,include ../../luci.mk,include $\(TOPDIR\)/feeds/luci/luci.mk,g" {} \;
+for i in $(find -name 'zh-cn' -type d); do mv $i $(dirname $i)/zh_Hans done
