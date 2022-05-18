@@ -6,7 +6,7 @@ for i in "dns2socks" "microsocks" "ipt2socks" "pdnsd-alt" "redsocks2"; do
   svn export --force "https://github.com/immortalwrt/packages/trunk/net/$i"
 done
 
-for i in "applications/luci-app-softethervpn" "applications/luci-app-vlmcsd"; do
+for i in "applications/luci-app-softethervpn" "applications/luci-app-vlmcsd" "applications/luci-app-turboacc"; do
   svn export --force "https://github.com/coolsnowwolf/luci/trunk/$i"
 done
 
