@@ -17,19 +17,23 @@ define Package/ddns-scripts-aliyun
   SUBMENU:=IP Addresses and Names
   TITLE:=Extension for aliyun.com
   PKGARCH:=all
-  DEPENDS:=+ddns-scripts +wget +openssl-util
+  DEPENDS:=+ddns-scripts +wget-ssl +openssl-util
 endef
 
 define Package/ddns-scripts-aliyun/description
   Dynamic DNS Client scripts extension for aliyun.com
 endef
 
+define Build/Compile
+	$(CP) ./files $(PKG_BUILD_DIR)
+endef
+
 define Package/ddns-scripts-aliyun/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_DATA) ./files/update_aliyun_com.sh $(1)/usr/lib/ddns
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/files/update_aliyun_com.sh $(1)/usr/lib/ddns
 
 	$(INSTALL_DIR) $(1)/usr/share/ddns/custom
-	$(INSTALL_DATA) ./files/aliyun.com.json $(1)/usr/share/ddns/custom
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/files/aliyun.com.json $(1)/usr/share/ddns/custom
 endef
 
 $(eval $(call BuildPackage,ddns-scripts-aliyun))
