@@ -23,7 +23,7 @@ done
 # custom
 svn export --force https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
 
-find -name Makefile -exec sed -i "s,include ../../luci.mk,include $\(TOPDIR\)/feeds/luci/luci.mk,g" {} \;
+find -name 'Makefile' -exec sed -i "s,include ../../luci.mk,include $\(TOPDIR\)/feeds/luci/luci.mk,g" {} \;
 
 sleep 3
 
