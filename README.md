@@ -1,4 +1,33 @@
-# Build Guide 
-```html
-https://openwrt.org/docs/guide-developer/toolchain/use-buildsystem
+
+# Install system dependency on Ubuntu 20.04
+```bash
+sudo apt update
+sudo apt install build-essential gawk gcc-multilib flex git gettext libncurses5-dev libssl-dev python3-distutils zlib1g-dev
+
+Reference: https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem#debianubuntu
+```
+
+# Openwrt offical build guide 
+```bash
+git clone https://git.openwrt.org/openwrt/openwrt.git
+cd openwrt
+git pull
+git checkout v21.02.3
+
+Reference: https://openwrt.org/docs/guide-developer/toolchain/use-buildsystem
+```
+
+# Build
+```bash
+echo -e '\nsrc-git plugin /home/bruce/openwrt-plugin/' >> feeds.conf.default
+./scripts/feeds update -a && ./scripts/feeds install -a
+
+# single thread
+nohup make -j1 V=s &
+
+# multi thread
+nohup make -j$(($(nproc) + 1)) V=s &
+
+# view make log
+tail -f nohup.out
 ```
