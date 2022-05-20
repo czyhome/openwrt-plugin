@@ -7,7 +7,7 @@ sudo apt install build-essential gawk gcc-multilib flex git gettext libncurses5-
 Reference: https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem#debianubuntu
 ```
 
-# Openwrt offical build guide 
+# Openwrt official build guide 
 ```bash
 git clone https://git.openwrt.org/openwrt/openwrt.git
 cd openwrt
@@ -22,7 +22,7 @@ Reference: https://openwrt.org/docs/guide-developer/toolchain/use-buildsystem
 echo -e '\nsrc-git plugin /home/bruce/openwrt-plugin/' >> feeds.conf.default
 ./scripts/feeds update -a && ./scripts/feeds install -a
 
-# single thread
+# use single thread when first build
 nohup make -j1 V=s &
 
 # multi thread
@@ -30,4 +30,6 @@ nohup make -j$(($(nproc) + 1)) V=s &
 
 # view make log
 tail -f nohup.out
+
+build output: bin/targets/<platform>/
 ```
