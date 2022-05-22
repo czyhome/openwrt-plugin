@@ -2,13 +2,12 @@
 
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=Server Modules
-LUCI_DEPENDS:=+fdisk +blockd +sudo +python3 +python3-pip \
+LUCI_TITLE:=General
+LUCI_DEPENDS:=+bash +fdisk +blockd +sudo +python3 +python3-pip \
 			  +kmod-tcp-bbr +ddns-scripts-aliyun +softethervpn5-bridge +softethervpn5-client +softethervpn5-server \
-			  +luci +luci-compat +luci-app-adbyby-plus +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd \
-			  +dockerd +docker-compose +luci-app-dockerman
+			  +luci +luci-compat +luci-app-adbyby-plus +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd
 
-PKG_NAME:=luci-app-bundle-server
+PKG_NAME:=luci-app-bundle-general
 PKG_VERSION:=1.0
 PKG_RELEASE:=1
 
