@@ -2,9 +2,10 @@
 
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=Basic App Modules
-LUCI_DEPENDS:=+luci +luci-compat +sudo +python3 +python3-pip +ddns-scripts-aliyun \
-			  +kmod-tcp-bbr \
+LUCI_TITLE:=Server Modules
+LUCI_DEPENDS:=+luci +luci-compat +sudo +python3 +python3-pip \
+			  +blockd +kmod-tcp-bbr \
+			  +ddns-scripts-aliyun \
 			  +softethervpn5-bridge +softethervpn5-client +softethervpn5-server \
 			  +luci-app-adbyby-plus +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd \
 			  +dockerd +docker-compose +luci-app-dockerman
