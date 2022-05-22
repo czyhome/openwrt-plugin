@@ -3,11 +3,9 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Server Modules
-LUCI_DEPENDS:=+luci +luci-compat +sudo +python3 +python3-pip \
-			  +blockd +kmod-tcp-bbr \
-			  +ddns-scripts-aliyun \
-			  +softethervpn5-bridge +softethervpn5-client +softethervpn5-server \
-			  +luci-app-adbyby-plus +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd \
+LUCI_DEPENDS:=+fdisk +blockd +sudo +python3 +python3-pip \
+			  +kmod-tcp-bbr +ddns-scripts-aliyun +softethervpn5-bridge +softethervpn5-client +softethervpn5-server \
+			  +luci +luci-compat +luci-app-adbyby-plus +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd \
 			  +dockerd +docker-compose +luci-app-dockerman
 
 PKG_NAME:=luci-app-bundle-server
