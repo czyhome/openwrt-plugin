@@ -1,18 +1,13 @@
 #!/bin/bash
 
 # lede luci
-for i in "applications/luci-app-vlmcsd" "applications/luci-app-adbyby-plus"; do
+for i in "applications/luci-app-vlmcsd"; do
   svn export --force "https://github.com/coolsnowwolf/luci/trunk/$i" app/$(basename $i)
 done
 
 # lede packages
 for i in "net/vlmcsd"; do
   svn export --force "https://github.com/coolsnowwolf/packages/trunk/$i" package/$(basename $i)
-done
-
-# lede package
-for i in "package/lean/adbyby"; do
-  svn export --force "https://github.com/coolsnowwolf/lede/trunk/$i" package/$(basename $i)
 done
 
 # hello packages
