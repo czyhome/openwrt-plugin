@@ -4,8 +4,9 @@ include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=General
 LUCI_DEPENDS:=+bash +fdisk +blockd +sudo +python3 +python3-pip \
-			  +kmod-tcp-bbr +ddns-scripts-aliyun +softethervpn5-bridge +softethervpn5-client +softethervpn5-server \
-			  +luci +luci-compat +adguardhome +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd
+			  +kmod-tcp-bbr +ddns-scripts-aliyun +softethervpn5-server \
+			  +luci +luci-compat +adguardhome \
+			  +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd +luci-app-wireguard
 
 PKG_NAME:=luci-app-bundle-general
 PKG_VERSION:=1.0
