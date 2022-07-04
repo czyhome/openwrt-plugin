@@ -3,7 +3,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=General
-LUCI_DEPENDS:=+bash +fdisk +blockd +sudo +python3 +python3-pip +python3-pip-src +python3-bcrypt \
+LUCI_DEPENDS:=+bash +fdisk +blockd +sudo +python3 +python3-pip +python3-dev \
 			  +kmod-tcp-bbr +ddns-scripts-aliyun +softethervpn5-server \
 			  +luci +luci-compat +adguardhome \
 			  +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd +luci-app-wireguard
