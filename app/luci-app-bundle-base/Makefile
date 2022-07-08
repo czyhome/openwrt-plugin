@@ -2,7 +2,7 @@
 
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=Bundle-Base
+LUCI_TITLE:=Bundle Base
 LUCI_DEPENDS:=+bash +fdisk +cfdisk +blockd +sudo +vim +python3 +python3-bcrypt \
 			  +kmod-tcp-bbr +ddns-scripts-aliyun +softethervpn5-server \
 			  +luci +luci-compat +adguardhome \
