@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # lede luci
-for i in "applications/luci-app-vlmcsd"; do
+for i in "applications/luci-app-vlmcsd" "applications/luci-app-socat"; do
   svn export --force "https://github.com/coolsnowwolf/luci/trunk/$i" app/$(basename $i)
 done
 
