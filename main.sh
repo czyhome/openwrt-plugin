@@ -10,11 +10,6 @@ for i in "net/vlmcsd"; do
   svn export --force "https://github.com/coolsnowwolf/packages/trunk/$i" package/$(basename $i)
 done
 
-# hello packages
-for i in "net/dns2socks" "net/microsocks" "net/ipt2socks" "net/pdnsd-alt" "net/redsocks2"; do
-  svn export --force "https://github.com/immortalwrt/packages/trunk/$i" package/$(basename $i)
-done
-
 # custom
 svn export --force https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
 
