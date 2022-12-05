@@ -8,7 +8,7 @@ LUCI_DEPENDS:=+bash +fdisk +cfdisk +blockd +sudo +gcc +vim +python3 +python3-bcr
 			  +luci +luci-compat +adguardhome \
 			  +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-ttyd +luci-app-wireguard \
 			  +luci-app-wol +luci-app-socat +luci-app-snmpd +luci-app-smartdns +luci-app-samba4 +luci-app-nfs \
-			  -dnsmasq
+			  +!dnsmasq
 
 PKG_NAME:=luci-app-bundle-base
 PKG_VERSION:=1.0
