@@ -1,9 +1,7 @@
 
-# Prerequisites
-[Reference](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem#debianubuntu)
+# [Prerequisites](https://openwrt.org/docs/guide-developer/toolchain/install-buildsystem#debianubuntu)
 
-# Openwrt official build guide 
-[Reference](https://openwrt.org/docs/guide-developer/toolchain/use-buildsystem)
+# [Build Usage ](https://openwrt.org/docs/guide-developer/toolchain/use-buildsystem)
 
 # Build
 ```bash
