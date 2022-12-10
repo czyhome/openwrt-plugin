@@ -7,9 +7,9 @@ LUCI_DEPENDS:=+bash +fdisk +cfdisk +blockd +sudo +gcc +vim +python3 +python3-bcr
 			  +kmod-tcp-bbr +ddns-scripts-aliyun +softethervpn5-server +openvpn-openssl +netdata \
 			  +luci +luci-compat +adguardhome +luci-app-ttyd +luci-app-commands \
 			  +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-wireguard \
-			  +luci-app-wol +luci-app-socat +luci-app-snmpd +luci-app-smartdns +luci-app-samba4 +luci-app-nfs \
-			  +luci-app-upnp +luci-app-aria2 +ariang +luci-app-openvpn +luci-app-sqm +luci-app-acme +acme-dnsapi \
-			  +luci-app-omcproxy +luci-app-udpxy
+			  +luci-app-wol +luci-app-socat +luci-app-snmpd +luci-app-smartdns \
+			  +luci-app-upnp +luci-app-openvpn +luci-app-sqm +luci-app-acme +acme-dnsapi +luci-app-omcproxy +luci-app-udpxy \
+			  +luci-app-aria2 +ariang +syncthing +rsync +luci-app-samba4 +luci-app-nfs
 # +luci-app-olsr +luci-app-olsr-services +luci-app-olsr-viz +luci-app-acl +luci-app-radicale2
 PKG_NAME:=luci-app-bundle-base
 PKG_VERSION:=1.0
