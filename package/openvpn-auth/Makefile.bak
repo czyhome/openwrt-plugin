@@ -20,7 +20,7 @@ PKG_LICENSE:=GPL-2.0
 include $(INCLUDE_DIR)/package.mk
 
 define Package/openvpn-auth
-  TITLE:=Open source VPN solution for auth
+  TITLE:=Open source VPN solution Auth
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=VPN
