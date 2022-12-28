@@ -28,9 +28,8 @@ define Package/openvpn-auth
 endef
 
 define Package/openvpn-auth/install
-	$(INSTALL_DATA) \
-		files/auth.sh \
-		$(1)/etc/openvpn/auth.sh
+	$(INSTALL_DIR) $(1)/etc/openvpn
+	$(INSTALL_DATA) files/auth.sh $(1)/etc/openvpn/auth.sh
 endef
 
 $(eval $(call BuildPackage,openvpn-auth))
