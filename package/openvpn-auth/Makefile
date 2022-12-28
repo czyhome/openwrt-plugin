@@ -8,28 +8,30 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=openvpn-auth
-
 PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
-
-PKG_MAINTAINER:=Bruce CHEN <a805899926@gmail.com>
-
-PKG_BUILD_PARALLEL:=1
-PKG_LICENSE:=GPL-2.0
 
 include $(INCLUDE_DIR)/package.mk
 
 define Package/openvpn-auth
-  TITLE:=Open source VPN solution Auth
   SECTION:=net
   CATEGORY:=Network
+  TITLE:=Open source VPN solution Auth
+  MAINTAINER:=Bruce CHEN <a805899926@gmail.com>
   SUBMENU:=VPN
-  MENU:=1
+  PKGARCH:=all
+endef
+
+define Package/openvpn-auth/description
+  Open source VPN solution Auth Module
+endef
+
+define Build/Compile
 endef
 
 define Package/openvpn-auth/install
 	$(INSTALL_DIR) $(1)/etc/openvpn
-	$(INSTALL_DATA) files/auth.sh $(1)/etc/openvpn/auth.sh
+	$(INSTALL_DATA) ./files/auth.sh $(1)/etc/openvpn/
 endef
 
 $(eval $(call BuildPackage,openvpn-auth))
