@@ -3,7 +3,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Docker
-LUCI_DEPENDS:=+dockerd +docker-compose
+LUCI_DEPENDS:=+dockerd +docker-compose +luci-app-dockerman
 
 PKG_NAME:=luci-app-bundle-docker
 PKG_VERSION:=1.0
