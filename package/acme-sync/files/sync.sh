@@ -34,7 +34,7 @@ for i in "${domains[@]}"; do
   logger -t "$LOG_TAG" "${i}"
   source_cer=${source_dir}/${i}/$i.cer
   target_cer=${target_dir}/${i}.cer
-  if [ -f "${source_cer}" ] && [ ! -f ${target_cer} ] || [ ! -z "$(diff -q ${source_cer} ${target_cer})" ];then
+  if [[ -f "${source_cer}" && ! -f ${target_cer} || -f ${target_cer} && ! -z "$(diff -q ${source_cer} ${target_cer})" ]];then
     for f in `find ${source_dir}/$i -name "$i.cer" -o -name "$i.key"`;do
       logger -t "$LOG_TAG" "$(readlink -f $f) ->  ${target_dir}";
       cp $f ${target_dir}
