@@ -3,27 +3,30 @@
 source_dir=
 target_dir=
 domains=
-
-while getopts "s:t:d:" opt
+post_shell=
+while getopts "s:t:d:p:" opt
 do
         case $opt in
                 s)
                   source_dir=$OPTARG
-                        ;;
+                ;;
                 t)
                   target_dir=$OPTARG
-                        ;;
+                ;;
                 d)
                   domains=$OPTARG
-                        ;;
-    *)
-      logger -t "$LOG_TAG" "Usage: $(basename $0) [-s argument] [-t argument]"
-      exit 1
-      ;;
+                ;;
+                p)
+                  post_shell=$OPTARG
+                ;;
+                *)
+                  logger -t "$LOG_TAG" "Usage: $(basename $0) [-s argument] [-t argument]"
+                  exit 1
+                ;;
     esac
 done
 domains=(`echo $domains | tr ',' ' '`)
-
+sync_any=false
 for i in "${domains[@]}"; do
   logger -t "$LOG_TAG" "syncing ${i}"
   source_cer=${source_dir}/${i}/$i.cer
@@ -31,7 +34,11 @@ for i in "${domains[@]}"; do
   if [ -f "${source_cer}" ];then
     if [ ! -f ${target_cer} ] || [ `md5sum ${source_cer} | awk '{print $1}'` != `md5sum ${target_cer} | awk '{print $1}'` ];then
       find ${source_dir}/$i -name "$i.cer" -o -name "$i.key" -exec sh -c 'f={};logger -t "$LOG_TAG" "$(readlink -f $f)";cp $f ${target_dir}/' \;
-      logger -t "$LOG_TAG" "synced ${i}"
+      sync_any=true
     fi
   fi
+  logger -t "$LOG_TAG" "synced ${i}"
 done
+if $sync_any;then
+  $post_shell
+fi
