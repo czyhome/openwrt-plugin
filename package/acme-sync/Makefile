@@ -16,6 +16,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/acme-sync
   SECTION:=net
   CATEGORY:=Network
+  DEPENDS:=+diffutils
   TITLE:=Acme Sync Tool
   MAINTAINER:=Bruce CHEN <a805899926@gmail.com>
   PKGARCH:=all
