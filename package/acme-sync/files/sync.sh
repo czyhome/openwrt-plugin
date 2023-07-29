@@ -28,7 +28,7 @@ done
 domains=(`echo $domains | tr ',' ' '`)
 sync_any=false
 for i in "${domains[@]}"; do
-  logger -t "$LOG_TAG" "syncing ${i}"
+  logger -t "$LOG_TAG" "${i}"
   source_cer=${source_dir}/${i}/$i.cer
   target_cer=${target_dir}/${i}.cer
   if [ -f "${source_cer}" ];then
@@ -37,7 +37,6 @@ for i in "${domains[@]}"; do
       sync_any=true
     fi
   fi
-  logger -t "$LOG_TAG" "synced ${i}"
 done
 if $sync_any;then
   $post_shell
