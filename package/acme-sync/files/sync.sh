@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# example cron: 0 0 * * * LOG_TAG=acme-sync /etc/acme/sync.sh -s <source_dir> -t <target_dir> -d example.com -p "echo 'post_shell'"
+# example cron: 0 0 * * * LOG_TAG=acme-sync /etc/acme/sync.sh -s <source_dir> -t <target_dir> -d example1.com,example2.com -p "echo 'post_shell'"
 LOG_TAG=${LOG_TAG-"acme-sync"}
 
 source_dir=
 target_dir=
-domains=
+domain_str=
 post_shell=
 while getopts "s:t:d:p:" opt
 do
@@ -17,7 +17,7 @@ do
                   target_dir=$OPTARG
                 ;;
                 d)
-                  domains=$OPTARG
+                  domain_str=$OPTARG
                 ;;
                 p)
                   post_shell=$OPTARG
@@ -28,19 +28,21 @@ do
                 ;;
     esac
 done
-domains=(`echo $domains | tr ',' ' '`)
+domains="$(echo $domain_str | tr ',' ' ')"
 sync_any=false
 mkdir -p ${target_dir}
-for i in "${domains[@]}"; do
+for i in $domains; do
   LOG_TAG="${LOG_TAG}.${i}"
   source_cer=${source_dir}/${i}/$i.cer
   target_cer=${target_dir}/${i}.cer
-  if [[ -f ${source_cer} && ! -f ${target_cer} || -f ${source_cer} && -f ${target_cer} && ! -z `diff -q ${source_cer} ${target_cer}` ]];then
-    for f in `find ${source_dir}/$i -name "$i.cer" -o -name "$i.key"`;do
-      logger -t "$LOG_TAG" "`readlink -f $f` -> `readlink -f ${target_dir}`";
-      cp $f ${target_dir}
-    done
-    sync_any=true
+  if [[ -e ${source_cer} ]];then
+    if [[ ! -e ${target_cer} ]] || [[ -e ${target_cer} && ! -z "$(diff -q ${source_cer} ${target_cer})" ]];then
+      for f in `find ${source_dir}/$i -name "$i.cer" -o -name "$i.key"`;do
+        logger -t "$LOG_TAG" "`readlink -f $f` -> `readlink -f ${target_dir}`";
+        cp $f ${target_dir}
+      done
+      sync_any=true
+    fi
   fi
 done
 if $sync_any;then
