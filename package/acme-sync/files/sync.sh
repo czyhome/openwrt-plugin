@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# example cron: */30 * * * * LOG_TAG=acme-sync /etc/acme/sync.sh -s <source_dir> -t <target_dir> -d example.com -p "echo 'post_shell'"
+
 source_dir=
 target_dir=
 domains=
