@@ -29,15 +29,17 @@ do
 done
 domains=(`echo $domains | tr ',' ' '`)
 sync_any=false
+mkdir -p ${target_dir}
 for i in "${domains[@]}"; do
   logger -t "$LOG_TAG" "${i}"
   source_cer=${source_dir}/${i}/$i.cer
   target_cer=${target_dir}/${i}.cer
-  if [ -f "${source_cer}" ];then
-    if [ ! -f ${target_cer} ] || [ ! -z "$(diff -q ${source_cer} ${target_cer})" ];then
-      find ${source_dir}/$i -name "$i.cer" -o -name "$i.key" -exec sh -c 'f={};logger -t "$LOG_TAG" "$(readlink -f $f)";cp $f ${target_dir}/' \;
-      sync_any=true
-    fi
+  if [ -f "${source_cer}" ] && [ ! -f ${target_cer} ] || [ ! -z "$(diff -q ${source_cer} ${target_cer})" ];then
+    for f in `find ${source_dir}/$i -name "$i.cer" -o -name "$i.key"`;do
+      logger -t "$LOG_TAG" "$(readlink -f $f) ->  ${target_dir}";
+      cp $f ${target_dir}
+    done
+    sync_any=true
   fi
 done
 if $sync_any;then
