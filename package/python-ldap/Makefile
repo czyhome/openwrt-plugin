@@ -19,6 +19,7 @@ define Package/python3-ldap
   SUBMENU:=Python
   SECTION:=lang
   CATEGORY:=Languages
+  DEPENDS:=+openldap
   TITLE:=Python Ldap Client
   URL:=https://github.com/python-ldap/python-ldap
 endef
