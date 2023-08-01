@@ -11,7 +11,6 @@ PKG_MAINTAINER:=Bruce Chen <a805899926@gmail.com>
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENCE.MIT
 
-include $(TOPDIR)/feeds/packages/lang/python/pypi.mk
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/python/python3-package.mk
 
@@ -26,6 +25,21 @@ endef
 
 define Package/python3-ldap/description
   Python Ldap Client
+endef
+
+define Build/Compile
+	$(call Build/Compile/PyMod,,build_ext \
+		--include-dirs="$(STAGING_DIR)/usr/include:$(STAGING_DIR)/usr/include/sasl" \
+		--library-dirs="$(STAGING_DIR)/usr/lib:$(STAGING_DIR)/usr/lib/sasl2" \
+	build_py \
+	install --prefix="$(PKG_INSTALL_DIR)/usr")
+endef
+
+define PyPackage/python-ldap/install
+	$(INSTALL_DIR) $(1)$(PYTHON_PKG_DIR)
+	$(CP) \
+	    $(PKG_INSTALL_DIR)$(PYTHON_PKG_DIR)/* \
+	    $(1)$(PYTHON_PKG_DIR)
 endef
 
 $(eval $(call Py3Package,python3-ldap))
