@@ -19,7 +19,7 @@ PKG_SOURCE_URL:=https://files.pythonhosted.org/packages/source/p/python-ldap
 PKG_HASH:=41975e79406502c092732c57ef0c2c2eb318d91e8e765f81f5d4ab6c1db727c5
 
 include $(INCLUDE_DIR)/package.mk
-include ../python-package.mk
+include $(TOPDIR)/feeds/packages/lang/python/python-package.mk
 
 define Package/python-ldap
   SUBMENU:=Python
