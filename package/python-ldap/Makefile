@@ -16,7 +16,7 @@ PKG_HASH:=ab26c519a0ef2a443a2a10391fa3c5cb52d7871323399db949ebfaa9f25ee2a0
 
 PKG_MAINTAINER:=Bruce Chen <a805899926@gmail.com>
 PKG_LICENSE:=MIT
-PKG_LICENSE_FILES:=LICENSE
+PKG_LICENSE_FILES:=LICENCE.MIT
 
 include ../pypi.mk
 include $(INCLUDE_DIR)/package.mk
@@ -27,7 +27,7 @@ define Package/python3-ldap
   SECTION:=lang
   CATEGORY:=Languages
   TITLE:=Python Ldap Client
-  URL:=https://www.python-ldap.org/
+  URL:=https://github.com/python-ldap/python-ldap
 endef
 
 define Package/python3-ldap/description
