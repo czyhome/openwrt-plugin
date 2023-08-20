@@ -33,7 +33,7 @@ endef
 define Package/openvpn-auth/install
 	$(INSTALL_DIR) $(1)/etc/openvpn
 	$(INSTALL_BIN) ./files/auth.sh $(1)/etc/openvpn/
-  $(INSTALL_BIN) ./files/auth.py $(1)/etc/openvpn/
+	$(INSTALL_BIN) ./files/auth.py $(1)/etc/openvpn/
 endef
 
 $(eval $(call BuildPackage,openvpn-auth))
