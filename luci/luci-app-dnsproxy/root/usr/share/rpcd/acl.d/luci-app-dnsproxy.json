@@ -1,0 +1,17 @@
+{
+	"luci-app-dnsproxy": {
+		"description": "Grant access to DnsProxy configuration",
+		"read": {
+			"file": {
+				"/etc/dnsproxy/*": [ "read" ]
+			},
+			"uci": [ "dnsproxy" ]
+		},
+		"write": {
+			"file": {
+				"/etc/dnsproxy/*": [ "write" ]
+			},
+			"uci": [ "dnsproxy" ]
+		}
+	}
+}

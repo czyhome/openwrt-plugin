@@ -1,0 +1,8 @@
+-- Copyright 2023 Steven Barth <a805899926@gmail.com>
+-- Licensed to the public under the Apache License 2.0.
+
+module("luci.controller.dnsproxy", package.seeall)
+
+function index()
+	entry( {"admin", "services", "dnsproxy"}, cbi("dnsproxy"), _("DnsProxy") ).acl_depends = { "luci-app-dnsproxy" }
+end
