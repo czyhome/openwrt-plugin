@@ -1,0 +1,9 @@
+# For documents, please see https://github.com/AdguardTeam/dnsproxy#usage
+
+config dnsproxy 'example'
+         option enabled '0'
+         option listen_addr '0.0.0.0'
+         option listen_port '53'
+         list bootstrap 'tls://8.8.8.8'
+         list upstream 'tls://8.8.8.8'
+         list upstream 'tls://8.8.4.4'
