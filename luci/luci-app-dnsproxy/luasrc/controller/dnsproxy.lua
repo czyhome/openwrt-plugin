@@ -1,4 +1,4 @@
--- Copyright 2023 Steven Barth <a805899926@gmail.com>
+-- Copyright 2023 Bruce Chen <a805899926@gmail.com>
 -- Licensed to the public under the Apache License 2.0.
 
 module("luci.controller.dnsproxy", package.seeall)

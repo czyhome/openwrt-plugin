@@ -1,4 +1,4 @@
--- Copyright 2023 Steven Barth <a805899926@gmail.com>
+-- Copyright 2023 Bruce Chen <a805899926@gmail.com>
 -- Licensed to the public under the Apache License 2.0.
 
 local fs  = require "nixio.fs"
@@ -12,6 +12,16 @@ local s = m:section( TypedSection, "dnsproxy", translate("DnsProxy instances"), 
 s.template = "cbi/tblsection"
 s.addremove = true
 s.add_select_options = { }
+
+local cfg = s:option(DummyValue, "config")
+function cfg.cfgvalue(self, section)
+	local file_cfg = self.map:get(section, "config")
+	if file_cfg then
+		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "file", "%s")
+	else
+		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "basic", "%s")
+	end
+end
 
 function s.getPID(section) -- Universal function which returns valid pid # or nil
 	local pid = sys.exec("%s | grep -w '[d]nsproxy *.%s.log'" % { psstring, section })
