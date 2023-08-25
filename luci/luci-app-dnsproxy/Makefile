@@ -11,6 +11,10 @@ LUCI_DEPENDS:=+luci-compat +dnsproxy
 
 PKG_LICENSE:=Apache-2.0
 
+define Package/luci-app-dnsproxy/conffiles
+/etc/config/dnsproxy
+endef
+
 include $(TOPDIR)/feeds/luci/luci.mk
 
 # call BuildPackage - OpenWrt buildroot signature
