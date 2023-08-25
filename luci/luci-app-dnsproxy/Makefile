@@ -13,6 +13,7 @@ PKG_LICENSE:=Apache-2.0
 
 define Package/luci-app-dnsproxy/conffiles
 /etc/config/dnsproxy
+/etc/init.d/dnsproxy
 endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
