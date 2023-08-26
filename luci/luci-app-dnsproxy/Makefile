@@ -11,9 +11,9 @@ LUCI_DEPENDS:=+luci-compat +dnsproxy
 
 PKG_LICENSE:=Apache-2.0
 
-define Package/dnsproxy/install
+define Package/luci-app-dnsproxy/install
 	$(INSTALL_DIR) $(1)/etc/init.d/
-	$(INSTALL_BIN) $(CURDIR)/files/dnsproxy.init $(1)/etc/init.d/dnsproxy
+	$(INSTALL_BIN) ./files/dnsproxy.init $(1)/etc/init.d/dnsproxy
 endef
 
 
