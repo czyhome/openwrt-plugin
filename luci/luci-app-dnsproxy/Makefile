@@ -7,13 +7,12 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for DnsProxy
-LUCI_DEPENDS:=+luci-compat +dnsproxy2
+LUCI_DEPENDS:=+luci-compat +dnsproxy
 
 PKG_LICENSE:=Apache-2.0
 
 define Package/luci-app-dnsproxy/conffiles
 /etc/config/dnsproxy
-/etc/init.d/dnsproxy
 endef
 
 include $(TOPDIR)/feeds/luci/luci.mk
