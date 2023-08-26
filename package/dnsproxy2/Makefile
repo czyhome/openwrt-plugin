@@ -51,9 +51,9 @@ define Package/dnsproxy2/install
 	$(INSTALL_BIN) $(CURDIR)/files/dnsproxy.init $(1)/etc/init.d/dnsproxy
 endef
 
-define Package/dnsproxy/conffiles
+define Package/dnsproxy2/conffiles
 /etc/config/dnsproxy
 endef
 
-$(eval $(call GoBinPackage,dnsproxy))
-$(eval $(call BuildPackage,dnsproxy))
+$(eval $(call GoBinPackage,dnsproxy2))
+$(eval $(call BuildPackage,dnsproxy2))
