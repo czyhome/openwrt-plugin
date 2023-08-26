@@ -4,7 +4,7 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=dnsproxy
+PKG_NAME:=dnsproxy2
 PKG_VERSION:=0.54.0
 PKG_RELEASE:=1
 
@@ -26,7 +26,7 @@ GO_PKG_LDFLAGS_X:=main.VersionString=v$(PKG_VERSION)
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
-define Package/dnsproxy
+define Package/dnsproxy2
   SECTION:=net
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
@@ -36,13 +36,13 @@ define Package/dnsproxy
   USERID:=dnsproxy=411:dnsproxy=411
 endef
 
-define Package/dnsproxy/description
+define Package/dnsproxy2/description
   A simple DNS proxy server that supports all existing DNS protocols including
   DNS-over-TLS, DNS-over-HTTPS, DNSCrypt, and DNS-over-QUIC.Moreover, it can
   work as a DNS-over-HTTPS, DNS-over-TLS or DNS-over-QUIC server.
 endef
 
-define Package/dnsproxy/install
+define Package/dnsproxy2/install
 	$(call GoPackage/Package/Install/Bin,$(1))
 
 	$(INSTALL_DIR) $(1)/etc/config/

@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=LuCI Support for DnsProxy
-LUCI_DEPENDS:=+luci-compat +dnsproxy
+LUCI_DEPENDS:=+luci-compat +dnsproxy2
 
 PKG_LICENSE:=Apache-2.0
 
