@@ -7,7 +7,7 @@ LUCI_DEPENDS:=+bash +fdisk +cfdisk +blockd +sudo +gcc +vim +python3 +python3-bcr
 			  +kmod-tcp-bbr +kmod-macvlan +ddns-scripts +ddns-scripts-aliyun +ddns-scripts-cloudflare +netdata +iperf3 +softethervpn5-server \
 			  +openvpn-openssl +openvpn-easy-rsa +openvpn-auth +openldap-server +openldap-utils \
 			  +luci +luci-compat +adguardhome +luci-app-ttyd +luci-app-commands \
-			  +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-wireguard +qrencode +cloudflared \
+			  +luci-app-dnsproxy +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-app-wireguard +qrencode +cloudflared \
 			  +luci-app-wol +luci-app-socat +luci-app-snmpd +luci-app-smartdns \
 			  +luci-app-upnp +luci-app-openvpn +luci-app-ocserv +luci-app-sqm +luci-app-acme +acme-dnsapi +acme-sync +luci-app-omcproxy +luci-app-udpxy \
 			  +luci-app-aria2 +ariang +rsync +luci-app-samba4 +luci-app-nfs
