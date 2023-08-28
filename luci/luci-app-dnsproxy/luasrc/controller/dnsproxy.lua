@@ -5,4 +5,5 @@ module("luci.controller.dnsproxy", package.seeall)
 
 function index()
 	entry( {"admin", "services", "dnsproxy"}, cbi("dnsproxy"), _("DnsProxy") ).acl_depends = { "luci-app-dnsproxy" }
+	entry( {"admin", "services", "dnsproxy", "edit"},    cbi("dnsproxy-edit"),    nil ).leaf = true
 end

@@ -5,7 +5,7 @@
 			"file": {
 				"/etc/dnsproxy/*": [ "read" ]
 			},
-			"uci": [ "dnsproxy" ]
+			"uci": [ "dnsproxy"]
 		},
 		"write": {
 			"file": {

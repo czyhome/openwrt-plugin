@@ -15,17 +15,17 @@ section_enabled() {
 add_instance() {
 	local name="$1"
     
-    config_get listen_addr "$s" listen_addr
-    config_get listen_port "$s" listen_port
+    config_get listen "$s" listen
+    config_get port "$s" port
 	config_get verbose "$s" verbose
-
+	
 	procd_open_instance "$name"
 	procd_set_param command "$PROG"	\
-		--listen "$listen_addr" \
-		--port "$listen_port" \
-		--output "/var/log/dnsproxy-$name.log"
+		--listen "$listen" \
+		--port "$port" \
+		--output "/var/log/dnsproxy.$name.log"
+
 	[ ${verbose} ] && {
-		echo "====="
 		procd_set_param command --verbose
 	}
 	for i in "bootstrap" "fallback" "upstream"; do

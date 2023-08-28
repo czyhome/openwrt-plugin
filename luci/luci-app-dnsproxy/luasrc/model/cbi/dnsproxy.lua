@@ -11,7 +11,7 @@ local m = Map("dnsproxy", translate("DnsProxy"))
 local s = m:section( TypedSection, "dnsproxy", translate("DnsProxy instances"), translate("Below is a list of configured DnsProxy instances and their current state") )
 s.template = "cbi/tblsection"
 s.addremove = true
-s.add_select_options = { }
+s.add_select_options = {}
 
 local cfg = s:option(DummyValue, "config")
 function cfg.cfgvalue(self, section)
@@ -19,7 +19,7 @@ function cfg.cfgvalue(self, section)
 	if file_cfg then
 		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "file", "%s")
 	else
-		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "basic", "%s")
+		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "edit", "%s")
 	end
 end
 
@@ -32,13 +32,12 @@ function s.getPID(section) -- Universal function which returns valid pid # or ni
 	end
 end
 
-function s.remove(self, name)
-	uci:delete("dnsproxy", name)
-	uci:save("dnsproxy")
-	uci:commit("dnsproxy")
+local port = s:option( DummyValue, "port", translate("Port") )
+function port.cfgvalue(self, section)
+	return AbstractValue.cfgvalue(self, section) or "-"
 end
 
-s:option( Flag, "enabled", translate("Enabled") )
+local enabled = s:option( Flag, "enabled", translate("Enabled") )
 
 local active = s:option( DummyValue, "_active", translate("Started") )
 function active.cfgvalue(self, section)
@@ -51,33 +50,33 @@ function active.cfgvalue(self, section)
 	return translate("no")
 end
 
--- local updown = s:option( Button, "_updown", translate("Start/Stop") )
--- updown._state = false
--- updown.redirect = luci.dispatcher.build_url("admin", "services", "dnsproxy")
+local updown = s:option( Button, "_updown", translate("Start/Stop") )
+updown._state = false
+updown.redirect = luci.dispatcher.build_url("admin", "services", "dnsproxy")
 
--- function updown.cbid(self, section)
--- 	local pid = s.getPID(section)
--- 	self._state = pid ~= nil and sys.process.signal(pid, 0)
--- 	self.option = self._state and "stop" or "start"
--- 	return AbstractValue.cbid(self, section)
--- end
--- function updown.cfgvalue(self, section)
--- 	self.title = self._state and "stop" or "start"
--- 	self.inputstyle = self._state and "reset" or "reload"
--- end
--- function updown.write(self, section, value)
--- 	if self.option == "stop" then
--- 		sys.call("/etc/init.d/dnsproxy stop %s" % section)
--- 	else
--- 		sys.call("/etc/init.d/dnsproxy start %s" % section)
--- 	end
--- 	luci.http.redirect( self.redirect )
--- end
+function updown.cbid(self, section)
+	local pid = s.getPID(section)
+	self._state = pid ~= nil and sys.process.signal(pid, 0)
+	self.option = self._state and "stop" or "start"
+	return AbstractValue.cbid(self, section)
+end
+function updown.cfgvalue(self, section)
+	self.title = self._state and "stop" or "start"
+	self.inputstyle = self._state and "reset" or "reload"
+end
+function updown.write(self, section, value)
+	if self.option == "stop" then
+		sys.call("/etc/init.d/dnsproxy stop %s" % section)
+	else
+		sys.call("/etc/init.d/dnsproxy start %s" % section)
+	end
+	luci.http.redirect( self.redirect )
+end
 
-local port = s:option( DummyValue, "listen_port", translate("Port") )
-function port.cfgvalue(self, section)
-	local val = AbstractValue.cfgvalue(self, section)
-	return val or "-"
+function s.remove(self, name)
+	uci:delete("dnsproxy", name)
+	uci:save("dnsproxy")
+	uci:commit("dnsproxy")
 end
 
 function m.on_after_apply(self,map)
