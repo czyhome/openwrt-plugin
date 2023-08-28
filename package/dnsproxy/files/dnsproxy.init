@@ -14,23 +14,31 @@ section_enabled() {
 
 add_instance() {
 	local name="$1"
-    
-    config_get listen "$s" listen
-    config_get port "$s" port
-	config_get verbose "$s" verbose
 	
-	procd_open_instance "$name"
-	procd_set_param command "$PROG"	\
-		--listen "$listen" \
-		--port "$port" \
-		--output "/var/log/dnsproxy.$name.log"
+	config_get_bool debug "$name" debug 0
 
-	[ ${verbose} ] && {
-		procd_set_param command --verbose
-	}
-	for i in "bootstrap" "fallback" "upstream"; do
+	procd_open_instance "$name"
+	procd_set_param command "$PROG"	--output "/var/log/dnsproxy.$name.log"
+
+	for i in "listen" "port" "bootstrap" "fallback" "upstream"; do
 		config_list_foreach "$name" $i "procd_append_param command --$i"
 	done
+
+	config_list_foreach "$name" https_port "procd_append_param command --https-port"
+	config_list_foreach "$name" tls_port "procd_append_param command --tls-port"
+	config_list_foreach "$name" quic_port "procd_append_param command --quic-port"
+	config_list_foreach "$name" dnscrypt_port "procd_append_param command --dnscrypt-port"
+
+	config_get tls_min_version "$name" tls_min_version
+	[ ! -z $tls_min_version ] && procd_append_param command --tls-min-version $tls_min_version
+
+	config_get tls_max_version "$name" tls_max_version
+	[ ! -z $tls_max_version ] && procd_append_param command --tls-min-version $tls_max_version
+
+	config_get_bool insecure "$name" insecure 0
+	[ "$insecure" -eq 1 ] && procd_append_param command --insecure
+
+	[ "$debug" -eq 1 ] && procd_append_param command --verbose
 		
     procd_set_param respawn
 	

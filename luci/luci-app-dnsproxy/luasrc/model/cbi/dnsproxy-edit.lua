@@ -13,13 +13,12 @@ s:tab("advanced", translate('Advanced Settings'));
 s:tab('logview',translate('Log File Viewer'));
 
 enabled = s:taboption("general", Flag, "enabled", translate("Enabled"))
+debug = s:taboption("general", Flag, "debug", translate("Enable debug logging"))
 
-listen = s:taboption("general", Value, "listen", translate("Listen"), translate("Listening addresses"))
-listen.rmempty = false
+listen = s:taboption("general", DynamicList, "listen", translate("Listen"), translate("Listening addresses"))
 listen.datatype = "ipaddr"
 
-port = s:taboption("general", Value, "port", translate("Port"), translate("Listening ports. Zero value disables TCP and UDP listeners"))
-port.rmempty = false
+port = s:taboption("general", DynamicList, "port", translate("Port"), translate("Listening ports. Zero value disables TCP and UDP listeners"))
 port.datatype = "port"
 
 s:taboption("general", DynamicList ,"bootstrap", translate("Bootstrap"), translate("Bootstrap DNS for DoH and DoT (default: 8.8.8.8:53)"))
@@ -31,17 +30,18 @@ https_port.datatype = "port"
 tls_port = s:taboption("advanced", Value, "tls_port", translate("TLS Port"))
 tls_port.datatype = "port"
 
-logview = s:taboption('logview', TextValue, '_read_log')
-logview.rows = 20
-function logview.cfgvalue(self, section)
-	if nixio.fs.access("/var/log/dnsproxy.%s.log" % section) then
-		local logs = luci.util.execi("cat /var/log/dnsproxy.%s.log" % section)
-		local s = ""
-		for line in logs do
-			s = line .. "\n" .. s
-		end
-		return s
-	end
-end
+-- logview = s:taboption('logview', TextValue, '_read_log')
+-- logview.submit=false
+-- logview.rows = 20
+-- function logview.cfgvalue(self, section)
+-- 	if nixio.fs.access("/var/log/dnsproxy.%s.log" % section) then
+-- 		local logs = luci.util.execi("cat /var/log/dnsproxy.%s.log" % section)
+-- 		local s = ""
+-- 		for line in logs do
+-- 			s = line .. "\n" .. s
+-- 		end
+-- 		return s
+-- 	end
+-- end
 
 return m
