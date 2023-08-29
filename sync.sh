@@ -1,5 +1,5 @@
 #!/bin/bash
-CUR_DIR=$(cd "$(dirname "$0")"; pwd)
-cp -rv ${CUR_DIR}/package/dnsproxy/* ${CUR_DIR}/../packages/dnsproxy/
-cp -rv ${CUR_DIR}/package/adguardhome/* ${CUR_DIR}/../packages/adguardhome/
-sed -i 's|/etc/adguardhome.yaml|/etc/adguardhome/|' ${CUR_DIR}/package/adguardhome/Makefile
+cd $(cd "$(dirname "$0")"; pwd)
+cp -rv package/dnsproxy/* ../packages/dnsproxy/
+cp -rv package/adguardhome/* ../packages/adguardhome/
+sed -i 's|/etc/adguardhome.yaml|/etc/adguardhome/|' ../package/adguardhome/Makefile
