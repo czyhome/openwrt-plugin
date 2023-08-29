@@ -26,12 +26,13 @@ append_param_bool() {
 
 add_instance() {
 	local name="$1"
-	echo '' > /var/log/dnsproxy.$name.log
+	local log_file=/var/log/dnsproxy.$name.log
+	echo '' > $log_file
 	
 	config_get_bool debug "$name" debug 0
 
 	procd_open_instance "$name"
-	procd_set_param command "$PROG"	--output "/var/log/dnsproxy.$name.log"
+	procd_set_param command "$PROG"	--output $log_file
 
 	for i in "listen" "port" "bootstrap" "fallback" "upstream" "https_port" "tls_port" "quic_port" "private_rdns_upstream"; do
 		config_list_foreach "$name" $i "procd_append_param command --${i//_/-}"

@@ -8,24 +8,15 @@ local uci = require "luci.model.uci".cursor()
 local testfullps = sys.exec("ps --help 2>&1 | grep BusyBox") --check which ps do we have
 local psstring = (string.len(testfullps)>0) and  "ps w" or  "ps axfw" --set command we use to get pid
 
-local m = Map("dnsproxy", translate("DnsProxy"))
-local s = m:section( TypedSection, "dnsproxy")
+local m = Map("adguardhome", translate("AdguardHome"))
+local s = m:section( TypedSection, "service", translate("Service"))
 s.template = "cbi/tblsection"
 s.addremove = true
 s.add_select_options = {}
-
-local cfg = s:option(DummyValue, "config")
-function cfg.cfgvalue(self, section)
-	local file_cfg = self.map:get(section, "config")
-	if file_cfg then
-		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "file", "%s")
-	else
-		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "edit", "%s")
-	end
-end
+s.extedit = luci.dispatcher.build_url("admin", "services", "adguardhome", "edit", "%s")
 
 function s.getPID(section) -- Universal function which returns valid pid # or nil
-	local pid = sys.exec("%s | grep -w 'dnsproxy.%s.log'" % { psstring, section })
+	local pid = sys.exec("%s | grep -w 'adguardhome.%s.pid'" % { psstring, section })
 	if pid and #pid > 0 then
 		return tonumber(pid:match("^%s*(%d+)"))
 	else
@@ -34,6 +25,7 @@ function s.getPID(section) -- Universal function which returns valid pid # or ni
 end
 
 local port = s:option( DummyValue, "port", translate("Port") )
+port.template="adguardhome/avalue"
 function port.cfgvalue(self, section)
 	return AbstractValue.cfgvalue(self, section) or "-"
 end
@@ -53,7 +45,7 @@ end
 
 local updown = s:option( Button, "_updown", translate("Start/Stop") )
 updown._state = false
-updown.redirect = luci.dispatcher.build_url("admin", "services", "dnsproxy")
+updown.redirect = luci.dispatcher.build_url("admin", "services", "adguardhome")
 
 function updown.cbid(self, section)
 	local pid = s.getPID(section)
@@ -67,21 +59,21 @@ function updown.cfgvalue(self, section)
 end
 function updown.write(self, section, value)
 	if self.option == "stop" then
-		sys.call("/etc/init.d/dnsproxy stop %s" % section)
+		sys.call("/etc/init.d/adguardhome stop %s" % section)
 	else
-		sys.call("/etc/init.d/dnsproxy start %s" % section)
+		sys.call("/etc/init.d/adguardhome start %s" % section)
 	end
 	luci.http.redirect( self.redirect )
 end
 
 function s.remove(self, name)
-	uci:delete("dnsproxy", name)
-	uci:save("dnsproxy")
-	uci:commit("dnsproxy")
+	uci:delete("adguardhome", name)
+	uci:save("adguardhome")
+	uci:commit("adguardhome")
 end
 
 function m.on_after_apply(self,map)
-	sys.call('/etc/init.d/dnsproxy reload')
+	sys.call('/etc/init.d/adguardhome reload')
 end
 
 return m
