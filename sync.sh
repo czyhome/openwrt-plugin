@@ -1,12 +1,21 @@
 #!/bin/bash
 cd $(cd "$(dirname "$0")"; pwd)
 
+function replace_conffiles(){
+    local pkg_name=$1
+    local pkg_makefile=$2
+    local before_line=$3
+    sed -i -e "/^define Package\/${pkg_name}\/conffiles/,/^endef$/d" $pkg_makefile
+    sed -i -e "`grep -n "${before_line}" $pkg_makefile | cut -d ":" -f 1` idefine Package/${pkg_name}/conffiles\n/etc/config/${pkg_name}\n/etc/${pkg_name}/\nendef" $pkg_makefile
+}
+
 # dnsproxy
 cp -rv package/dnsproxy/* ../packages/net/dnsproxy/
-sed -i -e 's|\sUSERID:=dnsproxy=411.*||' -e '/^define Package\/dnsproxy\/conffiles/,/^endef$/d' ../packages/net/dnsproxy/Makefile
-sed -i -e "`grep -n '$(eval $(call GoBinPackage,dnsproxy))' ../packages/net/dnsproxy/Makefile | cut -d ":" -f 1` idefine Package/dnsproxy/conffiles\n/etc/config/dnsproxy\n/etc/dnsproxy/\nendef" ../packages/net/dnsproxy/Makefile
+dnsproxy_makefile=../packages/net/dnsproxy/Makefile
+sed -i -e 's|\sUSERID:=dnsproxy=411.*||' $dnsproxy_makefile
+replace_conffiles dnsproxy $dnsproxy_makefile '$(eval $(call GoBinPackage,dnsproxy))'
 
 # adguardhome
 cp -rv package/adguardhome/* ../packages/net/adguardhome/
-sed -i -e '/^define Package\/adguardhome\/conffiles/,/^endef$/d' ../packages/net/adguardhome/Makefile
-sed -i -e "`grep -n '$(eval $(call GoBinPackage,adguardhome))' ../packages/net/adguardhome/Makefile | cut -d ":" -f 1` idefine Package/adguardhome/conffiles\n/etc/config/adguardhome\n/etc/adguardhome/\nendef" ../packages/net/adguardhome/Makefile
+adguardhome_makefile=../packages/net/adguardhome/Makefile
+replace_conffiles adguardhome $adguardhome_makefile '$(eval $(call GoBinPackage,adguardhome))'
