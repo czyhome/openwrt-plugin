@@ -8,6 +8,7 @@
 			"uci": [ "dnsproxy"]
 		},
 		"write": {
+			"cgi-io": [ "upload" ],
 			"file": {
 				"/etc/dnsproxy/*": [ "write" ]
 			},

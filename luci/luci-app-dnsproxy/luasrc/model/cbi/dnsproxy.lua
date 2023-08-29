@@ -3,6 +3,7 @@
 
 local fs  = require "nixio.fs"
 local sys = require "luci.sys"
+local json = require "luci.jsonc"
 local uci = require "luci.model.uci".cursor()
 local testfullps = sys.exec("ps --help 2>&1 | grep BusyBox") --check which ps do we have
 local psstring = (string.len(testfullps)>0) and  "ps w" or  "ps axfw" --set command we use to get pid

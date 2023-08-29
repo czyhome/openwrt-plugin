@@ -12,31 +12,59 @@ section_enabled() {
 	[ $enabled -gt 0 ]
 }
 
+append_param() {
+	local value
+	config_get value $1 $2
+	[ -n "$value" ] && procd_append_param command --${2//_/-} $value
+}
+
+append_param_bool() {
+	local value
+	config_get_bool value $1 $2 0
+	[ "$value" -eq 1 ] && procd_append_param command --${2//_/-}
+}
+
 add_instance() {
 	local name="$1"
+	echo '' > /var/log/dnsproxy.$name.log
 	
 	config_get_bool debug "$name" debug 0
 
 	procd_open_instance "$name"
 	procd_set_param command "$PROG"	--output "/var/log/dnsproxy.$name.log"
 
-	for i in "listen" "port" "bootstrap" "fallback" "upstream"; do
-		config_list_foreach "$name" $i "procd_append_param command --$i"
+	for i in "listen" "port" "bootstrap" "fallback" "upstream" "https_port" "tls_port" "quic_port" "private_rdns_upstream"; do
+		config_list_foreach "$name" $i "procd_append_param command --${i//_/-}"
 	done
 
-	config_list_foreach "$name" https_port "procd_append_param command --https-port"
-	config_list_foreach "$name" tls_port "procd_append_param command --tls-port"
-	config_list_foreach "$name" quic_port "procd_append_param command --quic-port"
-	config_list_foreach "$name" dnscrypt_port "procd_append_param command --dnscrypt-port"
+	append_param "$name" tls_min_version
+	append_param "$name" tls_max_version
+	append_param "$name" ratelimit
+	append_param "$name" bogus_nxdomain
+	append_param "$name" udp_buf_size
+	append_param "$name" max_go_routines
 
-	config_get tls_min_version "$name" tls_min_version
-	[ ! -z $tls_min_version ] && procd_append_param command --tls-min-version $tls_min_version
+	append_param_bool "$name" insecure
+	append_param_bool "$name" http3
+	append_param_bool "$name" all_servers
+	append_param_bool "$name" fastest_addr
+	append_param_bool "$name" refuse_any
+	append_param_bool "$name" ipv6_disabled
 
-	config_get tls_max_version "$name" tls_max_version
-	[ ! -z $tls_max_version ] && procd_append_param command --tls-min-version $tls_max_version
+	append_param_bool "$name" cache && {
+		append_param "$name" cache_size
+		append_param "$name" cache_min_ttl
+		append_param "$name" cache_max_ttl
+		append_param_bool "$name" cache_optimistic
+	}
 
-	config_get_bool insecure "$name" insecure 0
-	[ "$insecure" -eq 1 ] && procd_append_param command --insecure
+	append_param_bool "$name" endns && {
+		append_param "$name" edns_addr
+	}
+
+	append_param_bool "$name" dns64 && {
+		config_list_foreach "$name" dns64_prefix "procd_append_param command --dns64-prefix"
+	}
 
 	[ "$debug" -eq 1 ] && procd_append_param command --verbose
 		
