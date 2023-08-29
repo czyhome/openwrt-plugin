@@ -8,4 +8,5 @@ sed -i -e "`grep -n '$(eval $(call GoBinPackage,dnsproxy))' ../packages/net/dnsp
 
 # adguardhome
 cp -rv package/adguardhome/* ../packages/net/adguardhome/
-sed -i -e 's|\sUSERID:=dnsproxy=411.*||' -e "/^define Package\/dnsproxy\/conffiles/,/^endef$/d" ../packages/net/adguardhome/Makefile
+sed -i -e '/^define Package\/adguardhome\/conffiles/,/^endef$/d' ../packages/net/adguardhome/Makefile
+sed -i -e "`grep -n '$(eval $(call GoBinPackage,adguardhome))' ../packages/net/adguardhome/Makefile | cut -d ":" -f 1` idefine Package/adguardhome/conffiles\n/etc/config/adguardhome\n/etc/adguardhome/\nendef" ../packages/net/adguardhome/Makefile
