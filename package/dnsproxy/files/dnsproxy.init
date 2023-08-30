@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-# Copyright (C) 2021 Bruce Chen <a805899926@gmail.com>
+# Copyright (C) 2023 Bruce Chen <a805899926@gmail.com>
 
 START=90
 STOP=10
@@ -24,8 +24,12 @@ append_param_bool() {
 	[ "$value" -eq 1 ] && procd_append_param command --${2//_/-}
 }
 
-add_instance() {
+start_instance() {
 	local name="$1"
+    
+    section_enabled "$s" || { return 1 }
+    [ ! -d "/var/run" ] && mkdir -p "/var/run"
+
 	local log_file=/var/log/dnsproxy.$name.log
 	echo '' > $log_file
 	
@@ -72,16 +76,6 @@ add_instance() {
     procd_set_param respawn
 	
 	procd_close_instance
-}
-
-start_instance() {
-	local s="$1"
-    
-    section_enabled "$s" || {
-		return 1
-	}
-    [ ! -d "/var/run" ] && mkdir -p "/var/run"
-	add_instance "$s"
 }
 
 start_service() {
