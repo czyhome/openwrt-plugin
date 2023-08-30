@@ -12,9 +12,8 @@ LUCI_DEPENDS:=+bash +fdisk +cfdisk +blockd +sudo +gcc +vim +python3 +python3-bcr
 			  +luci-app-upnp +luci-app-openvpn +luci-app-ocserv +luci-app-sqm +luci-app-acme +acme-dnsapi +acme-sync +luci-app-omcproxy +luci-app-udpxy \
 			  +luci-app-aria2 +ariang +rsync +luci-app-samba4 +luci-app-nfs
 # +luci-app-olsr +luci-app-olsr-services +luci-app-olsr-viz +luci-app-acl +luci-app-radicale2
-PKG_NAME:=luci-app-bundle-base
-PKG_VERSION:=1.0
-PKG_RELEASE:=1
+
+PKG_LICENSE:=Apache-2.0
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
