@@ -1,11 +1,11 @@
 # Sample workflow for building and deploying a Hugo site to GitHub Pages
 name: Build Openwrt Offical
 
-on:
-  push:
-    paths:
-      - luci/**
-      - package/**
+# on:
+#   push:
+#     paths:
+#       - luci/**
+#       - package/**
 
 # Default to bash
 defaults:
