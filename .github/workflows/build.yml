@@ -15,6 +15,7 @@ defaults:
     shell: bash
 
 env:
+  SSH_ACTIONS: true
   OPENWRT_TAG: v22.03.5
   OPENWRT_FEED_BRANCH: openwrt-22.03
   
@@ -41,6 +42,10 @@ jobs:
         working-directory: openwrt
         run: |
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
+
+      - name: SSH connection to Actions
+        uses: P3TERX/debugger-action@master
+        if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
 
       - name: Generate configuration file
         working-directory: openwrt
