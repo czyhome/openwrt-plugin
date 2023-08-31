@@ -53,7 +53,9 @@ jobs:
       - name: test env
         working-directory: openwrt
         run: |
+          env
           echo  The target are ${{ inputs.target }}
+          echo  The branch are ${{ inputs.branch }}
       # - name: Generate configuration file
       #   working-directory: openwrt
       #   run: make defconfig
