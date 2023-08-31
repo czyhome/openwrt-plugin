@@ -31,7 +31,7 @@ jobs:
           git clone https://github.com/openwrt/openwrt.git
           cd openwrt
           git checkout ${OPENWRT_TAG}
-          sed -i -e 's|\^.*|;${OPENWRT_FEED_BRANCH}|' feeds.conf.default
+          sed -i -e "s|\^.*|;${OPENWRT_FEED_BRANCH}|" feeds.conf.default
           echo "
           src-git helloworld https://github.com/fw876/helloworld
           src-git plugin https://github.com/czy21/openwrt-plugin.git
