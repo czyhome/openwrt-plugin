@@ -8,6 +8,13 @@ on:
       - luci/**
       - package/**
   workflow_dispatch:
+    target:
+      required: true
+      default: 'x86_64'
+      options:
+        - x86_64
+        - r4s
+        - r2s
 
 # Default to bash
 defaults:
@@ -15,7 +22,6 @@ defaults:
     shell: bash
 
 env:
-  SSH_ACTIONS: true
   OPENWRT_TAG: v22.03.5
   OPENWRT_FEED_BRANCH: openwrt-22.03
   
@@ -42,50 +48,49 @@ jobs:
         working-directory: openwrt
         run: |
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
-
-      - name: SSH connection to Actions
-        uses: P3TERX/debugger-action@master
-        if: env.SSH_ACTIONS == 'true' || contains(github.event.action, 'ssh')
-
-      - name: Generate configuration file
-        working-directory: openwrt
-        run: make defconfig
-
-      - name: download packages
-        working-directory: openwrt
-        run: make download -j16
-
-      - name: compile firmware
+      - name: test env
         working-directory: openwrt
         run: |
-          make -j$(nproc) || make -j1 V=s
-          echo "======================="
-          echo "Space usage:"
-          echo "======================="
-          df -h
-          echo "======================="
-          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-          du -h --max-depth=1 ./build_dir
-          du -h --max-depth=1 ./bin
+          echo  The target are ${{ inputs.target }}
+      # - name: Generate configuration file
+      #   working-directory: openwrt
+      #   run: make defconfig
 
-      - name: Prepare artifact
-        working-directory: openwrt
-        run: |
-          mkdir -p ./artifact/package
-          mkdir -p ./artifact/buildinfo
-          rm -rf $(find ./bin/targets/ -type d -name "packages")
-          cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
-          cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+      # - name: download packages
+      #   working-directory: openwrt
+      #   run: make download -j16
 
-      - name: Upload buildinfo
-        uses: actions/upload-artifact@v3
-        with:
-          name: OpenWrt_buildinfo
-          path: ./artifact/buildinfo/
+      # - name: compile firmware
+      #   working-directory: openwrt
+      #   run: |
+      #     make -j$(nproc) || make -j1 V=s
+      #     echo "======================="
+      #     echo "Space usage:"
+      #     echo "======================="
+      #     df -h
+      #     echo "======================="
+      #     du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
+      #     du -h --max-depth=1 ./build_dir
+      #     du -h --max-depth=1 ./bin
 
-      - name: Upload package
-        uses: actions/upload-artifact@v3
-        with:
-          name: OpenWrt_package
+      # - name: Prepare artifact
+      #   working-directory: openwrt
+      #   run: |
+      #     mkdir -p ./artifact/package
+      #     mkdir -p ./artifact/buildinfo
+      #     rm -rf $(find ./bin/targets/ -type d -name "packages")
+      #     cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
+      #     cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+
+      # - name: Upload buildinfo
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: OpenWrt_buildinfo
+      #     path: ./artifact/buildinfo/
+
+      # - name: Upload package
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: OpenWrt_package
           
           
