@@ -19,7 +19,7 @@ debug = s:taboption("general", Flag, "debug", translate("Enable debug logging"))
 listen = s:taboption("general", DynamicList, "listen", translate("Listen"), translate("Listening addresses (default: 0.0.0.0)"))
 listen.datatype = "ipaddr"
 
-port = s:taboption("general", DynamicList, "port", translate("Port"), translate("Listening ports. Zero value disables TCP and UDP listeners"))
+port = s:taboption("general", DynamicList, "port", translate("Port"), translate("Listening ports. Zero value disables TCP and UDP listeners (default: 0.0.0.0:53)"))
 port.datatype = "port"
 
 bootstrap = s:taboption("general", DynamicList ,"bootstrap", translate("Bootstrap"), translate("Bootstrap DNS for DoH and DoT (default: 8.8.8.8:53)"))
