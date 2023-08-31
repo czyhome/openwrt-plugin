@@ -52,14 +52,10 @@ jobs:
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
           mv feeds/plugin/${{ inputs.target }}.config .config
 
-      - name: download packages
-        working-directory: openwrt
-        run: make download -j16
-
       - name: compile firmware
         working-directory: openwrt
         run: |
-          make -j$(nproc) || make -j1 V=s
+          make -j1
           echo "======================="
           echo "Space usage:"
           echo "======================="
