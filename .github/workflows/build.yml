@@ -8,13 +8,14 @@ on:
       - luci/**
       - package/**
   workflow_dispatch:
-    target:
-      required: true
-      default: 'x86_64'
-      options:
-        - x86_64
-        - r4s
-        - r2s
+    inputs:
+      target:
+        required: true
+        default: 'x86_64'
+        options:
+          - x86_64
+          - r4s
+          - r2s
 
 # Default to bash
 defaults:
