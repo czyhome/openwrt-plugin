@@ -1,5 +1,5 @@
 # Sample workflow for building and deploying a Hugo site to GitHub Pages
-name: openwrt ci
+name: Build Openwrt official
 
 on:
   # Runs on pushes targeting the default branch
@@ -14,6 +14,10 @@ defaults:
   run:
     shell: bash
 
+env:
+  OPENWRT_TAG: v22.03.5
+  OPENWRT_FEED_BRANCH: openwrt-22.03
+  
 jobs:
   # Build job
   build:
@@ -24,9 +28,6 @@ jobs:
           sudo apt update -y
           sudo apt install -y build-essential clang flex g++ gawk gcc-multilib gettext git libncurses5-dev libssl-dev python3-distutils rsync unzip zlib1g-dev file wget qemu-utils libelf-dev vim git make gcc
       - name: clone
-        env:
-          OPENWRT_TAG: v22.03.5
-          OPENWRT_FEED_BRANCH: openwrt-22.03
         run: |
           git clone https://github.com/openwrt/openwrt.git
           cd openwrt
@@ -40,6 +41,7 @@ jobs:
         working-directory: openwrt
         run: |
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
+
       - name: Generate configuration file
         working-directory: openwrt
         run: make defconfig
