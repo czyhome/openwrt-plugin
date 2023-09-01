@@ -35,7 +35,7 @@ jobs:
 
       - name: generate .config
         working-directory: /data/openwrt
-        run: make defconfig
+        run: rm -rf tmp && make defconfig
 
       - name: compile firmware
         working-directory: /data/openwrt
