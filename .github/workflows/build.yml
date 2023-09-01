@@ -21,28 +21,26 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - name: init env
+      - name: init
         working-directory: /data/openwrt
         run: |
           echo "openwrt_version=$(git describe | sed 's|v||')" >> "$GITHUB_ENV"
 
-      - name: update feeds
+      - name: update
         working-directory: /data/openwrt
-        run: |
-          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
-          echo ${{ env.openwrt_version }}
+        run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
 
-      - name: use target .config
+      - name: use target config
         working-directory: /data/openwrt
         run: |
           cp feeds/plugin/${{ inputs.target }}.config .config
           rm -rf tmp && make defconfig
 
-      - name: download package
+      - name: download
         working-directory: /data/openwrt
         run: make download -j8
 
-      - name: compile firmware
+      - name: compile
         working-directory: /data/openwrt
         run: |
           echo -e "$(nproc) thread compile"
