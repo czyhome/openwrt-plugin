@@ -40,9 +40,7 @@ jobs:
         working-directory: /data/openwrt
         run: |
           cp -rv feeds/plugin/${openwrt_target}.config .config
-          if [ "${first_build}" == "true" ];then
-            cat .config | grep 'CONFIG_TARGET' > .config
-          fi
+          [ "${first_build}" == "true" ] && sed -i -n '/CONFIG_TARGET/p' .config
           rm -rf tmp && make defconfig
 
       - name: download
