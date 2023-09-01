@@ -55,24 +55,21 @@ jobs:
           make -j${thread_num} > compile.log || make -j1 V=s > compile.log
           echo "::set-output name=status::success"
           
-      # - name: Prepare artifact
-      #   working-directory: openwrt
-      #   run: |
-      #     mkdir -p ./artifact/package
-      #     mkdir -p ./artifact/buildinfo
-      #     rm -rf $(find ./bin/targets/ -type d -name "packages")
-      #     cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
-      #     cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+      - name: artifact
+        working-directory: /data/openwrt
+        run: |
+          mkdir -p artifact
+          image_name_pattern=
+          if [ "${{ inputs.target }}" == "x86-64" ];then
+            image_name_pattern="*${{ inputs.target }}*squashfs-combined-efi*"
+          elif [ "${{ inputs.target }}" == "r4s" || "${{ inputs.target }}" == "r2s" ];then
+            image_name_pattern="*${{ inputs.target }}*squashfs*"
+          fi
+          find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} artifact \;
 
       # - name: Upload buildinfo
       #   uses: actions/upload-artifact@v3
       #   with:
       #     name: OpenWrt_buildinfo
-      #     path: ./artifact/buildinfo/
-
-      # - name: Upload package
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: OpenWrt_package
-          
+      #     path: ./artifact/buildinfo/     
           
