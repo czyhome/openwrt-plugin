@@ -51,12 +51,12 @@ jobs:
       - name: compile
         working-directory: /data/openwrt
         run: |
+          thread_num=$(($(nproc)+1))
           if [ "${first_build}" == "true" ];then
-            make -j1 || make -j1 V=s > compile.log
-          else
-            echo -e "$(nproc) thread compile"
-            make -j$(nproc) > compile.log || make -j1 V=s > compile.log
+            thread_num=1
           fi
+          echo -e "${thread_num} thread compile"
+          make -j${thread_num} > compile.log || make -j1 V=s > compile.log
           echo "::set-output name=status::success"
           
       # - name: Prepare artifact
