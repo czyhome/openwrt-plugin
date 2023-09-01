@@ -21,11 +21,17 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
+      - name: init env
+        working-directory: /data/openwrt
+        run: |
+          echo "openwrt_version=$(git describe | sed 's|v||')" >> "$GITHUB_ENV"
+
       - name: update feeds
         working-directory: /data/openwrt
         run: |
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
           cp feeds/plugin/${{ inputs.target }}.config .config
+          echo ${{ env.openwrt_version }}
 
       - name: generate .config
         working-directory: /data/openwrt
@@ -37,7 +43,7 @@ jobs:
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 V=s
           echo "::set-output name=status::success"
-
+          
       # - name: Prepare artifact
       #   working-directory: openwrt
       #   run: |
