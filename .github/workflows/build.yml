@@ -38,6 +38,9 @@ jobs:
           cp feeds/plugin/${{ inputs.target }}.config .config
           rm -rf tmp && make defconfig
 
+      - name: download package
+        run: make download -j8
+
       - name: compile firmware
         working-directory: /data/openwrt
         run: |
