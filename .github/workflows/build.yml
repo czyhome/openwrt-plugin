@@ -52,7 +52,7 @@ jobs:
           thread_num=$(($(nproc)+1))
           [ "${first_build}" == "true" ] && thread_num=1
           echo -e "${thread_num} thread compile"
-          make -j${thread_num} || make -j1 V=s | tee compile.log
+          `make -j${thread_num} || make -j1 V=s` | tee compile.log
           echo "::set-output name=status::success"
           
       - name: artifact
