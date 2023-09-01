@@ -39,7 +39,7 @@ jobs:
       - name: config
         working-directory: /data/openwrt
         run: |
-          cp feeds/plugin/${openwrt_target}.config .config
+          cp -rv feeds/plugin/${openwrt_target}.config .config
           [ "${first_build}" == "true" ] && grep 'CONFIG_TARGET' > .config
           rm -rf tmp && make defconfig
 
