@@ -30,7 +30,7 @@ jobs:
       - name: test env
         working-directory: /data/openwrt-test
         run: |
-          echo "haha" e.txt
+          echo "haha" >> e.txt
           ls -al
       # - name: update feeds
       #   working-directory: openwrt
