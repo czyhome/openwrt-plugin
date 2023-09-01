@@ -39,6 +39,7 @@ jobs:
           rm -rf tmp && make defconfig
 
       - name: download package
+        working-directory: /data/openwrt
         run: make download -j8
 
       - name: compile firmware
