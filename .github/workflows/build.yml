@@ -28,6 +28,7 @@ jobs:
       - name: init
         working-directory: /data/openwrt
         run: |
+          echo "openwrt_target=${{ inputs.target }}" >> "$GITHUB_ENV"
           echo "openwrt_version=$(git describe)" >> "$GITHUB_ENV"
           echo "first_build=${{ inputs.first_build }}" >> "$GITHUB_ENV"
 
@@ -38,7 +39,7 @@ jobs:
       - name: config
         working-directory: /data/openwrt
         run: |
-          cp feeds/plugin/${{ inputs.target }}.config .config
+          cp feeds/plugin/${openwrt_target}.config .config
           [ "${first_build}" == "true" ] && grep 'CONFIG_TARGET' > .config
           rm -rf tmp && make defconfig
 
@@ -52,21 +53,20 @@ jobs:
           thread_num=$(($(nproc)+1))
           [ "${first_build}" == "true" ] && thread_num=1
           echo -e "${thread_num} thread compile"
-          (make -j${thread_num} || make -j1 V=s) | tee ${{ inputs.target }}.compile.log
-          echo "::set-output name=status::success"
+          (make -j${thread_num} || make -j1 V=s) | tee ${openwrt_target}.compile.log
           
       - name: artifact
         working-directory: /data/openwrt
         run: |
-          artifact_openwrt=artifact/${openwrt_version}
-          mkdir -p ${artifact_openwrt}
-          image_name_pattern=
-          if [ "${{ inputs.target }}" == "x86-64" ];then
-            image_name_pattern="*${{ inputs.target }}*squashfs-combined-efi*"
-          elif [ "${{ inputs.target }}" == "r4s" || "${{ inputs.target }}" == "r2s" ];then
-            image_name_pattern="*${{ inputs.target }}*squashfs*"
+          openwrt_artifact=artifact/${openwrt_version}
+          mkdir -p ${openwrt_artifact}
+          openwrt_name_pattern=
+          if [ "${openwrt_target}" == "x86-64" ];then
+            openwrt_name_pattern="*${openwrt_target}*squashfs-combined-efi*"
+          elif [ "${openwrt_target}" == "r4s" || "${openwrt_target}" == "r2s" ];then
+            openwrt_name_pattern="*${openwrt_target}*squashfs*"
           fi
-          [ -n "${image_name_pattern}" ] && find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} ${artifact_openwrt} \;
+          [ -n "${openwrt_name_pattern}" ] && find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} ${openwrt_artifact} \;
 
       # - name: Upload buildinfo
       #   uses: actions/upload-artifact@v3
