@@ -6,10 +6,10 @@ on:
     inputs:
       target:
         required: true
-        default: 'x86_64'
+        default: 'x86-64'
         type: choice
         options:
-          - x86_64
+          - x86-64
           - r4s
           - r2s
 
