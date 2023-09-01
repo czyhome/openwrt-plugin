@@ -12,6 +12,9 @@ on:
           - x86-64
           - r4s
           - r2s
+      first_build:
+        required: true
+        default: false
 
 defaults:
   run:
@@ -25,6 +28,7 @@ jobs:
         working-directory: /data/openwrt
         run: |
           echo "openwrt_version=$(git describe | sed 's|v||')" >> "$GITHUB_ENV"
+          echo "first_build=${{ inputs.first_build }}" >> "$GITHUB_ENV"
 
       - name: update
         working-directory: /data/openwrt
@@ -34,6 +38,9 @@ jobs:
         working-directory: /data/openwrt
         run: |
           cp feeds/plugin/${{ inputs.target }}.config .config
+          if [ "${first_build}" == "true" ];then
+            grep 'CONFIG_TARGET' > .config
+          fi
           rm -rf tmp && make defconfig
 
       - name: download
@@ -43,8 +50,12 @@ jobs:
       - name: compile
         working-directory: /data/openwrt
         run: |
-          echo -e "$(nproc) thread compile"
-          make -j$(nproc) > compile.log || make -j1 V=s > compile.log
+          if [ "${first_build}" == "true" ];then
+            make -j1 || make -j1 V=s > compile.log
+          else
+            echo -e "$(nproc) thread compile"
+            make -j$(nproc) > compile.log || make -j1 V=s > compile.log
+          fi
           echo "::set-output name=status::success"
           
       # - name: Prepare artifact
