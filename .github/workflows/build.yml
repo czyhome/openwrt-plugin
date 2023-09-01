@@ -39,9 +39,7 @@ jobs:
         working-directory: /data/openwrt
         run: |
           cp feeds/plugin/${{ inputs.target }}.config .config
-          if [ "${first_build}" == "true" ];then
-            grep 'CONFIG_TARGET' > .config
-          fi
+          [ "${first_build}" == "true" ] && grep 'CONFIG_TARGET' > .config
           rm -rf tmp && make defconfig
 
       - name: download
@@ -52,9 +50,7 @@ jobs:
         working-directory: /data/openwrt
         run: |
           thread_num=$(($(nproc)+1))
-          if [ "${first_build}" == "true" ];then
-            thread_num=1
-          fi
+          [ "${first_build}" == "true" ] && thread_num=1
           echo -e "${thread_num} thread compile"
           make -j${thread_num} > compile.log || make -j1 V=s > compile.log
           echo "::set-output name=status::success"
