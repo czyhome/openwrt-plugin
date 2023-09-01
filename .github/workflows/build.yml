@@ -60,7 +60,7 @@ jobs:
         run: |
           openwrt_artifact=artifact/${openwrt_version} && mkdir -p ${openwrt_artifact}
           openwrt_name_pattern="*${openwrt_target}*squashfs-combined-efi*"
-          if [ "${openwrt_target}" == "r4s" || "${openwrt_target}" == "r2s" ];then
+          if [ "${openwrt_target}" == "r4s" ] || [ "${openwrt_target}" == "r2s" ];then
             openwrt_name_pattern="*${openwrt_target}*squashfs*"
           fi
           find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} ${openwrt_artifact} \;
