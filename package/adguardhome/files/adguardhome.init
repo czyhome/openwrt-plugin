@@ -32,11 +32,10 @@ start_instance() {
 
   config_get_bool debug "$name" debug 0
 
-  local global_workdir global_config
+  local global_workdir
   config_get global_workdir 'global' workdir
-  config_get global_config 'global' config
   
-  local config=$global_config/$name.yaml
+  local config=/etc/adguardhome/$name.yaml
   local workdir=$global_workdir/$name
 
   [ -d "$workdir" ] || mkdir -m 0755 -p "$workdir"
