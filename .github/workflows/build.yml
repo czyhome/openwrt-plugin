@@ -28,7 +28,7 @@ jobs:
       - name: init
         working-directory: /data/openwrt
         run: |
-          echo "openwrt_version=$(git describe | sed 's|v||')" >> "$GITHUB_ENV"
+          echo "openwrt_version=$(git describe)" >> "$GITHUB_ENV"
           echo "first_build=${{ inputs.first_build }}" >> "$GITHUB_ENV"
 
       - name: update
@@ -58,14 +58,15 @@ jobs:
       - name: artifact
         working-directory: /data/openwrt
         run: |
-          mkdir -p artifact
+          artifact_openwrt=artifact/${openwrt_version}
+          mkdir -p ${artifact_openwrt}
           image_name_pattern=
           if [ "${{ inputs.target }}" == "x86-64" ];then
             image_name_pattern="*${{ inputs.target }}*squashfs-combined-efi*"
           elif [ "${{ inputs.target }}" == "r4s" || "${{ inputs.target }}" == "r2s" ];then
             image_name_pattern="*${{ inputs.target }}*squashfs*"
           fi
-          find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} artifact \;
+          [ -n "${image_name_pattern}" ] && find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} ${artifact_openwrt} \;
 
       # - name: Upload buildinfo
       #   uses: actions/upload-artifact@v3
