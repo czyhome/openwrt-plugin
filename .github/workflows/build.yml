@@ -69,6 +69,8 @@ jobs:
 
   deploy:
     runs-on: self-hosted
+    needs: 
+      - build
     if: ${{ always() }}
     steps:
       - name: upload to nas
