@@ -1,13 +1,13 @@
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - luci
-      - package
-      - sync.sh
+      paths:
+        - luci
+        - package
+        - sync.sh
+  workflow_dispatch:
 
 jobs:
-  build_target:
+  build-target:
     uses: ./.github/workflows/build.yml
     strategy:
       fail-fast: False
