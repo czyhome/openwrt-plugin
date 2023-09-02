@@ -40,7 +40,8 @@ jobs:
         working-directory: /data/openwrt
         run: |
           if [[ "${openwrt_target}" =~ r[0-9]+s ]];then
-            cp -rv feeds/plugin/rxs.config .config && echo "CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-${openwrt_target}=y" > .config
+            cp -rv feeds/plugin/rxs.config .config 
+            echo "CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-${openwrt_target}=y" > .config
           else
             cp -rv feeds/plugin/${openwrt_target}.config .config
           fi
