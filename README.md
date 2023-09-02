@@ -1,1 +1,1 @@
-# [Guide](https://blog.czy21.com/post/openwrt/build/){:target="_blank"}
+# [Guide](https://blog.czy21.com/post/openwrt/build/)
