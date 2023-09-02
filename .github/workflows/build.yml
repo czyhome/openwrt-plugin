@@ -1,3 +1,4 @@
+name: Build Openwrt Official
 on:
   workflow_dispatch:
     inputs:
