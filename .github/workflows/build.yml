@@ -72,8 +72,7 @@ jobs:
         run: scp -i /data/.ssh/czy-rsa -r artifact opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
 
       - name: upload to pkg
-        working-directory: /data/openwrt
         uses: actions/upload-artifact@v3
         with:
           name: openwrt-${{ env.openwrt_version }}-${{ env.openwrt_target }}
-          path: artifact/${{ env.openwrt_version }}/openwrt*${{ env.openwrt_target }}*
+          path: /data/openwrt/artifact/${{ env.openwrt_version }}/openwrt*${{ env.openwrt_target }}*
