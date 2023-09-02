@@ -16,6 +16,6 @@ on:
 
 jobs:
   build_target:
-    use: ./github/workflows/build.yml
+    use: ./.github/workflows/build.yml
     with: 
       target: ${{ inputs.target }}
