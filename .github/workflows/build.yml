@@ -1,10 +1,14 @@
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       target:
         required: true
         default: 'x86-64'
-        type: string
+        type: choice
+        options:
+          - x86-64
+          - r4s
+          - r2s
       first_build:
         required: true
         default: false
