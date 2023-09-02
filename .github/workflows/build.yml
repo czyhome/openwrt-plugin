@@ -67,15 +67,15 @@ jobs:
           [ "${openwrt_target}" == "x86-64" ] && openwrt_name_pattern+="combined-efi*"
           find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} ${openwrt_artifact} \;
 
-      - name: upload to nas
-        working-directory: /data/openwrt
-        run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
-        
-  deploy:
-    runs-on: self-hosted
-    steps:
       - name: upload to pkg
         uses: actions/upload-artifact@v3
         with:
           name: openwrt-${{ env.openwrt_version }}-${{ env.openwrt_target }}
           path: /data/openwrt/artifact/${{ env.openwrt_version }}/openwrt*${{ env.openwrt_target }}*
+
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: upload to nas
+        working-directory: /data/openwrt
+        run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
