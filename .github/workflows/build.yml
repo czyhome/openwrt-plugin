@@ -9,7 +9,6 @@ on:
         options:
           - x86-64
           - r4s
-          - r2s
       first_build:
         required: true
         default: false
