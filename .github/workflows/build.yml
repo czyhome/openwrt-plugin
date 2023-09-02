@@ -71,5 +71,5 @@ jobs:
         working-directory: /data/openwrt
         uses: actions/upload-artifact@v3
         with:
-          name: openwrt-${{ env.openwrt_target }}-${{ env.openwrt_version }}
+          name: openwrt-${{ env.openwrt_version }}-${{ env.openwrt_target }}
           path: artifact/${{ env.openwrt_version }}/openwrt*${{ env.openwrt_target }}*
