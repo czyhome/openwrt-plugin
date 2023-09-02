@@ -5,5 +5,5 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        subtarget: [x86-64, r4s, r2s]
+        target: [x86-64, r4s, r2s]
     use: ./github/workflows/build.yml
