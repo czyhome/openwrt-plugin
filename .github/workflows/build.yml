@@ -70,7 +70,10 @@ jobs:
       - name: upload to nas
         working-directory: /data/openwrt
         run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
-
+        
+  deploy:
+    runs-on: self-hosted
+    steps:
       - name: upload to pkg
         uses: actions/upload-artifact@v3
         with:
