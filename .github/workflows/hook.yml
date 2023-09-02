@@ -12,6 +12,7 @@ jobs:
     strategy:
       fail-fast: False
       matrix:
-        target: [x86-64, r4s, r2s]
+        target: [x86-64, r4s]
     with:
       target: ${{ matrix.target }}
+      first_build: false
