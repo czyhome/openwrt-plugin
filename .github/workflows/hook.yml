@@ -12,3 +12,5 @@ jobs:
       fail-fast: False
       matrix:
         target: [x86-64, r4s, r2s]
+    with:
+      target: ${{ matrix.target }}
