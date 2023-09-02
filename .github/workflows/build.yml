@@ -65,7 +65,7 @@ jobs:
           openwrt_artifact=artifact/${openwrt_version} && mkdir -p ${openwrt_artifact}
           openwrt_name_pattern="openwrt*${openwrt_target}*squashfs*"
           [ "${openwrt_target}" == "x86-64" ] && openwrt_name_pattern+="combined-efi*"
-          find bin/targets/ -type f -name "${image_name_pattern}" -exec cp {} ${openwrt_artifact} \;
+          find bin/targets/ -type f -name "${openwrt_name_pattern}" -exec cp {} ${openwrt_artifact} \;
 
   deploy:
     runs-on: self-hosted
