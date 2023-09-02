@@ -65,7 +65,7 @@ jobs:
 
       - name: upload to nas
         working-directory: /data/openwrt
-        run: scp -i /data/.ssh/czy-rsa -r artifact/* opsor@192.168.2.19:/volume1/public/developer/linux/routeros/openwrt/
+        run: scp -i /data/.ssh/czy-rsa -r artifact opsor@192.168.2.19:/volume1/public/developer/linux/routeros/openwrt/
 
       # - name: Upload buildinfo
       #   uses: actions/upload-artifact@v3
