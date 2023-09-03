@@ -1,5 +1,13 @@
 name: Build Openwrt x86-64
 
+on:
+  workflow_dispatch:
+    inputs:
+      first_build:
+        required: true
+        default: false
+        type: boolean
+
 jobs:
   call-build-target:
     uses: ./.github/workflows/build.yml

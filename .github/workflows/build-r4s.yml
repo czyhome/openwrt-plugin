@@ -1,5 +1,13 @@
 name: Build Openwrt r4s
 
+on:
+  workflow_dispatch:
+    inputs:
+      first_build:
+        required: true
+        default: false
+        type: boolean
+
 jobs:
   call-build-target:
     uses: ./.github/workflows/build.yml
