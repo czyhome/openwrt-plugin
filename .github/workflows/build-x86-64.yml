@@ -1,0 +1,8 @@
+name: Build Openwrt x86-64
+
+jobs:
+  call-build-target:
+    uses: ./.github/workflows/build.yml
+    with:
+      target: x86-64
+      first_build: false

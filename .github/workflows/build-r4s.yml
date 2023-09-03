@@ -1,0 +1,8 @@
+name: Build Openwrt r4s
+
+jobs:
+  call-build-target:
+    uses: ./.github/workflows/build.yml
+    with:
+      target: r4s
+      first_build: false

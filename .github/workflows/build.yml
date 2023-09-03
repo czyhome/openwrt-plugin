@@ -1,8 +1,11 @@
-name: Build Openwrt Official
+name: Build Openwrt Target
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
+      target:
+        required: true
+        type: string
       first_build:
         required: true
         default: false
@@ -14,15 +17,12 @@ defaults:
   
 jobs:
   build:
-    strategy: 
-      matrix:
-        target: [x86-64,r4s]
     runs-on: self-hosted
     steps:
       - name: init
         working-directory: /data/openwrt
         run: |
-          echo "openwrt_target=${{ matrix.target }}" >> "$GITHUB_ENV"
+          echo "openwrt_target=${{ inputs.target }}" >> "$GITHUB_ENV"
           echo "openwrt_version=$(git describe)" >> "$GITHUB_ENV"
           echo "first_build=${{inputs.first_build}}" >> "$GITHUB_ENV"
 
