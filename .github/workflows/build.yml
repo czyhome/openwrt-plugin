@@ -1,6 +1,12 @@
 name: Build Openwrt Official
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      first_build:
+        required: true
+        default: false
+        type: boolean
 
 defaults:
   run:
@@ -18,7 +24,7 @@ jobs:
         run: |
           echo "openwrt_target=${{ matrix.target }}" >> "$GITHUB_ENV"
           echo "openwrt_version=$(git describe)" >> "$GITHUB_ENV"
-          echo "first_build=false" >> "$GITHUB_ENV"
+          echo "first_build=${{inputs.first_build}}" >> "$GITHUB_ENV"
 
       - name: update
         working-directory: /data/openwrt
