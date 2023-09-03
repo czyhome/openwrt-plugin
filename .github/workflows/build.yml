@@ -71,7 +71,7 @@ jobs:
         run: |
           remote_user=opsor
           remote_host=dsm.czy21-internal.com
-          remote_args="-q -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa"
+          remote_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /data/.ssh/czy-rsa"
           remote_path=/volume1/public/developer/linux/routeros/openwrt/${{ needs.setup.outputs.version }}
           output_image_files=`find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' 2>/dev/null | xargs`
           if [ -n "${output_image_files}" ];then
