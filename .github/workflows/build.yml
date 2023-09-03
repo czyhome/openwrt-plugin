@@ -62,7 +62,7 @@ jobs:
           [ "${openwrt_target}" == "x86-64" ] && openwrt_name_pattern+="combined-efi*"
           find bin/targets/ -type f -name "${openwrt_name_pattern}" -exec cp {} ${openwrt_artifact} \;
 
-  deploy:
+  upload:
     runs-on: self-hosted
     needs: build
     if: ${{ always() }}
@@ -71,9 +71,10 @@ jobs:
         working-directory: /data/openwrt
         run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact/* opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
 
-  release:
+  deploy:
     runs-on: self-hosted
     needs: build
     steps:
-      - working-directory: /data/openwrt
+      - name: deploy to release
+        working-directory: /data/openwrt
         run: echo "release to"
