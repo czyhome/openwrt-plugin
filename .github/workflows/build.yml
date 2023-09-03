@@ -62,6 +62,7 @@ jobs:
         run: |
           openwrt_artifact=artifact/${{ needs.setup.outputs.openwrt_version }} && mkdir -p ${openwrt_artifact}
           find bin/targets/ -type f -name "openwrt*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" -exec cp {} ${openwrt_artifact} \;
+          echo "openwrt_artifact=${openwrt_artifact}" >> "$GITHUB_OUTPUT"
 
   upload:
     name: Upload ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -71,7 +72,15 @@ jobs:
     steps:
       - name: Upload to nas
         working-directory: /data/openwrt
-        run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact/* opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
+        run: |
+          remote_user=opsor
+          remote_host=dsm.czy21-internal.com
+          remote_args="-o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa"
+          remote_dir=/volume1/public/developer/linux/routeros/openwrt/${{ needs.setup.outputs.openwrt_version }}
+          
+          ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_dir}
+          scp ${remote_args} -r ${{ needs.setup.outputs.openwrt_artifact }}/*${{ inputs.target }}-${{ inputs.subtarget }}* ${remote_user}@${remote_host}:${remote_dir}
+          
 
   publish:
     name: Publish ${{ inputs.target }}/${{ inputs.subtarget }}
