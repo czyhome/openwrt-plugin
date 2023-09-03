@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - config/rockchip/**
+  workflow_dispatch:
 
 jobs:
   build_ext:

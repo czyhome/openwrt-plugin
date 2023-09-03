@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - config/x86/**
+  workflow_dispatch:
 
 jobs:
   build_ext:
