@@ -9,7 +9,7 @@ on:
         type: boolean
 
 jobs:
-  call-build-target:
+  build_ext:
     strategy:
       matrix:
         subtarget:

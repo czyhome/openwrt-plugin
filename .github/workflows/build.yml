@@ -16,16 +16,18 @@ defaults:
     shell: bash
   
 jobs:
-  build:
+  setup: 
     runs-on: self-hosted
     steps:
-      - name: init
-        working-directory: /data/openwrt
+      - name: set env
         run: |
           echo "openwrt_target=${{ inputs.target }}" >> "$GITHUB_ENV"
           echo "openwrt_version=$(git describe)" >> "$GITHUB_ENV"
           echo "first_build=${{inputs.first_build}}" >> "$GITHUB_ENV"
-
+  build:
+    runs-on: self-hosted
+    needs: setup
+    steps:
       - name: update
         working-directory: /data/openwrt
         run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
@@ -52,7 +54,8 @@ jobs:
           thread_num=$(($(nproc)+1))
           [ "${first_build}" == "true" ] && thread_num=1
           echo -e "${thread_num} thread compile"
-          (make -j${thread_num} || make -j1 V=s) | tee ${openwrt_target}.compile.log
+          mkdir -p logs
+          (make -j${thread_num} || make -j1 V=s) | tee logs/${openwrt_target}.log
           
       - name: artifact
         working-directory: /data/openwrt
