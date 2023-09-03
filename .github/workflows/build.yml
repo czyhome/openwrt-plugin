@@ -71,7 +71,6 @@ jobs:
     name: Publish ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
     needs: build
-    if: env.first_build == false
     steps:
       - name: Publish to release
         working-directory: /data/openwrt
