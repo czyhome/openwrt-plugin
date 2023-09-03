@@ -13,4 +13,4 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       target: r4s
-      first_build: false
+      first_build: ${{ inputs.first_build }}
