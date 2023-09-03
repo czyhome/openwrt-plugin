@@ -1,9 +1,6 @@
 name: Build Openwrt Official
-on:
-  push:
-    paths:
-      - luci
-      - package
+
+on: [push]
 
 defaults:
   run:
