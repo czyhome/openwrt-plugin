@@ -4,12 +4,6 @@ on:
   push:
     paths:
       - config/x86/**
-  workflow_dispatch:
-    inputs:
-      first_build:
-        required: true
-        default: false
-        type: boolean
 
 jobs:
   build_ext:
@@ -20,5 +14,4 @@ jobs:
     with:
       target: x86
       subtarget: ${{ matrix.subtarget }}
-      first_build: ${{ inputs.first_build }}
       output_image_type: combined-efi
