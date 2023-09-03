@@ -9,7 +9,9 @@ on:
       first_build:
         type: boolean
 
-
+permissions:
+  contents: read
+  
 defaults:
   run:
     shell: bash
