@@ -57,20 +57,16 @@ jobs:
           openwrt_artifact=artifact/${openwrt_version} && mkdir -p ${openwrt_artifact}
           find bin/targets/ -type f -name "openwrt*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" -exec cp {} ${openwrt_artifact} \;
 
-  upload:
-    runs-on: self-hosted
-    needs: build
-    if: ${{ always() }}
-    steps:
-      - name: Upload to nas
+      - name: Upload
         working-directory: /data/openwrt
         run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact/* opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
 
-  deploy:
+  publish:
+    name: Publish ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
     needs: build
     if: inputs.first_build == false
     steps:
-      - name: Deploy to release
+      - name: Publish to release
         working-directory: /data/openwrt
         run: echo "release to"
