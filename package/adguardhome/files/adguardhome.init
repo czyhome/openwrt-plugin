@@ -1,5 +1,6 @@
 #!/bin/sh /etc/rc.common
 # Copyright (C) 2023 Bruce Chen <a805899926@gmail.com>
+#
 
 START=25
 STOP=89
