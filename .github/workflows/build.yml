@@ -68,7 +68,7 @@ jobs:
   upload:
     runs-on: self-hosted
     needs: build
-    if: env.first_build == 'false'
+    if: ${{ inputs.first_build }}
     steps:
       - name: upload to nas
         working-directory: /data/openwrt
@@ -77,7 +77,7 @@ jobs:
   deploy:
     runs-on: self-hosted
     needs: build
-    if: env.first_build == 'false'
+    if: ${{ inputs.first_build }}
     steps:
       - name: deploy to release
         working-directory: /data/openwrt
