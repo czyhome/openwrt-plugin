@@ -1,0 +1,16 @@
+
+on:
+  push:
+    paths:
+      - luci
+      - package
+
+jobs:
+  build_target:
+    strategy:
+      matrix:
+        target: [x86-64,r4s]
+    uses: ./.github/workflows/build.yml
+    with:
+      target: ${{ matrix.target }}
+      first_build: false
