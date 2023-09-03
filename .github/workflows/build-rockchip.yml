@@ -1,4 +1,4 @@
-name: Build Openwrt x86-64
+name: Build Openwrt rockchip
 
 on:
   workflow_dispatch:
@@ -10,7 +10,12 @@ on:
 
 jobs:
   call-build-target:
+    strategy:
+      matrix:
+        subtarget:
+          - r2s
+          - r4s
     uses: ./.github/workflows/build.yml
     with:
-      target: x86-64
+      target: ${{ matrix.subtarget }}
       first_build: ${{ inputs.first_build }}
