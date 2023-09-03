@@ -10,6 +10,7 @@ jobs:
   build_ext:
     uses: ./.github/workflows/build.yml
     strategy:
+      fail-fast: false
       matrix:
         subtarget: [64]
     with:

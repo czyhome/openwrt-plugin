@@ -1,0 +1,48 @@
+name: Checkout openwrt tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      openwrt_tag:
+        required: true
+        default: 'v22.03.5'
+        type: choice
+        options:
+          - v22.03.5
+      
+env:
+  openwrt_dir: /data/openwrt
+  
+jobs:
+  set_target:
+    name: Set targets
+    runs-on: self-hosted
+    outputs:
+      targets_subtargets: ${{ steps.find_targets.outputs.targets_subtargets }}
+      targets: ${{ steps.find_targets.outputs.targets }}
+    steps:
+      - name: Checkout
+        run: |
+          cloned=`git ls-remote ${{ env.openwrt_dir }} -q 2>/dev/null && echo true || false`
+          [ "${cloned}" == false ] && git clone https://github.com/openwrt/openwrt.git ${{ env.openwrt_dir }}
+          cd ${{ env.openwrt_dir }}
+          openwrt_dir_tag=`git tag --points-at HEAD`
+          [  "${{ openwrt_tag }}" != "${openwrt_dir_tag}" ] && `git checkout ${{ inputs.openwrt_tag }}`
+          
+      - name: Set targets
+        id: find_targets
+        run: |
+          echo "find targets workflow"
+  
+  # build:
+  #   name: Build targets
+  #   needs: set_target
+  #   strategy:
+  #      fail-fast: false
+  #      matrix:
+  #        include: ${{fromJson(needs.set_target.outputs.targets_subtargets)}}
+  #   uses: ./.github/workflows/build.yml
+  #   with:
+  #     target: ${{ matrix.target }}
+  #     subtarget: ${{ matrix.subtarget }}
+  #     output_image_type: ${{ matrix.output_image_type }}
