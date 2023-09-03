@@ -1,0 +1,16 @@
+name: Build Openwrt r2s
+
+on:
+  workflow_dispatch:
+    inputs:
+      first_build:
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  call-build-target:
+    uses: ./.github/workflows/build.yml
+    with:
+      target: r2s
+      first_build: ${{ inputs.first_build }}
