@@ -6,6 +6,11 @@ on:
       target:
         required: true
         type: string
+      subtarget:
+        required: true
+        type: string
+      output_image_type:
+        type: string
       first_build:
         type: boolean
 
@@ -17,61 +22,47 @@ defaults:
     shell: bash
   
 jobs:
-  setup: 
-    runs-on: self-hosted
-    steps:
-      - name: set env
-        run: |
-          echo "openwrt_target=${{ inputs.target }}" >> "$GITHUB_ENV"
-          echo "openwrt_version=$(git describe)" >> "$GITHUB_ENV"
-          echo "first_build=${{inputs.first_build}}" >> "$GITHUB_ENV"
   build:
+    name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
     needs: setup
     steps:
-      - name: update
+      - name: Update
         working-directory: /data/openwrt
         run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
 
-      - name: config
+      - name: Config
         working-directory: /data/openwrt
         run: |
-          if [[ "${openwrt_target}" =~ r[0-9]+s ]];then
-            cp -rv feeds/plugin/config/rxs .config
-            sed -i "/CONFIG_TARGET_rockchip_armv8/a CONFIG_TARGET_rockchip_armv8_DEVICE_friendlyarm_nanopi-${openwrt_target}=y" .config
-          else
-            cp -rv feeds/plugin/config/${openwrt_target} .config
-          fi
-          [ "${first_build}" == "true" ] && sed -i -n '/CONFIG_TARGET/p' .config
+          cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
+          [ "${{ inputs.first_build }}" == true ] && sed -i -n '/CONFIG_TARGET/p' .config
           rm -rf tmp && make defconfig
 
-      - name: download
+      - name: Download
         working-directory: /data/openwrt
         run: make download -j8
 
-      - name: compile
+      - name: Compile
         working-directory: /data/openwrt
         run: |
           thread_num=$(($(nproc)+1))
-          [ "${first_build}" == "true" ] && thread_num=1
+          [ "${{ inputs.first_build }}" == true ] && thread_num=1
           echo -e "${thread_num} thread compile"
           mkdir -p logs
-          (make -j${thread_num} || make -j1 V=s) | tee logs/${openwrt_target}.log
+          (make -j${thread_num} || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
           
-      - name: artifact
+      - name: Artifact
         working-directory: /data/openwrt
         run: |
           openwrt_artifact=artifact/${openwrt_version} && mkdir -p ${openwrt_artifact}
-          openwrt_name_pattern="openwrt*${openwrt_target}*squashfs*"
-          [ "${openwrt_target}" == "x86-64" ] && openwrt_name_pattern+="combined-efi*"
-          find bin/targets/ -type f -name "${openwrt_name_pattern}" -exec cp {} ${openwrt_artifact} \;
+          find bin/targets/ -type f -name "openwrt*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" -exec cp {} ${openwrt_artifact} \;
 
   upload:
     runs-on: self-hosted
     needs: build
-    if: inputs.first_build == false
+    if: ${{ always() }}
     steps:
-      - name: upload to nas
+      - name: Upload to nas
         working-directory: /data/openwrt
         run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact/* opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
 
@@ -80,6 +71,6 @@ jobs:
     needs: build
     if: inputs.first_build == false
     steps:
-      - name: deploy to release
+      - name: Deploy to release
         working-directory: /data/openwrt
         run: echo "release to"

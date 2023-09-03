@@ -10,12 +10,11 @@ on:
 
 jobs:
   build_ext:
+    uses: ./.github/workflows/build.yml
     strategy:
       matrix:
-        subtarget:
-          - r2s
-          - r4s
-    uses: ./.github/workflows/build.yml
+        subtarget: [r2s,r4s]
     with:
-      target: ${{ matrix.subtarget }}
+      target: rockchip
+      subtarget: ${{ matrix.subtarget }}
       first_build: ${{ inputs.first_build }}

@@ -10,11 +10,12 @@ on:
 
 jobs:
   build_ext:
+    uses: ./.github/workflows/build.yml
     strategy:
       matrix:
-        subtarget:
-          - 64
-    uses: ./.github/workflows/build.yml
+        subtarget: [64]
     with:
-      target: x86-${{ matrix.subtarget }}
+      target: x86
+      subtarget: ${{ matrix.subtarget }}
       first_build: ${{ inputs.first_build }}
+      output_image_type: combined-efi
