@@ -26,6 +26,7 @@ jobs:
     steps:
       - name: Set env
         run: |
+          echo "openwrt_version=$(git describe)" >> "$GITHUB_OUTPUT"
           echo "first_build=`[ -n "$([ -d /data/openwrt/bin/targets ] && find /data/openwrt/bin/targets -type f -name '*${{ inputs.target }}-${{ inputs.subtarget }}*')" ] && echo false || echo true`" >> "$GITHUB_OUTPUT"
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -59,7 +60,7 @@ jobs:
       - name: Artifact
         working-directory: /data/openwrt
         run: |
-          openwrt_artifact=artifact/${openwrt_version} && mkdir -p ${openwrt_artifact}
+          openwrt_artifact=artifact/${{ needs.setup.outputs.openwrt_version }} && mkdir -p ${openwrt_artifact}
           find bin/targets/ -type f -name "openwrt*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" -exec cp {} ${openwrt_artifact} \;
 
   upload:
