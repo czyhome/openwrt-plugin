@@ -64,11 +64,12 @@ jobs:
           find bin/targets/ -type f -name "openwrt*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" -exec cp {} ${openwrt_artifact} \;
 
   upload:
+    name: Upload ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
     needs: build
     if: needs.setup.outputs.first_build == false
     steps:
-      - name: upload to nas
+      - name: Upload to nas
         working-directory: /data/openwrt
         run: scp -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa -r artifact/* opsor@dsm.czy21-internal.com:/volume1/public/developer/linux/routeros/openwrt/
 
