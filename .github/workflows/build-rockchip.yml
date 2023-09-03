@@ -1,4 +1,4 @@
-name: Build Openwrt rockchip
+name: Build rockchip target
 
 on:
   workflow_dispatch:

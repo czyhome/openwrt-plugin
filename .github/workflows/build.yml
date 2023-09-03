@@ -1,4 +1,4 @@
-name: Build Openwrt sub target
+name: Build sub target
 
 on:
   workflow_call:
