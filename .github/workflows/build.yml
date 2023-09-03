@@ -65,14 +65,9 @@ jobs:
           mkdir -p logs
           (make -j${thread_num} || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
-  upload:
-    name: Upload ${{ inputs.target }}/${{ inputs.subtarget }}
-    runs-on: self-hosted
-    needs: build
-    if: needs.setup.outputs.first_build == false
-    steps:
-      - name: Upload to nas
+      - name: Upload ${{ inputs.target }}/${{ inputs.subtarget }} to nas
         working-directory: /data/openwrt
+        if: needs.setup.outputs.first_build == false
         run: |
           remote_user=opsor
           remote_host=dsm.czy21-internal.com
@@ -84,13 +79,7 @@ jobs:
             scp ${remote_args} -r ${output_image_files} ${remote_user}@${remote_host}:${remote_path}
           fi
           
-
-  publish:
-    name: Publish ${{ inputs.target }}/${{ inputs.subtarget }}
-    runs-on: self-hosted
-    needs: build
-    if: needs.setup.outputs.first_build == false
-    steps:
-      - name: Publish to release
+      - name: Publish ${{ inputs.target }}/${{ inputs.subtarget }} to github
         working-directory: /data/openwrt
+        if: needs.setup.outputs.first_build == false
         run: echo "release to"
