@@ -27,9 +27,9 @@ jobs:
       - name: Set env
         working-directory: /data/openwrt
         run: |
-          echo "first_build=`[ -n "$([ -d bin/targets/ ] && find bin/targets/ -type f -name '*${{ inputs.target }}-${{ inputs.subtarget }}*')" ] && echo false || echo true`" >> "$GITHUB_OUTPUT"
+          echo "first_build=`[ -n "$(find bin/targets/ -type f -name 'openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*' 2>/dev/null)" ] && echo false || echo true`" >> "$GITHUB_OUTPUT"
           echo "openwrt_version=$(git describe)" >> "$GITHUB_OUTPUT"
-          echo "openwrt_output_image_pattern=openwrt*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" >> "$GITHUB_OUTPUT"
+          echo "openwrt_output_image_pattern=openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -73,7 +73,7 @@ jobs:
           remote_host=dsm.czy21-internal.com
           remote_args="-q -o StrictHostKeyChecking=no -i /data/.ssh/czy-rsa"
           remote_path=/volume1/public/developer/linux/routeros/openwrt/${{ needs.setup.outputs.openwrt_version }}
-          openwrt_output_image_files=`[ -d "bin/targets/" ] && find bin/targets/ -type f -name "${{ needs.setup.outputs.openwrt_output_image_pattern }}" | xargs`
+          openwrt_output_image_files=`find bin/targets/ -type f -name '${{ needs.setup.outputs.openwrt_output_image_pattern }}' 2>/dev/null | xargs`
           if [ -n ${openwrt_output_image_files} ];then
             ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_path}
             scp ${remote_args} -r ${openwrt_output_image_files} ${remote_user}@${remote_host}:${remote_path}
