@@ -1,19 +1,23 @@
 name: Build Openwrt Official
 on:
+  push:
+    paths:
+      - luci
+      - package
   workflow_dispatch:
-    inputs:
-      target:
-        required: true
-        default: 'x86-64'
-        type: choice
-        options:
-          - x86-64
-          - r4s
-          - r2s
-      first_build:
-        required: true
-        default: false
-        type: boolean
+    # inputs:
+    #   target:
+    #     required: true
+    #     default: 'x86-64'
+    #     type: choice
+    #     options:
+    #       - x86-64
+    #       - r4s
+    #       - r2s
+    #   first_build:
+    #     required: true
+    #     default: false
+    #     type: boolean
 
 defaults:
   run:
@@ -21,14 +25,18 @@ defaults:
   
 jobs:
   build:
+    strategy: 
+      matrix:
+        target: [x86-64,r4s]
+        first_build: false
     runs-on: self-hosted
     steps:
       - name: init
         working-directory: /data/openwrt
         run: |
-          echo "openwrt_target=${{ inputs.target }}" >> "$GITHUB_ENV"
+          echo "openwrt_target=${{ matrix.target }}" >> "$GITHUB_ENV"
           echo "openwrt_version=$(git describe)" >> "$GITHUB_ENV"
-          echo "first_build=${{ inputs.first_build }}" >> "$GITHUB_ENV"
+          echo "first_build=${{ matrix.first_build }}" >> "$GITHUB_ENV"
 
       - name: update
         working-directory: /data/openwrt
