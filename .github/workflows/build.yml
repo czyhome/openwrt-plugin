@@ -21,12 +21,12 @@ defaults:
   
 jobs:
   setup:
-  name: Setup ${{ inputs.target }}/${{ inputs.subtarget }}
-    runs-on: self-hosted
-    steps:
-      - name: Set env
-        run: |
-          echo "first_build=`[ -n "$([ -d /data/openwrt/bin/targets ] && find /data/openwrt/bin/targets -type f -name '*${{ inputs.target }}-${{ inputs.subtarget }}*')" ] && echo false || echo true`" >> "$GITHUB_ENV"
+    name: Setup ${{ inputs.target }}/${{ inputs.subtarget }}
+      runs-on: self-hosted
+      steps:
+        - name: Set env
+          run: |
+            echo "first_build=`[ -n "$([ -d /data/openwrt/bin/targets ] && find /data/openwrt/bin/targets -type f -name '*${{ inputs.target }}-${{ inputs.subtarget }}*')" ] && echo false || echo true`" >> "$GITHUB_ENV"
 
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
