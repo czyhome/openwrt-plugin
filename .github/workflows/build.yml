@@ -23,8 +23,13 @@ jobs:
   setup:
     name: Setup ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
+    outputs:
+      version: ${{ steps.set_env.outputs.version }}
+      first_build: ${{ steps.set_env.outputs.first_build }}
+      output_image_pattern: ${{ steps.set_env.outputs.output_image_pattern }}
     steps:
       - name: Set env
+        id: set_env
         working-directory: /data/openwrt
         run: |
           echo "version=$(git describe)" >> "$GITHUB_OUTPUT"
