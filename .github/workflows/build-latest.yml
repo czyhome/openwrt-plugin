@@ -34,8 +34,6 @@ jobs:
           
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ steps.get_latest_stable.outputs.openwrt_branch }}
       - name: Set targets
         id: find_targets
         run: |
