@@ -19,6 +19,15 @@ jobs:
       targets: ${{ steps.find_targets.outputs.targets }}
     steps:
       - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set targets
+        id: find_targets
+        run: |
+          py_output=`python3 -B ${{ github.workspace }}/function/get_targets.py`
+          echo "${py_output}"
+      - name: Checkout Openwrt
         working-directory: /data/openwrt-dev
         run: |
           cloned=`git ls-remote ${{ github.workspace }} -q 2>/dev/null && echo true || echo false`
@@ -30,10 +39,6 @@ jobs:
           src-git helloworld https://github.com/fw876/helloworld
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
-      - name: Set targets
-        id: find_targets
-        run: |
-          echo "find targets workflow"
   
   # build:
   #   name: Build targets
