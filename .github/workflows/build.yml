@@ -47,19 +47,13 @@ jobs:
         working-directory: /data/openwrt
         run: |
           cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
-          rm -rf tmp && make defconfig
-
-      - name: Download
-        working-directory: /data/openwrt
-        run: make download -j8
+          rm -rf tmp && make defconfig && make download -j8
 
       - name: Compile
         working-directory: /data/openwrt
         run: |
-          thread_num=$(($(nproc)+1))
-          echo -e "${thread_num} thread compile"
           mkdir -p logs
-          (make -j${thread_num} || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+          (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
       - name: Upload ${{ inputs.target }}/${{ inputs.subtarget }} to nas
         working-directory: /data/openwrt
