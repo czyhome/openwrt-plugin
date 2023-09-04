@@ -23,7 +23,7 @@ jobs:
         id: find_targets
         run: |
           python3 -B function/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
-          echo "${{ steps.get_latest_stable_tag.openwrt_tag }}"
+          echo "${{ steps.get_latest_stable_tag.outputs.openwrt_tag }}"
       # - name: Checkout Openwrt
       #   run: |
       #     cloned=`git ls-remote ${{ env.openwrt_workdir }} -q 2>/dev/null && echo true || echo false`
