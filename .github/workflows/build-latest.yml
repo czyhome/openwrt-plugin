@@ -27,10 +27,12 @@ jobs:
       - name: Checkout Openwrt
         run: |
           openwrt_tag=${{ steps.get_latest_stable_tag.outputs.openwrt_tag }}
-          cloned=`git ls-remote ${{ env.openwrt_workdir }} -q 2>/dev/null && echo true || echo false`
-          [ "${cloned}" == false ] && git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
+          openwrt_dir_tag=`[ -d ${{ env.openwrt_workdir }} ] && (cd ${{ env.openwrt_workdir }} && git tag --points-at HEAD 2>/dev/null)`
+          if [ "${openwrt_tag}" != ${openwrt_dir_tag} ];then
+            rm -rf ${{ env.openwrt_workdir }}
+            git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
+          fi
           cd ${{ env.openwrt_workdir }} && git checkout feeds.conf.default
-          [  "${openwrt_tag}" != "`git tag --points-at HEAD`" ] && `git checkout --force ${openwrt_tag}`
           openwrt_branch=`git branch -a --contains ${openwrt_tag} 2>/dev/null| sed -n '/remotes\/origin/p' | sed -e 's|^\s*remotes/origin/||'`
           [ -n "${openwrt_branch}" ] && sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
