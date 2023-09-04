@@ -1,4 +1,4 @@
-name: Checkout openwrt tag
+name: Build latest stable tag
 
 on:
   workflow_dispatch:

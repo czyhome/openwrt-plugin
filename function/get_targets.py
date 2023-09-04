@@ -1,13 +1,15 @@
 import io
 import json
 import pathlib
-import sys
 
 import yaml
 
+exclude_build = ["build-latest"]
 targets = []
 subtargets = []
 for t in pathlib.Path(__file__).parent.parent.joinpath(".github/workflows").rglob("build-*.yml"):
+    if t.stem in exclude_build:
+        continue
     with io.open(t, "r", encoding="utf8") as f:
         obj: dict = yaml.full_load(f)
         target = obj.get("jobs").get("build_ext").get("with").get("target")
