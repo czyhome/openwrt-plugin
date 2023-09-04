@@ -17,8 +17,8 @@ jobs:
     name: Set targets
     runs-on: self-hosted
     outputs:
-      targets_subtargets: ${{ steps.find_targets.outputs.targets_subtargets }}
       targets: ${{ steps.find_targets.outputs.targets }}
+      targets_subtargets: ${{ steps.find_targets.outputs.targets_subtargets }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -40,12 +40,14 @@ jobs:
           src-git helloworld https://github.com/fw876/helloworld
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
-          echo "${{ needs.set_target.outputs.targets }}"
-          echo "${{ needs.set_target.outputs.targets }}"
   
-  # build:
-  #   name: Build targets
-  #   needs: set_target
+  build:
+    name: Build targets
+    needs: set_target
+    steps:
+      - name: haha
+        run: |
+          echo '${{ needs.set_target.outputs.targets }}'
   #   strategy:
   #      fail-fast: false
   #      matrix:
