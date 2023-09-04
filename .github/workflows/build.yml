@@ -47,8 +47,12 @@ jobs:
         working-directory: /data/openwrt
         run: |
           cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
-          rm -rf tmp && make defconfig && make download -j8
+          rm -rf tmp && make defconfig
 
+      - name: Download
+        working-directory: /data/openwrt
+        run: make download -j8
+          
       - name: Compile
         working-directory: /data/openwrt
         run: |
