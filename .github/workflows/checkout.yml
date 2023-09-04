@@ -9,9 +9,6 @@ on:
         type: choice
         options:
           - v22.03.5
-      
-env:
-  openwrt_dir: /data/openwrt
   
 jobs:
   set_target:
@@ -22,10 +19,10 @@ jobs:
       targets: ${{ steps.find_targets.outputs.targets }}
     steps:
       - name: Checkout
+        working-directory: /data/openwrt-dev
         run: |
-          cloned=`git ls-remote ${{ env.openwrt_dir }} -q 2>/dev/null && echo true || false`
-          [ "${cloned}" == false ] && git clone https://github.com/openwrt/openwrt.git ${{ env.openwrt_dir }}
-          cd ${{ env.openwrt_dir }}
+          cloned=`git ls-remote ${{ github.workspace }} -q 2>/dev/null && echo true || echo false`
+          [ "${cloned}" == false ] && git clone https://github.com/openwrt/openwrt.git ${{ github.workspace }}
           openwrt_dir_tag=`git tag --points-at HEAD`
           [  "${{ openwrt_tag }}" != "${openwrt_dir_tag}" ] && `git checkout ${{ inputs.openwrt_tag }}`
           
