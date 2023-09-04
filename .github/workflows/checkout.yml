@@ -22,10 +22,14 @@ jobs:
         working-directory: /data/openwrt-dev
         run: |
           cloned=`git ls-remote ${{ github.workspace }} -q 2>/dev/null && echo true || echo false`
-          [ "${cloned}" == false ] && git clone https://github.com/openwrt/openwrt.git ${{ github.workspace }}
-          openwrt_dir_tag=`git tag --points-at HEAD`
-          [  "${{ inputs.openwrt_tag }}" != "${openwrt_dir_tag}" ] && `git checkout ${{ inputs.openwrt_tag }}`
-          
+          [ "${cloned}" == false ] && git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ github.workspace }}
+          [  "${{ inputs.openwrt_tag }}" != "`git tag --points-at HEAD`" ] && `git checkout --force ${{ inputs.openwrt_tag }}`
+          openwrt_branch=`git branch -a --contains v19.07.9 2>/dev/null| sed -n '/remotes\/origin/p' | sed -e 's|^\s*remotes/origin/||'`
+          [ -n "${openwrt_branch}" ] && sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
+          echo "
+          src-git helloworld https://github.com/fw876/helloworld
+          src-git plugin https://github.com/czy21/openwrt-plugin.git
+          " >> feeds.conf.default
       - name: Set targets
         id: find_targets
         run: |
