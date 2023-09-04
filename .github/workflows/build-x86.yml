@@ -1,9 +1,6 @@
 name: Build x86 target
 
 on:
-  push:
-    paths:
-      - config/x86/**
   workflow_dispatch:
 
 jobs:
