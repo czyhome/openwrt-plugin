@@ -43,18 +43,13 @@ jobs:
   
   build:
     name: Build targets
-    runs-on: self-hosted
     needs: set_target
-    steps:
-      - name: haha
-        run: |
-          echo '${{ needs.set_target.outputs.targets_subtargets }}'
-  #   strategy:
-  #      fail-fast: false
-  #      matrix:
-  #        include: ${{fromJson(needs.set_target.outputs.targets_subtargets)}}
-  #   uses: ./.github/workflows/build.yml
-  #   with:
-  #     target: ${{ matrix.target }}
-  #     subtarget: ${{ matrix.subtarget }}
-  #     output_image_type: ${{ matrix.output_image_type }}
+    strategy:
+       fail-fast: false
+       matrix:
+         include: ${{fromJson(needs.set_target.outputs.targets_subtargets)}}
+    uses: ./.github/workflows/build.yml
+    with:
+      target: ${{ matrix.target }}
+      subtarget: ${{ matrix.subtarget }}
+      output_image_type: ${{ matrix.output_image_type }}
