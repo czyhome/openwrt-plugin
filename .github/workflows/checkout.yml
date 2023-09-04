@@ -1,7 +1,10 @@
 name: Checkout openwrt tag
 
 on:
+  schedule:
+    - cron:  '30 23 * * *'
   workflow_dispatch:
+  
 env:
   openwrt_workdir: /data/openwrt
 
@@ -23,29 +26,29 @@ jobs:
         id: find_targets
         run: |
           python3 -B function/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
-          echo "${{ steps.get_latest_stable_tag.outputs.openwrt_tag }}"
-      # - name: Checkout Openwrt
-      #   run: |
-      #     cloned=`git ls-remote ${{ env.openwrt_workdir }} -q 2>/dev/null && echo true || echo false`
-      #     [ "${cloned}" == false ] && git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
-      #     cd ${{ env.openwrt_workdir }} && git checkout feeds.conf.default
-      #     [  "${{ inputs.openwrt_tag }}" != "`git tag --points-at HEAD`" ] && `git checkout --force ${{ inputs.openwrt_tag }}`
-      #     openwrt_branch=`git branch -a --contains ${{ inputs.openwrt_tag }} 2>/dev/null| sed -n '/remotes\/origin/p' | sed -e 's|^\s*remotes/origin/||'`
-      #     [ -n "${openwrt_branch}" ] && sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
-      #     echo "
-      #     src-git helloworld https://github.com/fw876/helloworld
-      #     src-git plugin https://github.com/czy21/openwrt-plugin.git
-      #     " >> feeds.conf.default
+      - name: Checkout Openwrt
+        run: |
+          openwrt_tag=${{ steps.get_latest_stable_tag.outputs.openwrt_tag }}
+          cloned=`git ls-remote ${{ env.openwrt_workdir }} -q 2>/dev/null && echo true || echo false`
+          [ "${cloned}" == false ] && git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
+          cd ${{ env.openwrt_workdir }} && git checkout feeds.conf.default
+          [  "${openwrt_tag}" != "`git tag --points-at HEAD`" ] && `git checkout --force ${openwrt_tag}`
+          openwrt_branch=`git branch -a --contains ${openwrt_tag} 2>/dev/null| sed -n '/remotes\/origin/p' | sed -e 's|^\s*remotes/origin/||'`
+          [ -n "${openwrt_branch}" ] && sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
+          echo "
+          src-git helloworld https://github.com/fw876/helloworld
+          src-git plugin https://github.com/czy21/openwrt-plugin.git
+          " >> feeds.conf.default
   
-  # build:
-  #   name: Build target
-  #   needs: setup
-  #   strategy:
-  #      fail-fast: false
-  #      matrix:
-  #        include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
-  #   uses: ./.github/workflows/build.yml
-  #   with:
-  #     target: ${{ matrix.target }}
-  #     subtarget: ${{ matrix.subtarget }}
-  #     output_image_type: ${{ matrix.output_image_type }}
+  build:
+    name: Build target
+    needs: setup
+    strategy:
+       fail-fast: false
+       matrix:
+         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+    uses: ./.github/workflows/build.yml
+    with:
+      target: ${{ matrix.target }}
+      subtarget: ${{ matrix.subtarget }}
+      output_image_type: ${{ matrix.output_image_type }}
