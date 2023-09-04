@@ -35,7 +35,7 @@ jobs:
             rm -rf ${{ env.openwrt_workdir }}
             git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
           fi
-          cd ${{ env.openwrt_workdir }} && git checkout feeds.conf.default
+          cd ${{ env.openwrt_workdir }} && git checkout --force ${openwrt_tag}
           openwrt_branch=`git branch -a --contains ${openwrt_tag} 2>/dev/null| sed -n '/remotes\/origin/p' | sed -e 's|^\s*remotes/origin/||'`
           [ -n "${openwrt_branch}" ] && sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
