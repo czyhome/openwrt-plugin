@@ -43,6 +43,7 @@ jobs:
   
   build:
     name: Build targets
+    runs-on: self-hosted
     needs: set_target
     steps:
       - name: haha
