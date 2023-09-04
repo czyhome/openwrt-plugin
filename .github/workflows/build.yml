@@ -62,9 +62,8 @@ jobs:
           remote_host=dsm.czy21-internal.com
           remote_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /data/.ssh/czy-rsa"
           remote_path=/volume1/public/developer/linux/routeros/openwrt/${{ needs.setup.outputs.version }}
-          output_image_files=`find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' 2>/dev/null | xargs`
           ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_path}
-          for t in $(output_image_files);do
+          for t in `find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' 2>/dev/null | xargs`;do
             file_name=$(basename $t | sed "s|openwrt-|openwrt-$(date '+%Y%m%d')-|")
             scp ${remote_args} $t ${remote_user}@${remote_host}:${remote_path}/${file_name}
           done
