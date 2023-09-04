@@ -14,5 +14,5 @@ for t in pathlib.Path(__file__).parent.parent.joinpath(".github/workflows").rglo
         targets.append(target)
         for sub in obj.get("jobs").get("build_ext").get("strategy").get("matrix").get("subtarget"):
             subtargets.append({"target": target, "subtarget": sub})
-print(json.dumps(targets))
-print(json.dumps(subtargets))
+print("targets={0}".format(json.dumps(targets)))
+print("targets_subtargets={0}".format(json.dumps(subtargets)))
