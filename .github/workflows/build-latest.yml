@@ -27,6 +27,7 @@ jobs:
       - name: Checkout Openwrt
         run: |
           openwrt_tag=${{ steps.get_latest_stable_tag.outputs.openwrt_tag }}
+          echo "================"
           openwrt_dir_tag=`[ -d ${{ env.openwrt_workdir }} ] && (cd ${{ env.openwrt_workdir }} && git tag --points-at HEAD 2>/dev/null)`
           echo ${openwrt_dir_tag}
           if [ "${openwrt_tag}" != "${openwrt_dir_tag}" ];then
