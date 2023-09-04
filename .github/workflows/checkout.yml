@@ -27,10 +27,7 @@ jobs:
       - name: Set targets
         id: find_targets
         run: |
-          python3 -B function/get_targets.py | while read line
-          do
-            echo "$line" >> "$GITHUB_OUTPUT"
-          done
+          python3 -B function/get_targets.py | while read v;do echo "$v"; done
       - name: Checkout Openwrt
         run: |
           cloned=`git ls-remote ${{ env.openwrt_workdir }} -q 2>/dev/null && echo true || echo false`
@@ -43,8 +40,8 @@ jobs:
           src-git helloworld https://github.com/fw876/helloworld
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
-          echo "${{ needs.setup.outputs.find_targets.targets }}"
-          echo "${{ needs.setup.outputs.find_targets.targets_subtargets }}"
+          echo "${{ needs.set_target.outputs.targets }}"
+          echo "${{ needs.set_target.outputs.targets }}"
   
   # build:
   #   name: Build targets
