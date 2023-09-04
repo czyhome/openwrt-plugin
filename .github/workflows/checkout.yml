@@ -27,7 +27,7 @@ jobs:
       - name: Set targets
         id: find_targets
         run: |
-          python3 -B function/get_targets.py | while read v;do echo "$v"; done
+          python3 -B function/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
       - name: Checkout Openwrt
         run: |
           cloned=`git ls-remote ${{ env.openwrt_workdir }} -q 2>/dev/null && echo true || echo false`
