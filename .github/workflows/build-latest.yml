@@ -20,51 +20,49 @@ jobs:
         id: get_latest_stable
         run: |
           # openwrt_tag=$(curl -s https://api.github.com/repos/openwrt/openwrt/releases/latest | sed -n '/tag_name/p' | sed 's|^\s*"tag_name": "\(.*\)",|\1|')
-          [[ "${openwrt_tag}" =~ ^v[0-9] ]] || exit 1
+          [[ "${openwrt_tag}" =~ ^v[0-9] ]] || echo "get latest stable tag fail" && exit 1
           openwrt_branch=$(echo ${openwrt_tag} | sed 's|^v\([0-9]\+\.[0-9]\+\).*|\1|')
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
-      - name: test stop
-        run: echo "stop ==================="
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         ref: ${{ steps.get_latest_stable.outputs.openwrt_branch }}
-  #     - name: Set targets
-  #       id: find_targets
-  #       run: |
-  #         python3 -B function/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
-  #     - name: Checkout Openwrt
-  #       run: |
-  #         openwrt_tag=${{ steps.get_latest_stable.outputs.openwrt_tag }}
-  #         openwrt_branch=${{ steps.get_latest_stable.outputs.openwrt_branch }}
-  #         openwrt_dir_tag=
-  #         if [ -d ${{ env.openwrt_workdir }}/.git ];then
-  #           openwrt_dir_tag=`cd ${{ env.openwrt_workdir }} && git tag --points-at HEAD`
-  #         fi
-  #         if [ "${openwrt_tag}" != "${openwrt_dir_tag}" ];then
-  #           rm -rf ${{ env.openwrt_workdir }}
-  #           git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
-  #         fi
-  #         cd ${{ env.openwrt_workdir }} && git checkout --force ${openwrt_tag}
-  #         sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
-  #         echo "
-  #         src-git helloworld https://github.com/fw876/helloworld
-  #         src-git plugin https://github.com/czy21/openwrt-plugin.git;${openwrt_branch}
-  #         " >> feeds.conf.default
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.get_latest_stable.outputs.openwrt_branch }}
+      - name: Set targets
+        id: find_targets
+        run: |
+          python3 -B function/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
+      - name: Checkout Openwrt
+        run: |
+          openwrt_tag=${{ steps.get_latest_stable.outputs.openwrt_tag }}
+          openwrt_branch=${{ steps.get_latest_stable.outputs.openwrt_branch }}
+          openwrt_dir_tag=
+          if [ -d ${{ env.openwrt_workdir }}/.git ];then
+            openwrt_dir_tag=`cd ${{ env.openwrt_workdir }} && git tag --points-at HEAD`
+          fi
+          if [ "${openwrt_tag}" != "${openwrt_dir_tag}" ];then
+            rm -rf ${{ env.openwrt_workdir }}
+            git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
+          fi
+          cd ${{ env.openwrt_workdir }} && git checkout --force ${openwrt_tag}
+          sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
+          echo "
+          src-git helloworld https://github.com/fw876/helloworld
+          src-git plugin https://github.com/czy21/openwrt-plugin.git;${openwrt_branch}
+          " >> feeds.conf.default
   
-  # build:
-  #   name: Build target
-  #   needs: setup
-  #   strategy:
-  #      fail-fast: false
-  #      matrix:
-  #        include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
-  #   uses: ./.github/workflows/build.yml
-  #   with:
-  #     target: ${{ matrix.target }}
-  #     subtarget: ${{ matrix.subtarget }}
-  #     output_image_type: ${{ matrix.output_image_type }}
+  build:
+    name: Build target
+    needs: setup
+    strategy:
+       fail-fast: false
+       matrix:
+         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+    uses: ./.github/workflows/build.yml
+    with:
+      target: ${{ matrix.target }}
+      subtarget: ${{ matrix.subtarget }}
+      output_image_type: ${{ matrix.output_image_type }}
   
   # release:
   #   name: Release to github
