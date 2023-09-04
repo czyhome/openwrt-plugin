@@ -24,6 +24,10 @@ jobs:
           openwrt_branch=$(echo ${openwrt_tag} | sed 's|^v\([0-9]\+\.[0-9]\+\).*|\1|')
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+      - name: Check branch
+        run: | 
+          remote_branch=git ls-remote https://github.com/czy21/openwrt-plugin | grep '${{ steps.get_latest_stable.outputs.openwrt_branch }}'
+          
       - name: Checkout
         uses: actions/checkout@v3
         with:
