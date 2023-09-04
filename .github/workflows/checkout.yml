@@ -24,7 +24,7 @@ jobs:
           cloned=`git ls-remote ${{ github.workspace }} -q 2>/dev/null && echo true || echo false`
           [ "${cloned}" == false ] && git clone https://github.com/openwrt/openwrt.git ${{ github.workspace }}
           openwrt_dir_tag=`git tag --points-at HEAD`
-          [  "${{ openwrt_tag }}" != "${openwrt_dir_tag}" ] && `git checkout ${{ inputs.openwrt_tag }}`
+          [  "${{ inputs.openwrt_tag }}" != "${openwrt_dir_tag}" ] && `git checkout ${{ inputs.openwrt_tag }}`
           
       - name: Set targets
         id: find_targets
