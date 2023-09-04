@@ -70,4 +70,4 @@ jobs:
   #     - uses: softprops/action-gh-release@v1
   #       if: startsWith(${{ needs.setup.outputs.openwrt_tag }}, 'refs/tags/')
   #       with:
-  #         files: ${{ openwrt_workdir }}/artifact/**
+  #         files: ${{ openwrt_workdir }}/artifact/** 
