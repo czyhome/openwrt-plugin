@@ -59,7 +59,7 @@ jobs:
           mkdir -p logs
           (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
-      - name: Upload ${{ inputs.target }}/${{ inputs.subtarget }} to nas
+      - name: Upload to nas
         working-directory: /data/openwrt
         run: |
           remote_user=opsor
@@ -72,6 +72,6 @@ jobs:
             scp ${remote_args} $t ${remote_user}@${remote_host}:${remote_path}/${file_name}
           done
           
-      - name: Publish ${{ inputs.target }}/${{ inputs.subtarget }} to github
+      - name: Publish to github
         working-directory: /data/openwrt
         run: echo "release to"
