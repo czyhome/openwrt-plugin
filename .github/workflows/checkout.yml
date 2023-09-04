@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: haha
         run: |
-          echo '${{ needs.set_target.outputs.targets }}'
+          echo '${{ needs.set_target.outputs.targets_subtargets }}'
   #   strategy:
   #      fail-fast: false
   #      matrix:
