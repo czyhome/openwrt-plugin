@@ -30,7 +30,7 @@ jobs:
           fi
       - name: Check branch
         run: | 
-          remote_branch=git ls-remote https://github.com/czy21/openwrt-plugin | grep '${{ steps.get_latest_stable.outputs.openwrt_branch }}'
+          remote_branch=`git ls-remote https://github.com/czy21/openwrt-plugin | grep '${{ steps.get_latest_stable.outputs.openwrt_branch }}'`
           
       - name: Checkout
         uses: actions/checkout@v3
