@@ -28,7 +28,7 @@ jobs:
         run: |
           openwrt_tag=${{ steps.get_latest_stable_tag.outputs.openwrt_tag }}
           openwrt_dir_tag=`[ -d ${{ env.openwrt_workdir }} ] && (cd ${{ env.openwrt_workdir }} && git tag --points-at HEAD 2>/dev/null)`
-          if [ "${openwrt_tag}" != ${openwrt_dir_tag} ];then
+          if [ "${openwrt_tag}" != "${openwrt_dir_tag}" ];then
             rm -rf ${{ env.openwrt_workdir }}
             git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ env.openwrt_workdir }}
           fi
