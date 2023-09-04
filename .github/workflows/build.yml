@@ -59,6 +59,12 @@ jobs:
           mkdir -p logs
           (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
+      - name: Artifact
+        working-directory: /data/openwrt
+        run: |
+          mkdir -p artifact
+          find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' -exec cp -rv {} artifact \;
+
       - name: Upload to nas
         working-directory: /data/openwrt
         run: |
@@ -66,12 +72,8 @@ jobs:
           remote_host=dsm.czy21-internal.com
           remote_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /data/.ssh/czy-rsa"
           remote_path=/volume1/public/developer/linux/routeros/openwrt/${{ needs.setup.outputs.version }}
+          output_image_files=`find artifact -type f -name '${{ needs.setup.outputs.output_image_pattern }}' | xargs`
           ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_path}
-          for t in `find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' 2>/dev/null | xargs`;do
-            file_name=$(basename $t | sed "s|openwrt-|openwrt-$(date '+%Y%m%d')-|")
-            scp ${remote_args} $t ${remote_user}@${remote_host}:${remote_path}/${file_name}
-          done
-          
-      - name: Publish to github
-        working-directory: /data/openwrt
-        run: echo "release to"
+          if [ -n "${output_image_files}" ];then
+            scp ${remote_args} -r ${output_image_files} ${remote_user}@${remote_host}:${remote_path}
+          fi
