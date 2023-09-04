@@ -57,13 +57,17 @@ jobs:
       subtarget: ${{ matrix.subtarget }}
       output_image_type: ${{ matrix.output_image_type }}
   
-  release:
-    name: Release to github
-    needs: build
-    steps:
-      - name: Set tag
-        run: git tag ${{ needs.setup.outputs.openwrt_tag }} --force && git push --tag --force
-      - uses: softprops/action-gh-release@v1
-        if: startsWith(${{ needs.setup.outputs.openwrt_tag }}, 'refs/tags/')
-        with:
-          files: ${{ openwrt_workdir }}/artifact/**
+  # release:
+  #   name: Release to github
+  #   needs: build
+  #   steps:
+  #     - name: Set tag
+  #       run: |
+  #         git pull 
+  #         git tag ${{ needs.setup.outputs.openwrt_tag }} --force
+
+  #         git push --tag --force
+  #     - uses: softprops/action-gh-release@v1
+  #       if: startsWith(${{ needs.setup.outputs.openwrt_tag }}, 'refs/tags/')
+  #       with:
+  #         files: ${{ openwrt_workdir }}/artifact/**
