@@ -58,7 +58,7 @@ jobs:
       output_image_type: ${{ matrix.output_image_type }}
   
   release:
-    name: Publish to github
+    name: Release to github
     needs: build
     steps:
       - name: Set tag
