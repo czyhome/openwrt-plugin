@@ -10,10 +10,10 @@ on:
         options:
           - v22.03.5
 env:
-  openwrt_workdir: /data/openwrt-dev
+  openwrt_workdir: /data/openwrt
 
 jobs:
-  set_target:
+  set_targets:
     name: Set targets
     runs-on: self-hosted
     outputs:
@@ -42,12 +42,12 @@ jobs:
           " >> feeds.conf.default
   
   build:
-    name: Build targets
-    needs: set_target
+    name: Build target
+    needs: set_targets
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.set_target.outputs.targets_subtargets)}}
+         include: ${{fromJson(needs.set_targets.outputs.targets_subtargets)}}
     uses: ./.github/workflows/build.yml
     with:
       target: ${{ matrix.target }}
