@@ -47,6 +47,7 @@ jobs:
     steps:
       - name: Checkout openwrt
         run: |
+          openwrt_branch=${{ needs.setup.outputs.openwrt_branch }}
           openwrt_latest_tag=${{ needs.setup.outputs.openwrt_latest_tag }}
           openwrt_local_tag=
           if [ -d "${{ env.openwrt_workdir }}/.git" ];then
@@ -73,31 +74,31 @@ jobs:
           cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
           rm -rf tmp && make defconfig
 
-      # - name: Download
-      #   working-directory: ${{ env.openwrt_workdir }}
-      #   run: make download -j8
+      - name: Download
+        working-directory: ${{ env.openwrt_workdir }}
+        run: make download -j8
           
-      # - name: Compile
-      #   working-directory: ${{ env.openwrt_workdir }}
-      #   run: |
-      #     mkdir -p logs
-      #     (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+      - name: Compile
+        working-directory: ${{ env.openwrt_workdir }}
+        run: |
+          mkdir -p logs
+          (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
-      # - name: Artifact
-      #   working-directory: ${{ env.openwrt_workdir }}
-      #   run: |
-      #     mkdir -p artifact
-      #     find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' -exec cp -rv {} artifact \;
+      - name: Artifact
+        working-directory: ${{ env.openwrt_workdir }}
+        run: |
+          mkdir -p artifact
+          find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' -exec cp -rv {} artifact \;
 
-      # - name: Upload to nas
-      #   working-directory: ${{ env.openwrt_workdir }}
-      #   run: |
-      #     remote_user=opsor
-      #     remote_host=dsm.czy21-internal.com
-      #     remote_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /data/.ssh/czy-rsa"
-      #     remote_path=/volume1/public/developer/linux/routeros/openwrt/$(git describe)
-      #     output_image_files=`find artifact -type f -name '${{ needs.setup.outputs.output_image_pattern }}' | xargs`
-      #     ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_path}
-      #     if [ -n "${output_image_files}" ];then
-      #       scp ${remote_args} -r ${output_image_files} ${remote_user}@${remote_host}:${remote_path}
-      #     fi
+      - name: Upload to nas
+        working-directory: ${{ env.openwrt_workdir }}
+        run: |
+          remote_user=opsor
+          remote_host=dsm.czy21-internal.com
+          remote_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /data/.ssh/czy-rsa"
+          remote_path=/volume1/public/developer/linux/routeros/openwrt/$(git describe)
+          output_image_files=`find artifact -type f -name '${{ needs.setup.outputs.output_image_pattern }}' | xargs`
+          ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_path}
+          if [ -n "${output_image_files}" ];then
+            scp ${remote_args} -r ${output_image_files} ${remote_user}@${remote_host}:${remote_path}
+          fi
