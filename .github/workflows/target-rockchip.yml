@@ -1,7 +1,9 @@
 name: Build rockchip target
 
 on:
-  workflow_dispatch:
+  paths: 
+    - luci/**
+    - package/**
 
 jobs:
   build_ext:

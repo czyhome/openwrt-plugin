@@ -1,7 +1,9 @@
 name: Build x86 target
 
 on:
-  workflow_dispatch:
+  paths: 
+    - luci/**
+    - package/**
 
 jobs:
   build_ext:
