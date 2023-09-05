@@ -16,9 +16,6 @@ jobs:
       openwrt_tag: ${{ steps.get_latest_stable.outputs.openwrt_tag }}
       openwrt_branch: ${{ steps.get_latest_stable.outputs.openwrt_branch }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Get latest stable tag
         id: get_latest_stable
         run: |
@@ -49,9 +46,13 @@ jobs:
           src-git helloworld https://github.com/fw876/helloworld
           src-git plugin https://github.com/czy21/openwrt-plugin.git;${openwrt_branch}
           " >> feeds.conf.default
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Check branch
         run: | 
-          remote_branch=`git ls-remote https://github.com/czy21/openwrt-plugin | grep 'refs/heads/${{ steps.get_latest_stable.outputs.openwrt_branch }}'`
+          remote_branch=`git branch -rv | grep 'origin/${{ steps.get_latest_stable.outputs.openwrt_branch }}'`
           if [ -n "${remote_branch}" ];then
             git checkout -b ${{ steps.get_latest_stable.outputs.openwrt_branch }} origin/${{ steps.get_latest_stable.outputs.openwrt_branch }}
             git pull
