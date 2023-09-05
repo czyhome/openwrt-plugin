@@ -28,17 +28,6 @@ jobs:
             echo "error: get latest stable tag fail"
             exit 1
           fi
-      - name: Check branch
-        run: | 
-          remote_branch=`git ls-remote https://github.com/czy21/openwrt-plugin | grep 'refs/heads/${{ steps.get_latest_stable.outputs.openwrt_branch }}'`
-          
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Set targets
-        id: find_targets
-        run: python3 -B .github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
-
       - name: Checkout Openwrt
         run: |
           openwrt_tag=${{ steps.get_latest_stable.outputs.openwrt_tag }}
@@ -57,19 +46,39 @@ jobs:
           src-git helloworld https://github.com/fw876/helloworld
           src-git plugin https://github.com/czy21/openwrt-plugin.git;${openwrt_branch}
           " >> feeds.conf.default
+
+      - name: Check branch
+        run: | 
+          remote_branch=`git ls-remote https://github.com/czy21/openwrt-plugin | grep 'refs/heads/${{ steps.get_latest_stable.outputs.openwrt_branch }}'`
+          if [ -n "${remote_branch}" ];then
+            pwd
+            ls -al
+            git status
+          fi
+          
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set targets
+        id: find_targets
+        run: |
+            pwd
+            ls -al
+            git status
+          python3 -B .github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
   
-  build:
-    name: Build target
-    needs: setup
-    strategy:
-       fail-fast: false
-       matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
-    uses: ./.github/workflows/build.yml
-    with:
-      target: ${{ matrix.target }}
-      subtarget: ${{ matrix.subtarget }}
-      output_image_type: ${{ matrix.output_image_type }}
+#  build:
+#    name: Build target
+#    needs: setup
+#    strategy:
+#       fail-fast: false
+#       matrix:
+#         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+#    uses: ./.github/workflows/build.yml
+#    with:
+#      target: ${{ matrix.target }}
+#      subtarget: ${{ matrix.subtarget }}
+#      output_image_type: ${{ matrix.output_image_type }}
   
   # release:
   #   name: Release to github
