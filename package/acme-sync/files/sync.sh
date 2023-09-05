@@ -7,6 +7,7 @@ source_dir=
 target_dir=
 domain_str=
 post_shell=
+
 while getopts "s:t:d:p:" opt
 do
         case $opt in
