@@ -3,6 +3,8 @@ name: Build rockchip target
 on:
   push:
     paths:
+      - .github/workflows/target-rockchip.yml
+      - config/rockchip/**
       - luci/**
       - package/**
 

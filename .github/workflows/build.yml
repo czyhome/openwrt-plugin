@@ -28,7 +28,6 @@ jobs:
     steps:
       - name: Set env
         id: set_env
-        working-directory: /data/openwrt
         run: |
           echo "output_image_pattern=openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" >> "$GITHUB_OUTPUT"
   build:
@@ -36,41 +35,47 @@ jobs:
     runs-on: self-hosted
     needs: setup
     steps:
-      - name: Update
-        working-directory: /data/openwrt
-        run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Config
-        working-directory: /data/openwrt
-        run: |
-          cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
-          rm -rf tmp && make defconfig
+      - name: test branch
+        run: git status && ls -al && pwd
+        
+      # - name: Update
+      #   working-directory: /data/openwrt
+      #   run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
 
-      - name: Download
-        working-directory: /data/openwrt
-        run: make download -j8
+      # - name: Config
+      #   working-directory: /data/openwrt
+      #   run: |
+      #     cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
+      #     rm -rf tmp && make defconfig
+
+      # - name: Download
+      #   working-directory: /data/openwrt
+      #   run: make download -j8
           
-      - name: Compile
-        working-directory: /data/openwrt
-        run: |
-          mkdir -p logs
-          (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+      # - name: Compile
+      #   working-directory: /data/openwrt
+      #   run: |
+      #     mkdir -p logs
+      #     (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
-      - name: Artifact
-        working-directory: /data/openwrt
-        run: |
-          mkdir -p artifact
-          find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' -exec cp -rv {} artifact \;
+      # - name: Artifact
+      #   working-directory: /data/openwrt
+      #   run: |
+      #     mkdir -p artifact
+      #     find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' -exec cp -rv {} artifact \;
 
-      - name: Upload to nas
-        working-directory: /data/openwrt
-        run: |
-          remote_user=opsor
-          remote_host=dsm.czy21-internal.com
-          remote_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /data/.ssh/czy-rsa"
-          remote_path=/volume1/public/developer/linux/routeros/openwrt/$(git describe)
-          output_image_files=`find artifact -type f -name '${{ needs.setup.outputs.output_image_pattern }}' | xargs`
-          ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_path}
-          if [ -n "${output_image_files}" ];then
-            scp ${remote_args} -r ${output_image_files} ${remote_user}@${remote_host}:${remote_path}
-          fi
+      # - name: Upload to nas
+      #   working-directory: /data/openwrt
+      #   run: |
+      #     remote_user=opsor
+      #     remote_host=dsm.czy21-internal.com
+      #     remote_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i /data/.ssh/czy-rsa"
+      #     remote_path=/volume1/public/developer/linux/routeros/openwrt/$(git describe)
+      #     output_image_files=`find artifact -type f -name '${{ needs.setup.outputs.output_image_pattern }}' | xargs`
+      #     ssh ${remote_args} ${remote_user}@${remote_host} mkdir -p ${remote_path}
+      #     if [ -n "${output_image_files}" ];then
+      #       scp ${remote_args} -r ${output_image_files} ${remote_user}@${remote_host}:${remote_path}
+      #     fi

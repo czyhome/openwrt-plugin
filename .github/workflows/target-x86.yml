@@ -3,6 +3,8 @@ name: Build x86 target
 on:
   push:
     paths:
+      - .github/workflows/target-x86.yml
+      - config/x86/**
       - luci/**
       - package/**
 
