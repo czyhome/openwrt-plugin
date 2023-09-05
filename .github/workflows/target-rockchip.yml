@@ -1,9 +1,10 @@
 name: Build rockchip target
 
 on:
-  paths: 
-    - luci/**
-    - package/**
+  push:
+    paths:
+      - luci/**
+      - package/**
 
 jobs:
   build_ext:
