@@ -7,7 +7,7 @@ import yaml
 exclude_build = ["build-latest"]
 targets = []
 subtargets = []
-for t in pathlib.Path(__file__).parent.parent.joinpath(".github/workflows").rglob("build-*.yml"):
+for t in pathlib.Path(__file__).parent.parent.rglob("build-*.yml"):
     if t.stem in exclude_build:
         continue
     with io.open(t, "r", encoding="utf8") as f:
