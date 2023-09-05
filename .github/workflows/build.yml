@@ -13,7 +13,7 @@ on:
         type: string
 
 env:
-  openwrt_workdir: /data/${{ github.ref_name }}
+  openwrt_workdir: /data/openwrt
 
 permissions:
   contents: read
@@ -47,9 +47,9 @@ jobs:
     steps:
       - name: Checkout openwrt
         run: |
-          openwrt_latest_tag=${{ steps.get_latest_stable.outputs.openwrt_latest_tag }}
+          openwrt_latest_tag=${{ steps.setup.outputs.openwrt_latest_tag }}
           openwrt_local_tag=
-          if [ -d ${{ env.openwrt_workdir }}/.git ];then
+          if [ -d "${{ env.openwrt_workdir }}/.git" ];then
             openwrt_local_tag=`cd ${{ env.openwrt_workdir }} && git tag --points-at HEAD`
           fi
           if [ "${openwrt_latest_tag}" != "${openwrt_local_tag}" ];then
