@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "output_image_pattern=openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-          echo "openwrt_latest_tag=`git ls-remote --tags --refs https://github.com/openwrt/openwrt | grep -o "$(echo ${{ github.ref_name }} | sed 's|openwrt-||').*" | sort -r | head -1`" >> "$GITHUB_OUTPUT"
+          echo "openwrt_latest_tag=`git ls-remote --tags --refs https://github.com/openwrt/openwrt | grep -o "$(echo ${{ github.ref_name }} | sed 's|openwrt-|v|').*" | sort -r | head -1`" >> "$GITHUB_OUTPUT"
           
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
