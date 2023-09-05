@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Checkout openwrt
         run: |
-          openwrt_latest_tag=${{ steps.setup.outputs.openwrt_latest_tag }}
+          openwrt_latest_tag=${{ needs.setup.outputs.openwrt_latest_tag }}
           openwrt_local_tag=
           if [ -d "${{ env.openwrt_workdir }}/.git" ];then
             openwrt_local_tag=`cd ${{ env.openwrt_workdir }} && git tag --points-at HEAD`
@@ -63,34 +63,34 @@ jobs:
           src-git plugin https://github.com/czy21/openwrt-plugin.git;${openwrt_branch}
           " >> feeds.conf.default
 
-      # - name: Update
-      #   working-directory: /data/openwrt
-      #   run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
+      - name: Update
+        working-directory: ${{ env.openwrt_workdir }}
+        run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/sync.sh
 
-      # - name: Config
-      #   working-directory: /data/openwrt
-      #   run: |
-      #     cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
-      #     rm -rf tmp && make defconfig
+      - name: Config
+        working-directory: ${{ env.openwrt_workdir }}
+        run: |
+          cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
+          rm -rf tmp && make defconfig
 
       # - name: Download
-      #   working-directory: /data/openwrt
+      #   working-directory: ${{ env.openwrt_workdir }}
       #   run: make download -j8
           
       # - name: Compile
-      #   working-directory: /data/openwrt
+      #   working-directory: ${{ env.openwrt_workdir }}
       #   run: |
       #     mkdir -p logs
       #     (make -j$(($(nproc)+1)) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
       # - name: Artifact
-      #   working-directory: /data/openwrt
+      #   working-directory: ${{ env.openwrt_workdir }}
       #   run: |
       #     mkdir -p artifact
       #     find bin/targets/ -type f -name '${{ needs.setup.outputs.output_image_pattern }}' -exec cp -rv {} artifact \;
 
       # - name: Upload to nas
-      #   working-directory: /data/openwrt
+      #   working-directory: ${{ env.openwrt_workdir }}
       #   run: |
       #     remote_user=opsor
       #     remote_host=dsm.czy21-internal.com
