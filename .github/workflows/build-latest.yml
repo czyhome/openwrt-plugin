@@ -55,16 +55,14 @@ jobs:
             ls -al
             git status
           fi
-          
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Set targets
         id: find_targets
         run: |
-            pwd
-            ls -al
-            git status
+          pwd
+          ls -al
+          git status
           python3 -B .github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
   
 #  build:
