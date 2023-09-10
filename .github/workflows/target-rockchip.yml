@@ -1,0 +1,19 @@
+name: Build rockchip target
+
+on:
+  workflow_dispatch:
+    inputs:
+      openwrt_tag:
+        type: string
+
+jobs:
+  build_ext:
+    uses: ./.github/workflows/build.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        subtarget: [r2s,r4s]
+    with:
+      target: rockchip
+      subtarget: ${{ matrix.subtarget }}
+      openwrt_tag: ${{ inputs.openwrt_tag }}

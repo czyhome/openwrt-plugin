@@ -27,7 +27,10 @@ append_param_bool() {
 start_instance() {
   local name="$1"
 
-  section_enabled "$s" || { return 1 }
+  section_enabled "$name" || {
+    return 1
+  }
+  
   [ ! -d "/var/run" ] && mkdir -p "/var/run"
 
   local log_file=/var/log/dnsproxy.$name.log

@@ -16,7 +16,7 @@ s.add_select_options = {}
 s.extedit = luci.dispatcher.build_url("admin", "services", "adguardhome", "edit", "%s")
 
 function s.getPID(section) -- Universal function which returns valid pid # or nil
-	local pid = sys.exec("%s | grep -w 'adguardhome.%s.pid'" % { psstring, section })
+	local pid = sys.exec("%s | grep -w '[a]dguardhome.%s.pid'" % { psstring, section })
 	if pid and #pid > 0 then
 		return tonumber(pid:match("^%s*(%d+)"))
 	else
@@ -67,6 +67,10 @@ function updown.write(self, section, value)
 end
 
 function s.remove(self, name)
+	local cfg_file  = "/etc/adguardhome/" ..name.. ".yaml"
+	if fs.access(cfg_file) then
+		fs.unlink(cfg_file)
+	end
 	uci:delete("adguardhome", name)
 	uci:save("adguardhome")
 	uci:commit("adguardhome")

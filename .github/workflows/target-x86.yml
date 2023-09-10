@@ -1,0 +1,20 @@
+name: Build x86 target
+
+on:
+  workflow_dispatch:
+    inputs:
+      openwrt_tag:
+        type: string
+        
+jobs:
+  build_ext:
+    uses: ./.github/workflows/build.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        subtarget: [64]
+    with:
+      target: x86
+      subtarget: ${{ matrix.subtarget }}
+      output_image_type: combined-efi
+      openwrt_tag: ${{ inputs.openwrt_tag }}

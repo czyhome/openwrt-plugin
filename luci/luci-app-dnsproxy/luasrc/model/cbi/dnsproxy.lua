@@ -13,19 +13,10 @@ local s = m:section( TypedSection, "dnsproxy")
 s.template = "cbi/tblsection"
 s.addremove = true
 s.add_select_options = {}
-
-local cfg = s:option(DummyValue, "config")
-function cfg.cfgvalue(self, section)
-	local file_cfg = self.map:get(section, "config")
-	if file_cfg then
-		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "file", "%s")
-	else
-		s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "edit", "%s")
-	end
-end
+s.extedit = luci.dispatcher.build_url("admin", "services", "dnsproxy", "edit", "%s")
 
 function s.getPID(section) -- Universal function which returns valid pid # or nil
-	local pid = sys.exec("%s | grep -w 'dnsproxy.%s.log'" % { psstring, section })
+	local pid = sys.exec("%s | grep -w '[d]nsproxy.%s.log'" % { psstring, section })
 	if pid and #pid > 0 then
 		return tonumber(pid:match("^%s*(%d+)"))
 	else
