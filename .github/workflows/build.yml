@@ -29,7 +29,6 @@ jobs:
       - name: Init
         id: init
         run: |
-          echo "output_image_pattern=openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*" >> "$GITHUB_OUTPUT"
           openwrt_tag=${{ inputs.openwrt_tag }}
           [ -n "${openwrt_tag}" ] || openwrt_tag=$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
@@ -78,4 +77,5 @@ jobs:
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
           mkdir -p artifact
-          find bin/targets/ -type f -name '${{ steps.init.outputs.output_image_pattern }}' -exec cp -rv {} artifact \;
+          find bin/targets/ -type f -name 'openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*squashfs*${{ inputs.output_image_type }}*' -exec cp -rv {} artifact \;
+          find bin/targets/ -type f -name "openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*.manifest" -exec cp -rv {} artifact \;
