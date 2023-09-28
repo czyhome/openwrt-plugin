@@ -5,3 +5,7 @@
 - feeds.conf.default中本仓库分支为 main
 - luci/luci-app-bundle-base/Makefile 应用集合
 ## [Guide](https://blog.czy21.com/post/openwrt/build/)
+
+## Screenshot
+![avatar](./static/openwrt-info.png)
+![avatar](./static/openwrt-app.png)
