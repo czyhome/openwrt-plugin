@@ -48,6 +48,7 @@ CONFIG_OPENVPN_openssl_ENABLE_PORT_SHARE=y
 CONFIG_OPENVPN_openssl_ENABLE_SMALL=y
 CONFIG_PACKAGE_acme=y
 CONFIG_PACKAGE_acme-acmesh=y
+CONFIG_PACKAGE_acme-acmesh-dnsapi=y
 CONFIG_PACKAGE_acme-common=y
 CONFIG_PACKAGE_acme-sync=y
 CONFIG_PACKAGE_adguardhome=y
