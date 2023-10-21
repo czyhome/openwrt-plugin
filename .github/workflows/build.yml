@@ -44,10 +44,10 @@ jobs:
           fi
           if [ "${openwrt_tag}" != "${openwrt_local_tag}" ];then
             rm -rf ${{ inputs.openwrt_dir }}
-            git clone http://gitea.czy21-internal.com/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
+            git clone https://github.com/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
           fi
           cd ${{ inputs.openwrt_dir }} && git checkout --force ${openwrt_tag}
-          sed -i -e 's|https://git.openwrt.org/\(.*\)/|http://gitea.czy21-internal.com/openwrt/|g' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
+          sed -i -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
           src-git helloworld https://github.com/fw876/helloworld
           src-git plugin https://github.com/czy21/openwrt-plugin.git
