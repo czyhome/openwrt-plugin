@@ -28,7 +28,7 @@ function logview.cfgvalue(self, section)
 		local logs = luci.util.execi("cat /var/log/adguardhome.%s.log" % section)
 		local s = ""
 		for line in logs do
-			s = line .. "\n" .. s
+			s = s .. "\n" .. line
 		end
 		return s
 	end
