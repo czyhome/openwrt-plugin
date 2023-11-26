@@ -49,7 +49,7 @@ jobs:
           cd ${{ inputs.openwrt_dir }} && git checkout --force ${openwrt_tag}
           sed -i -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
-          src-git helloworld https://github.com/fw876/helloworld
+          src-git helloworld https://github.com/fw876/helloworld;main
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
 
