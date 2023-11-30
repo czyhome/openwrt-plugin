@@ -1,4 +1,4 @@
-name: Build x86 target
+name: Build ramips target
 
 on:
   workflow_dispatch:
