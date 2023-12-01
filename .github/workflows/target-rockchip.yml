@@ -16,4 +16,5 @@ jobs:
     with:
       target: rockchip
       subtarget: ${{ matrix.subtarget }}
+      output_image_type: squashfs-sysupgrade
       openwrt_tag: ${{ inputs.openwrt_tag }}

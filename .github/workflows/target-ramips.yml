@@ -16,4 +16,5 @@ jobs:
     with:
       target: ramips
       subtarget: ${{ matrix.subtarget }}
+      output_image_type: initramfs-kernel
       openwrt_tag: ${{ inputs.openwrt_tag }}
