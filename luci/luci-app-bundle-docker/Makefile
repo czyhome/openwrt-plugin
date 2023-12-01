@@ -3,7 +3,7 @@
 include $(TOPDIR)/rules.mk
 
 LUCI_TITLE:=Docker
-LUCI_DEPENDS:=+dockerd +docker-compose +luci-app-dockerman
+LUCI_DEPENDS:=+kmod-macvlan +dockerd +docker-compose +luci-app-dockerman
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
