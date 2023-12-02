@@ -6,6 +6,7 @@
 - luci/luci-app-bundle-base/Makefile 应用集合
 ## Feature
 - 支持AdguardHome,DnsProxy多进程
+- 支持设备:x86,r2s,r4s,newifi-d2
 ## [Guide](https://blog.czy21.com/post/openwrt/build/)
 ## Screenshot
 ![avatar](./static/openwrt-info.png)
