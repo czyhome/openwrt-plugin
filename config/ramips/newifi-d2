@@ -4,35 +4,23 @@ CONFIG_TARGET_ramips_mt7621_DEVICE_d-team_newifi-d2=y
 
 # CONFIG_PACKAGE_dnsmasq is not set
 CONFIG_LUCI_LANG_zh_Hans=y
-CONFIG_PACKAGE_bash=y
-CONFIG_PACKAGE_fdisk=y
-CONFIG_PACKAGE_cfdisk=y
-CONFIG_PACKAGE_blockd=y
-CONFIG_PACKAGE_iperf3=y
-CONFIG_PACKAGE_kmod-tcp-bbr=y
-CONFIG_PACKAGE_kmod-fs-ext4=y
-CONFIG_PACKAGE_kmod-usb-storage=y
-CONFIG_PACKAGE_kmod-usb-storage-extras=y
 
 CONFIG_PACKAGE_qrencode=y
 CONFIG_PACKAGE_ddns-scripts=y
 CONFIG_PACKAGE_ddns-scripts-aliyun=y
 CONFIG_PACKAGE_ddns-scripts-cloudflare=y
 CONFIG_PACKAGE_openvpn-openssl=y
+CONFIG_PACKAGE_openvpn-easy-rsa=y
 CONFIG_PACKAGE_openvpn-auth=y
 
 CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_luci-compat=y
 CONFIG_PACKAGE_luci-proto-wireguard=y
 CONFIG_PACKAGE_luci-app-ddns=y
-CONFIG_PACKAGE_luci-app-nlbwmon=y
-CONFIG_PACKAGE_luci-app-wol=y
 CONFIG_PACKAGE_luci-app-adguardhome=y
 CONFIG_PACKAGE_luci-app-openvpn=y
-CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_PACKAGE_luci-app-ssr-plus=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Server=y
-CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Xray=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_MosDNS=y
 CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Client=y
