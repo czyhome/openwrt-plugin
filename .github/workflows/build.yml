@@ -58,7 +58,7 @@ jobs:
         run: |
            for t in "feeds/packages";do
              if [ -d "$t/.git" ];then
-                `cd $t;git checkout --force && git clean -xdf`
+                $(cd $t;git checkout --force && git clean -xdf)
              fi
            done
            pwd
