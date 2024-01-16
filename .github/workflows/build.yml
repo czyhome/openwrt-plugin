@@ -59,7 +59,7 @@ jobs:
           reset_feeds=(feeds/packages)
           for t in $reset_feeds;do
               if [ -d "$t/.git" ];then
-              sh -c 'cd $t && git reset --hard && git clean -xdf'
+              sh -c "cd $t && git reset --hard && git clean -xdf"
               fi
           done
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
