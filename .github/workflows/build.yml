@@ -56,27 +56,29 @@ jobs:
       - name: Update
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
-          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
+          env
+          #./github/workflows/scripts/feeds.sh --reset
+          #./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
 
-      - name: Config
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: |
-          cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
-          rm -rf tmp && make defconfig
+      # - name: Config
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: |
+      #     cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
+      #     rm -rf tmp && make defconfig
 
-      - name: Download
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: make download -j8
+      # - name: Download
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: make download -j8
           
-      - name: Compile
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: |
-          mkdir -p logs
-          (make -j$(nproc) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+      # - name: Compile
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: |
+      #     mkdir -p logs
+      #     (make -j$(nproc) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
-      - name: Artifact
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: |
-          mkdir -p artifact
-          find bin/targets/ -type f -name 'openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*${{ inputs.output_image_type }}*' -exec cp -rv {} artifact \;
-          find bin/targets/ -type f -name "openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*.manifest" -exec cp -rv {} artifact \;
+      # - name: Artifact
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: |
+      #     mkdir -p artifact
+      #     find bin/targets/ -type f -name 'openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*${{ inputs.output_image_type }}*' -exec cp -rv {} artifact \;
+      #     find bin/targets/ -type f -name "openwrt-*${{ inputs.target }}*${{ inputs.subtarget }}*.manifest" -exec cp -rv {} artifact \;
