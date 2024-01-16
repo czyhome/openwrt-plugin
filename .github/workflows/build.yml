@@ -62,7 +62,6 @@ jobs:
               (cd $t && git reset --hard && git clean -xdf)
               fi
           done
-          pwd
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
 
       - name: Config
