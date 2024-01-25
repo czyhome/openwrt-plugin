@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# example cron: 0 0 * * * LOG_TAG=acme-sync /etc/acme/sync.sh -s <source_dir> -t <target_dir> -d example1.com,example2.com -p "echo 'post_shell'"
+# example cron: 0 0 * * * LOG_TAG=acme-sync /etc/acme/sync.sh -s <source_dir> -t <target_dir> -d example1.com,example2.com -p /etc/acme/post.sh
 LOG_TAG=${LOG_TAG-"acme-sync"}
 
 source_dir=
@@ -45,6 +45,7 @@ for i in $domains; do
     fi
   fi
 done
+
 if $sync_any;then
   $post_shell
 fi
