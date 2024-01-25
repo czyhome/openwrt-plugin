@@ -32,6 +32,7 @@ endef
 define Package/acme-sync/install
 	$(INSTALL_DIR) $(1)/etc/acme
 	$(INSTALL_BIN) ./files/sync.sh $(1)/etc/acme/
+  $(INSTALL_BIN) ./files/post.sh $(1)/etc/acme/
 endef
 
 $(eval $(call BuildPackage,acme-sync))
