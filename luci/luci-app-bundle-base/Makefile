@@ -5,7 +5,7 @@ include $(TOPDIR)/rules.mk
 LUCI_TITLE:=Bundle Base
 LUCI_DEPENDS:=+bash +fdisk +cfdisk +blockd +sudo +gcc +vim +python3 +python3-bcrypt +python3-venv \
 			  +kmod-tcp-bbr +dnsmasq-full +ddns-scripts +ddns-scripts-aliyun +ddns-scripts-cloudflare +netdata +iperf3 +softethervpn5-server \
-			  +openvpn-openssl +openvpn-easy-rsa +openvpn-auth +openldap-server +openldap-utils \
+			  +openvpn-openssl +openvpn-easy-rsa +openvpn-auth +openldap-server +openldap-utils +openssh-client \
 			  +luci +luci-compat +luci-app-ttyd +luci-app-commands \
 			  +luci-app-adguardhome +luci-app-dnsproxy +luci-app-ddns +luci-app-nlbwmon +luci-app-qos +luci-app-vlmcsd +luci-proto-wireguard +qrencode \
 			  +luci-app-wol +luci-app-socat +luci-app-snmpd +luci-app-smartdns \
