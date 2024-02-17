@@ -50,7 +50,6 @@ jobs:
           sed -i -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
           src-git helloworld https://github.com/fw876/helloworld;main
-          src-git openclash https://github.com/vernesong/OpenClash.git;master
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
 
