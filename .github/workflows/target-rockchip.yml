@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        subtarget: [r4s]
+        subtarget: [r2s,r4s]
     with:
       target: rockchip
       subtarget: ${{ matrix.subtarget }}
