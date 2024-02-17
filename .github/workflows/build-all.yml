@@ -57,7 +57,6 @@ jobs:
           git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${openwrt_tag} --force
       - name: Release file
         uses: softprops/action-gh-release@v1
-        uses: svenstaro/upload-release-action@v2
         with:
           tag_name: ${{ needs.setup.outputs.openwrt_tag }}
           files: /data/openwrt/artifact/openwrt-*
