@@ -56,7 +56,14 @@ jobs:
 
       - name: Update
         working-directory: ${{ inputs.openwrt_dir }}
-        run: ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
+        run: |
+          reset_feeds=(feeds/packages)
+          for t in ${reset_feeds[@]};do
+              if [ -d "$t/.git" ];then
+              (cd $t && git reset --hard && git clean -xdf)
+              fi
+          done
+          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
 
       - name: Config
         working-directory: ${{ inputs.openwrt_dir }}
