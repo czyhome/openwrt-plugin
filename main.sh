@@ -36,10 +36,6 @@ fi
 
 ################################################
 if [ "$1" == "install" ];then
-  for i in "net/dnsproxy" "net/adguardhome" "libs/openldap"; do
-    cp_pkg $i
-  done
-
   # openldap
   sed -i -e 's|$(INSTALL_BIN) ./files/ldap.init $(1)/etc/init.d/ldap|$(INSTALL_BIN) ./files/openldap.init $(1)/etc/init.d/openldap|' ../packages/libs/openldap/Makefile
 fi
