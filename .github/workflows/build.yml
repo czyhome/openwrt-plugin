@@ -58,7 +58,7 @@ jobs:
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
           reset_feeds=(feeds/packages)
-          for t in $reset_feeds;do
+          for t in ${reset_feeds[@]};do
               if [ -d "$t/.git" ];then
               (cd $t && git reset --hard && git clean -xdf)
               fi
@@ -85,5 +85,12 @@ jobs:
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
           mkdir -p artifact
-          find bin/targets/${{ inputs.target }} -type f -name 'openwrt-*${{ inputs.subtarget }}*${{ inputs.output_image_type }}*' -exec cp -rv {} artifact \;
-          find bin/targets/${{ inputs.target }} -type f -name "openwrt-*${{ inputs.subtarget }}*.manifest" -exec cp -rv {} artifact \;
+          subtargets=(${{ inputs.subtarget }})
+          if [ "${{ inputs.subtarget }}" == "multi" ];then
+            subtargets=(`sed -n 's|CONFIG_TARGET_DEVICE.*-\(.*\)=y|\1|p' .config | xargs`)
+          fi
+          echo "subtargets: ${subtargets[@]}"
+          for t in ${subtargets[@]};do
+            find bin/targets/${{ inputs.target }} -type f -name "openwrt-*$t*${{ inputs.output_image_type }}*" -exec cp -rv {} artifact \;
+            find bin/targets/${{ inputs.target }} -type f -name "openwrt-*$t*.manifest" -exec cp -rv {} artifact \;
+          done
