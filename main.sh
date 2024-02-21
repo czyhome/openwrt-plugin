@@ -36,7 +36,7 @@ fi
 
 ################################################
 if [ "$1" == "install" ];then
-  for i in "libs/openldap"; do
+  for i in "net/dnsproxy" "net/adguardhome" "libs/openldap"; do
     cp_pkg $i
   done
 
