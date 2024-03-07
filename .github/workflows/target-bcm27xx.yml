@@ -1,4 +1,4 @@
-name: Build rpi zero w target
+name: Build bcm27xx target
 
 on:
   workflow_dispatch:
@@ -12,9 +12,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        subtarget: [zero-w]
+        subtarget: [rpi]
     with:
-      target: rpi
+      target: bcm27xx
       subtarget: ${{ matrix.subtarget }}
       output_image_type: squashfs-sysupgrade
       openwrt_tag: ${{ inputs.openwrt_tag }}
