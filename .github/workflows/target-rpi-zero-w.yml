@@ -1,0 +1,20 @@
+name: Build rpi zero w target
+
+on:
+  workflow_dispatch:
+    inputs:
+      openwrt_tag:
+        type: string
+        
+jobs:
+  build_ext:
+    uses: ./.github/workflows/build.yml
+    strategy:
+      fail-fast: false
+      matrix:
+        subtarget: [zero-w]
+    with:
+      target: rpi
+      subtarget: ${{ matrix.subtarget }}
+      output_image_type: squashfs-sysupgrade
+      openwrt_tag: ${{ inputs.openwrt_tag }}
