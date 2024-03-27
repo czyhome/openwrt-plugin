@@ -31,7 +31,7 @@ endef
 
 define Package/ddns-scripts-aliyun/install
 	$(INSTALL_DIR) $(1)/usr/lib/ddns
-	$(INSTALL_DATA) ./files/update_aliyun_com.sh $(1)/usr/lib/ddns/
+	$(INSTALL_BIN) ./files/update_aliyun_com.sh $(1)/usr/lib/ddns/
 
 	$(INSTALL_DIR) $(1)/usr/share/ddns/custom
 	$(INSTALL_DATA) ./files/aliyun.com.json $(1)/usr/share/ddns/custom/
