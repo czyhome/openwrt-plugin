@@ -54,6 +54,6 @@ mkdir -p ${target_dir}
 for d in $domains; do
   target_cer=${target_dir}/${d}.cer
   if [[ ! -e ${target_cer} ]] || [[ -e ${target_cer} && $(openssl x509 -in ${target_cer} -noout -enddate -checkend ${checkend} | grep 'will expire') ]];then
-    logger -t "${LOG_TAG}" < <(/usr/lib/acme/client/acme.sh --installcert --home ${source_dir} -d ${d} --cert-file ${target_cer} --key-file ${target_dir}/${d}.key --fullchain-file ${target_dir}/${d}.pem --reloadcmd "$reloadcmd")
+    /usr/lib/acme/client/acme.sh --installcert --home ${source_dir} -d ${d} --cert-file ${target_cer} --key-file ${target_dir}/${d}.key --fullchain-file ${target_dir}/${d}.pem --reloadcmd "$reloadcmd" | logger -t "${LOG_TAG}"
   fi
 done
