@@ -13,8 +13,8 @@ echo "Usage:
   -d  <x.com,y.com>   Domains
   -s  <source_dir>    Cert source dir (default \"${source_dir}\")
   -t  <target_dir>    Cert target dir
-  -c  <command>       Command to execute after installcert(default \"${reloadcmd}\")
-  -e  <seconds>       Check whether target cert expires in the next arg seconds(default \"${checkend}\")
+  -c  <command>       Command to execute after installcert (default \"${reloadcmd}\")
+  -e  <seconds>       Check whether target cert expires in the next arg seconds (default \"${checkend}\")
   -h
 "
 exit 2
