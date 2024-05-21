@@ -1,13 +1,26 @@
 #!/bin/bash
 
-# example cron: 0 0 * * * LOG_TAG=acme-sync /etc/acme/sync.sh -s <source_dir> -t <target_dir> -d example1.com,example2.com -p /etc/acme/post.sh
+# example cron: 0 0 * * * LOG_TAG=acme-sync /etc/acme/sync.sh -t <target_dir> -d example1.com,example2.com
 LOG_TAG=${LOG_TAG-"acme-sync"}
 
-source_dir=
+source_dir=/etc/acme
 target_dir=
 domain_str=
-post_shell=
-while getopts "s:t:d:p:" opt
+checkend=432000
+reloadcmd=/etc/acme/post.sh
+function usage(){
+echo "Usage:
+  -d  <x.com,y.com>   Domains
+  -s  <source_dir>    Cert source dir (default \"${source_dir}\")
+  -t  <target_dir>    Cert target dir
+  -c  <command>       Command to execute after installcert.
+  -e  <seconds>       Check whether target cert expires in the next arg seconds
+  -h
+"
+exit 2
+}
+
+while getopts "d:s:t:c:e:h" opt
 do
         case $opt in
                 s)
@@ -19,33 +32,30 @@ do
                 d)
                   domain_str=$OPTARG
                 ;;
-                p)
-                  post_shell=$OPTARG
+                c)
+                  reloadcmd=$OPTARG
+                ;;
+                e)
+                  checkend=$OPTARG
+                ;;
+                h)
+                usage
                 ;;
                 *)
-                  logger -t "$LOG_TAG" "Usage: $(basename $0) [-s argument] [-t argument]"
-                  exit 1
+                  usage
                 ;;
     esac
 done
+
+[ -z $domain_str ] && echo "option requires an argument -- d" && usage
+[ -z $target_dir ] && echo "option requires an argument -- t" && usage
+
 domains="$(echo $domain_str | tr ',' ' ')"
-sync_any=false
 mkdir -p ${target_dir}
-for i in $domains; do
-  LOG_TAG="${LOG_TAG}.${i}"
-  source_cer=${source_dir}/${i}/$i.cer
-  target_cer=${target_dir}/${i}.cer
-  if [[ -e ${source_cer} ]];then
-    if [[ ! -e ${target_cer} ]] || [[ -e ${target_cer} && ! -z "$(diff -q ${source_cer} ${target_cer})" ]];then
-      for f in `find ${source_dir}/$i -name "$i.cer" -o -name "$i.key"`;do
-        logger -t "$LOG_TAG" "`readlink -f $f` -> `readlink -f ${target_dir}`";
-        cp $f ${target_dir}
-      done
-      sync_any=true
-    fi
+for d in $domains; do
+  LOG_TAG="${LOG_TAG}.${d}"
+  target_cer=${target_dir}/${d}.cer
+  if [[ ! -e ${target_cer} ]] || [[ -e ${target_cer} && $(openssl x509 -in ${target_cer} -noout -enddate -checkend ${checkend} | grep 'will expire') ]];then
+    /usr/lib/acme/client/acme.sh --installcert --home ${source_dir} -d ${d} --cert-file ${target_cer} --key-file ${target_dir}/${d}.key --fullchain-file ${target_dir}/${d}.pem --reloadcmd "$reloadcmd"
   fi
 done
-
-if $sync_any;then
-  $post_shell
-fi
