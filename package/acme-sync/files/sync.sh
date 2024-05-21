@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # example cron: 0 0 * * * LOG_TAG=acme-sync /etc/acme/sync.sh -t <target_dir> -d example1.com,example2.com
-LOG_TAG=${LOG_TAG-"acme-sync"}
 
 source_dir=/etc/acme
 target_dir=
@@ -53,9 +52,8 @@ done
 domains="$(echo $domain_str | tr ',' ' ')"
 mkdir -p ${target_dir}
 for d in $domains; do
-  LOG_TAG="${LOG_TAG}.${d}"
   target_cer=${target_dir}/${d}.cer
   if [[ ! -e ${target_cer} ]] || [[ -e ${target_cer} && $(openssl x509 -in ${target_cer} -noout -enddate -checkend ${checkend} | grep 'will expire') ]];then
-    /usr/lib/acme/client/acme.sh --installcert --home ${source_dir} -d ${d} --cert-file ${target_cer} --key-file ${target_dir}/${d}.key --fullchain-file ${target_dir}/${d}.pem --reloadcmd "$reloadcmd"
+    /usr/lib/acme/client/acme.sh --installcert --home ${source_dir} -d ${d} --cert-file ${target_cer} --key-file ${target_dir}/${d}.key --fullchain-file ${target_dir}/${d}.pem --reloadcmd "$reloadcmd" --log /var/log/acme-sync.log
   fi
 done
