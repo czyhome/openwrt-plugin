@@ -42,7 +42,7 @@ do
                 usage
                 ;;
                 *)
-                  usage
+                usage
                 ;;
     esac
 done
