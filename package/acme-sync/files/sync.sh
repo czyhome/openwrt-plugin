@@ -6,15 +6,15 @@ LOG_TAG=${LOG_TAG-"acme-sync"}
 source_dir=/etc/acme
 target_dir=
 domain_str=
-checkend=432000
+checkend=432000 # 5day
 reloadcmd=/etc/acme/post.sh
 function usage(){
 echo "Usage:
   -d  <x.com,y.com>   Domains
   -s  <source_dir>    Cert source dir (default \"${source_dir}\")
   -t  <target_dir>    Cert target dir
-  -c  <command>       Command to execute after installcert.
-  -e  <seconds>       Check whether target cert expires in the next arg seconds
+  -c  <command>       Command to execute after installcert(default \"${reloadcmd}\")
+  -e  <seconds>       Check whether target cert expires in the next arg seconds(default \"${checkend}\")
   -h
 "
 exit 2
