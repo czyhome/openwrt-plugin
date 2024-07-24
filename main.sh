@@ -42,6 +42,26 @@ if [ "$1" == "install" ];then
 
   # openldap
   sed -i -e 's|$(INSTALL_BIN) ./files/ldap.init $(1)/etc/init.d/ldap|$(INSTALL_BIN) ./files/openldap.init $(1)/etc/init.d/openldap|' ../packages/libs/openldap/Makefile
+  # adguardhome
+  sed -i -e 's|$(call GoPackage/Package/Install/Bin,$(1))|\0\n\n\t$(INSTALL_DIR) $(1)/etc/adguardhome\n|' -e 's|/etc/adguardhome.yaml|/etc/adguardhome/|' ../packages/net/adguardhome/Makefile
+  # dnsproxy
+dnsproxy_install='\
+define Package/dnsproxy/install \
+	$(call GoPackage/Package/Install/Bin,$(1)) \
+\
+	$(INSTALL_DIR) $(1)/etc/dnsproxy \
+\
+	$(INSTALL_DIR) $(1)/etc/init.d \
+	$(INSTALL_BIN) ./files/dnsproxy.init $(1)/etc/init.d/dnsproxy \
+\
+	$(INSTALL_DIR) $(1)/etc/config \
+	$(INSTALL_DATA) ./files/dnsproxy.config $(1)/etc/config/dnsproxy \
+endef \
+'
+  sed -i -e "/define Package\/dnsproxy\/install/{:a;N;/endef/!ba;s|\(define Package/dnsproxy/install\)\n\(.*\)\n\(endef\)||}" \
+         -e "s|define Package/dnsproxy/conffiles|${dnsproxy_install}\n\0|" \
+         -e "/define Package\/dnsproxy\/conffiles/{:a;N;/endef/!ba;s|\(define Package/dnsproxy/conffiles\)\n\(.*\)\n\(endef\)|\1\n/etc/dnsproxy/\n\3|}" \
+         -e 's|USERID:=dnsproxy=411:dnsproxy=411||' ../packages/net/dnsproxy/Makefile
 fi
 
 if [ "$1" == "check" ];then
