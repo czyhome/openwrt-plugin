@@ -43,20 +43,26 @@ jobs:
       output_image_type: ${{ matrix.output_image_type }}
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
 
-  release:
-    name: Release
+  set-tag:
     runs-on: self-hosted
     needs: [setup,build]
     steps:
-      - name: Set tag
-        env:
+      - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
           git tag ${openwrt_tag} --force
           git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${openwrt_tag} --force
-      - name: Release file
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.setup.outputs.openwrt_tag }}
-          files: /data/openwrt/artifact/openwrt-*
+
+  release:
+    name: Release target
+    runs-on: self-hosted
+    needs: [setup,build,set-tag]
+    strategy:
+       fail-fast: false
+       matrix:
+         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+    uses: softprops/action-gh-release@v2
+    with:
+      tag_name: ${{ needs.setup.outputs.openwrt_tag }}
+      files: /data/openwrt/artifact/openwrt-${{ matrix.target }}-*
