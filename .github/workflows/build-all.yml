@@ -62,7 +62,8 @@ jobs:
        fail-fast: false
        matrix:
          include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
-    uses: softprops/action-gh-release@v2
-    with:
-      tag_name: ${{ needs.setup.outputs.openwrt_tag }}
-      files: /data/openwrt/artifact/openwrt-${{ matrix.target }}-*
+    steps:
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.setup.outputs.openwrt_tag }}
+          files: /data/openwrt/artifact/openwrt-${{ matrix.target }}-*
