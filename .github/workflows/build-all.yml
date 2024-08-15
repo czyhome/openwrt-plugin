@@ -60,7 +60,7 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+         target: ${{fromJson(needs.setup.outputs.targets)}}
     steps:
       - uses: softprops/action-gh-release@v2
         with:
