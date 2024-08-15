@@ -36,9 +36,10 @@ jobs:
        fail-fast: false
        matrix:
          target: ${{fromJson(needs.setup.outputs.targets)}}
-    uses: ./.github/workflows/target-${{ matrix.target }}.yml
-    with:
-      openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
+    steps:
+      - uses: ./.github/workflows/target-${{ matrix.target }}.yml
+        with:
+          openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
 
   set-tag:
     name: Set tag
