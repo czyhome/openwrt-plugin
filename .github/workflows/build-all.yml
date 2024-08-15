@@ -35,12 +35,9 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
-    uses: ./.github/workflows/build.yml
+         target: ${{fromJson(needs.setup.outputs.targets)}}
+    uses: ./.github/workflows/target-${{ matrix.target }}.yml
     with:
-      target: ${{ matrix.target }}
-      subtarget: ${{ matrix.subtarget }}
-      output_image_type: ${{ matrix.output_image_type }}
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
 
   set-tag:
