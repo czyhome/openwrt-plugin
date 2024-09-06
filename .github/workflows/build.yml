@@ -47,7 +47,7 @@ jobs:
             git clone https://github.com/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
           fi
           cd ${{ inputs.openwrt_dir }} && git checkout --force ${openwrt_tag}
-          sed -i -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
+          sed -i -e 's|git.openwrt.org.*/\(.*\).git|github.com/openwrt/\1.git|' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
           src-git helloworld https://github.com/fw876/helloworld;main
           src-git openclash https://github.com/vernesong/OpenClash.git;master
