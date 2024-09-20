@@ -49,8 +49,12 @@ jobs:
           openwrt_tag=${{ steps.init.outputs.openwrt_tag }}
           [ -d "${{ inputs.openwrt_dir }}/.git" ] || git clone $git_repo/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
           cd ${{ inputs.openwrt_dir }}
-          git fetch --all
-          git checkout --force ${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}
+          git fetch --all --tags --force
+          if [ "${{ inputs.openwrt_master }}" == "true" ];then
+            git checkout -B ${{ steps.init.outputs.openwrt_branch }} origin/${{ steps.init.outputs.openwrt_branch }} --force
+          else
+            git checkout ${{ steps.init.outputs.openwrt_tag } --force
+          fi
 
           sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           
