@@ -37,7 +37,7 @@ jobs:
           echo "openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')" >> "$GITHUB_OUTPUT"
           
           [ "${{ inputs.openwrt_master }}" == "true" ] && echo "openwrt_branch=master" >> "$GITHUB_OUTPUT"
-          
+
       - name: Checkout openwrt
         run: |
           # git_repo=https://github.com
@@ -54,7 +54,7 @@ jobs:
           
           echo "
           src-git helloworld $git_repo/fw876/helloworld;main
-          src-git openclash  $git_repo/vernesong/OpenClash.git;master
+          src-svn openclash https://github.com/vernesong/OpenClash/trunk/
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
 
