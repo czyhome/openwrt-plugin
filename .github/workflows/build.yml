@@ -67,7 +67,7 @@ jobs:
       - name: Config
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
-          cp -rv feeds/plugin/config/${{ inputs.openwrt_master && 'master' || 'stable' }}/${{ inputs.target }}/${{ inputs.subtarget }} .config
+          cp -rv feeds/plugin/config/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || 'stable' }}/${{ inputs.target }}/${{ inputs.subtarget }} .config
           rm -rf tmp && make defconfig
 
       - name: Download
