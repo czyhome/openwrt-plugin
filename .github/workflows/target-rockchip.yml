@@ -5,6 +5,8 @@ on:
     inputs:
       openwrt_tag:
         type: string
+      openwrt_master:
+        type: boolean
 
 jobs:
   build_ext:
@@ -18,3 +20,4 @@ jobs:
       subtarget: ${{ matrix.subtarget }}
       output_image_type: squashfs-sysupgrade
       openwrt_tag: ${{ inputs.openwrt_tag }}
+      openwrt_master: ${{ inputs.openwrt_master }}
