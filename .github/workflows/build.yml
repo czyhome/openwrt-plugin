@@ -49,7 +49,7 @@ jobs:
             if [ ! -d "${{ steps.init.outputs.openwrt_dir }}/.git" ];then
               git clone https://github.com/openwrt/openwrt.git ${{ steps.init.outputs.openwrt_dir }}
             fi
-            cd ${{ steps.init.outputs.openwrt_dir }}
+            cd ${{ steps.init.outputs.openwrt_dir }} && git pull --force
           else
             if [ -d "${{ steps.init.outputs.openwrt_dir }}/.git" ];then
               openwrt_local_tag=`cd ${{ steps.init.outputs.openwrt_dir }} && git tag --points-at HEAD`
