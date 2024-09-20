@@ -11,11 +11,11 @@ on:
         type: string
       output_image_type:
         type: string
-      openwrt_tag:
-        type: string
       openwrt_dir:
         type: string
         default: /data/openwrt
+      openwrt_tag:
+        type: string
       openwrt_master:
         type: boolean
 
@@ -37,6 +37,7 @@ jobs:
           echo "openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')" >> "$GITHUB_OUTPUT"
           
           [ "${{ inputs.openwrt_master }}" == "true" ] && echo "openwrt_branch=master" >> "$GITHUB_OUTPUT"
+          
       - name: Checkout openwrt
         run: |
           # git_repo=https://github.com
