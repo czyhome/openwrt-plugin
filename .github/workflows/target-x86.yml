@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stable_subtarget: 64
-        master_subtarget: 64
+        stable_subtarget: [64]
+        master_subtarget: [64]
     with:
       target: x86
       subtarget: ${{ inputs.openwrt_master && matrix.master_subtarget || matrix.stable_subtarget }}
