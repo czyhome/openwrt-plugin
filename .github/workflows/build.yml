@@ -36,7 +36,9 @@ jobs:
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')" >> "$GITHUB_OUTPUT"
           
-          [ "${{ inputs.openwrt_master }}" == "true" ] && echo "openwrt_branch=master" >> "$GITHUB_OUTPUT"
+          if [ "${{ inputs.openwrt_master }}" == "true" ];then
+            echo "openwrt_branch=master" >> "$GITHUB_OUTPUT"
+          fi
           
       - name: Checkout openwrt
         run: |
