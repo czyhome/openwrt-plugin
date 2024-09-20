@@ -7,14 +7,20 @@ on:
         type: string
       openwrt_master:
         type: boolean
-        
+
+env:
+  stable_subtarget:
+    - newifi-d2
+  master_subtarget:
+    - newifi-d2
+
 jobs:
   build_ext:
     uses: ./.github/workflows/build.yml
     strategy:
       fail-fast: false
       matrix:
-        subtarget: [newifi-d2]
+        subtarget: ${{ inputs.openwrt_master && env.master_subtarget || stable_subtarget }}
     with:
       target: ramips
       subtarget: ${{ matrix.subtarget }}

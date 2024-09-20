@@ -7,6 +7,8 @@ on:
     inputs:
       openwrt_tag:
         type: string
+      openwrt_master:
+        type: boolean
 
 jobs:
   setup:
@@ -27,7 +29,7 @@ jobs:
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
       - name: Set targets
         id: find_targets
-        run: python3 -B ./.github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
+        run: python3 -B ./.github/workflows/scripts/get_targets.py ${{ inputs.openwrt_master && '--openwrt-master' }} | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
   
   build:
     name: Build target
@@ -42,11 +44,13 @@ jobs:
       subtarget: ${{ matrix.subtarget }}
       output_image_type: ${{ matrix.output_image_type }}
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
+      openwrt_master: ${{ inputs.openwrt_master }}
 
   set-tag:
     name: Set tag
     runs-on: self-hosted
     needs: [setup,build]
+    if: ${{ ! inputs.openwrt_master }}
     steps:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -59,6 +63,7 @@ jobs:
     name: Release target
     runs-on: self-hosted
     needs: [setup,build,set-tag]
+    if: ${{ ! inputs.openwrt_master }}
     strategy:
        fail-fast: false
        matrix:
