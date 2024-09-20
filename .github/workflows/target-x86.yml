@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        subtarget: ${{ inputs.openwrt_master && fromJson(format('[{0}]', env.master_subtarget))  || fromJson(format('[{0}]', env.stable_subtarget)) }}
+        subtarget: ${{ fromJson(format('[{0}]', env.master_subtarget)) }}
     with:
       target: x86
       subtarget: ${{ matrix.subtarget }}
