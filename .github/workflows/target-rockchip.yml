@@ -9,10 +9,8 @@ on:
         type: boolean
 
 env:
-  stable_subtarget:
-    - multi
-  master_subtarget:
-    - multi
+  stable_subtarget: multi
+  master_subtarget: multi
 
 jobs:
   build_ext:
@@ -20,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        subtarget: ${{ inputs.openwrt_master && env.master_subtarget || stable_subtarget }}
+        subtarget: ${{ inputs.openwrt_master && fromJSON(env.master_subtarget) || fromJSON(stable_subtarget) }}
     with:
       target: rockchip
       subtarget: ${{ matrix.subtarget }}

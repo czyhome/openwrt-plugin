@@ -9,10 +9,8 @@ on:
         type: boolean
         
 env:
-  stable_subtarget:
-    - 64
-  master_subtarget:
-    - 64
+  stable_subtarget: 64
+  master_subtarget: 64
 
 jobs:
   build_ext:
@@ -20,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        subtarget: ${{ inputs.openwrt_master && env.master_subtarget || stable_subtarget }}
+        subtarget: ${{ inputs.openwrt_master && fromJSON(env.master_subtarget) || fromJSON(stable_subtarget) }}
     with:
       target: x86
       subtarget: ${{ matrix.subtarget }}
