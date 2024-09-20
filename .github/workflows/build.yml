@@ -49,7 +49,8 @@ jobs:
           sed -i -e 's|git.openwrt.org.*/\(.*\).git|github.com/openwrt/\1.git|' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
           src-git helloworld https://github.com/fw876/helloworld;main
-          src-git openclash https://github.com/vernesong/OpenClash.git;master
+          # src-git openclash https://github.com/vernesong/OpenClash.git;master
+          src-git openclash https://gitea.czy21-internal.com/vernesong/OpenClash.git;master
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
 
@@ -62,7 +63,7 @@ jobs:
               (cd $t && git reset --hard && git clean -xdf)
               fi
           done
-          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
+          ./scripts/feeds update -af && ./scripts/feeds install -af && ./feeds/plugin/main.sh install
 
       - name: Config
         working-directory: ${{ inputs.openwrt_dir }}
