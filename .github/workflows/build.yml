@@ -50,7 +50,7 @@ jobs:
           git fetch --all
           git checkout --force ${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}
 
-          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|"" -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
+          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           
           echo "
           src-git helloworld $git_repo/fw876/helloworld;main
