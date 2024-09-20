@@ -81,13 +81,14 @@ jobs:
       - name: Artifact
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
-          mkdir -p bin/artifact
+          artifact_dir=bin/artifact/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || 'stable' }}
+          mkdir -p $artifact_dir
           subtargets=(${{ inputs.subtarget }})
           if [ "${{ inputs.subtarget }}" == "multi" ];then
             subtargets=(`sed -n 's|CONFIG_TARGET_DEVICE.*-\(.*\)=y|\1|p' .config | xargs`)
           fi
           echo "subtargets: ${subtargets[@]}"
           for t in ${subtargets[@]};do
-            find bin/targets/${{ inputs.target }} -type f -name "openwrt-*$t*${{ inputs.output_image_type }}*" -exec cp -rv {} bin/artifact \;
-            find bin/targets/${{ inputs.target }} -type f -name "openwrt-*$t*.manifest" -exec cp -rv {} bin/artifact \;
+            find bin/targets/${{ inputs.target }} -type f -name "openwrt-*$t*${{ inputs.output_image_type }}*" -exec cp -rv {} $artifact_dir \;
+            find bin/targets/${{ inputs.target }} -type f -name "openwrt-*$t*.manifest" -exec cp -rv {} $artifact_dir \;
           done
