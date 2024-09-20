@@ -44,7 +44,7 @@ jobs:
           [ -d "${{ inputs.openwrt_dir }}/.git" ] || git clone https://github.com/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
           cd ${{ inputs.openwrt_dir }}
           git fetch --all
-          git checkout --force ${{ inputs.openwrt_master && 'master' || steps.init.outputs.openwrt_tag }}
+          git checkout --force ${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}
 
           sed -i -e 's|git.openwrt.org.*/\(.*\).git|github.com/openwrt/\1.git|' -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           echo "
