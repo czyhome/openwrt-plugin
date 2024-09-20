@@ -8,20 +8,17 @@ on:
       openwrt_master:
         type: boolean
 
-env:
-  stable_subtarget: multi
-  master_subtarget: multi
-
 jobs:
   build_ext:
     uses: ./.github/workflows/build.yml
     strategy:
       fail-fast: false
       matrix:
-        subtarget: ${{ inputs.openwrt_master && fromJSON(env.master_subtarget) || fromJSON(stable_subtarget) }}
+        stable_subtarget: [multi]
+        master_subtarget: [multi]
     with:
       target: rockchip
-      subtarget: ${{ matrix.subtarget }}
+      subtarget: ${{ inputs.openwrt_master && matrix.master_subtarget || matrix.stable_subtarget }}
       output_image_type: squashfs-sysupgrade
       openwrt_tag: ${{ inputs.openwrt_tag }}
       openwrt_master: ${{ inputs.openwrt_master }}
