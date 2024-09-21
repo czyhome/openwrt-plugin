@@ -1,4 +1,4 @@
-name: Build sub target
+name: Build subtarget
 
 on:
   workflow_call:
