@@ -66,7 +66,7 @@ jobs:
 
       - name: Update
         working-directory: ${{ inputs.openwrt_dir }}
-        run: ./scripts/feeds update -as && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
+        run: ./scripts/feeds update -ar && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
 
       - name: Config
         working-directory: ${{ inputs.openwrt_dir }}
