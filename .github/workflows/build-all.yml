@@ -70,9 +70,10 @@ jobs:
          target: ${{fromJson(needs.setup.outputs.targets)}}
     steps:
       - name: Upload to MinIO
+        env: 
+          MC_HOST_TARGET: http://${{ secrets.MINIO_ACCESS_KEY }}:${{ secrets.MINIO_SECRET_KEY }}@${{ secrets.MINIO_ENDPOINT }}
         run: |
-          export MC_HOST_TARGET=http://${{ secrets.MINIO_ACCESS_KEY }}:${{ secrets.MINIO_SECRET_KEY }}@${{ secrets.MINIO_ENDPOINT }}
-          mc cp --json /data/openwrt/bin/artifact/${{ inputs.openwrt_master && 'master' || 'stable' }}/openwrt-${{ matrix.target }}-* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && 'master' || steps.init.outputs.openwrt_tag }}/
+          mc cp --json /data/openwrt/bin/artifact/${{ inputs.openwrt_master && 'master' || 'stable' }}/openwrt-${{ matrix.target }}-* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && 'master' || needs.setup.outputs.openwrt_tag }}/
 
       - name: Upload to GitHub
         uses: softprops/action-gh-release@v2
