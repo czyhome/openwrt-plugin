@@ -69,32 +69,32 @@ jobs:
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
 
-      - name: Update
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: |
-          sed -i -e "s|; exit 1|;|" ./scripts/feeds
-          ./scripts/feeds update -af && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
+      # - name: Update
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: |
+      #     sed -i -e "s|; exit 1|;|" ./scripts/feeds
+      #     ./scripts/feeds update -af && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
 
-      - name: Config
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: |
-          if [[ "${{ inputs.openwrt_master }}" == "true" && -f "feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }}" ]];then
-            cp -rv feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }} .config
-          else
-            cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
-          fi
-          sed -n 's|.*${{ inputs.subtarget }}_DEVICE_\(.*\)=y|\1|p' .config | xargs echo Devices:
-          rm -rf tmp && make defconfig
+      # - name: Config
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: |
+      #     if [[ "${{ inputs.openwrt_master }}" == "true" && -f "feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }}" ]];then
+      #       cp -rv feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }} .config
+      #     else
+      #       cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
+      #     fi
+      #     sed -n 's|.*${{ inputs.subtarget }}_DEVICE_\(.*\)=y|\1|p' .config | xargs echo Devices:
+      #     rm -rf tmp && make defconfig
 
-      - name: Download
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: make download -j8
+      # - name: Download
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: make download -j8
           
-      - name: Compile
-        working-directory: ${{ inputs.openwrt_dir }}
-        run: |
-          mkdir -p logs
-          # (make -j$(nproc) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+      # - name: Compile
+      #   working-directory: ${{ inputs.openwrt_dir }}
+      #   run: |
+      #     mkdir -p logs
+      #     (make -j$(nproc) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
       - name: Artifact
         working-directory: ${{ inputs.openwrt_dir }}
