@@ -47,7 +47,10 @@ jobs:
 
           openwrt_branch=${{ steps.init.outputs.openwrt_branch }}
           openwrt_tag=${{ steps.init.outputs.openwrt_tag }}
-          [ -d "${{ inputs.openwrt_dir }}/.git" ] || git clone $git_repo/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
+          if [ ! -d "${{ inputs.openwrt_dir }}/.git" ];then
+            git clone $git_repo/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
+          fi
+          
           cd ${{ inputs.openwrt_dir }}
           git fetch --all --tags --force
           if [ "${{ inputs.openwrt_master }}" == "true" ];then
