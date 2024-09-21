@@ -59,6 +59,23 @@ jobs:
           git tag ${openwrt_tag} --force
           git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${openwrt_tag} --force
 
+  upload:
+    name: Upload target
+    runs-on: self-hosted
+    needs: [setup,build,set-tag]
+    steps:
+      - name: Upload to MinIO
+        uses: yakubique/minio-upload@v1.1.3
+        with:
+          endpoint: ${{ secrets.MINIO_ENDPOINT }}
+          access_key: ${{ secrets.MINIO_ACCESS_KEY }}
+          secret_key: ${{ secrets.MINIO_SECRET_KEY }}
+          bucket: ${{ secrets.MINIO_BUCKET }}
+          source: ${{ inputs.openwrt_dir }}/bin/artifact/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || 'stable' }}
+          target: ${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}
+          recursive: true
+          insecure: true
+      
   release:
     name: Release target
     runs-on: self-hosted
