@@ -46,36 +46,33 @@ jobs:
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
       openwrt_master: ${{ inputs.openwrt_master }}
 
-  set-tag:
-    name: Set tag
+  post:
+    name: Post
     runs-on: self-hosted
     needs: [setup,build]
-    if: ${{ ! inputs.openwrt_master }}
-    steps:
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
-          git tag ${openwrt_tag} --force
-          git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY} ${openwrt_tag} --force
-
-  release:
-    name: Release target
-    runs-on: self-hosted
-    needs: [setup,build,set-tag]
-    if: ${{ ! inputs.openwrt_master }}
-    strategy:
-       fail-fast: false
-       matrix:
-         target: ${{fromJson(needs.setup.outputs.targets)}}
     steps:
       - name: Upload to MinIO
         env: 
           MC_HOST_TARGET: http://${{ secrets.MINIO_ACCESS_KEY }}:${{ secrets.MINIO_SECRET_KEY }}@${{ secrets.MINIO_ENDPOINT }}
         run: |
-          mc cp --json /data/openwrt/bin/artifact/${{ inputs.openwrt_master && 'master' || 'stable' }}/openwrt-${{ matrix.target }}-* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && 'master' || needs.setup.outputs.openwrt_tag }}/
+          mc cp --json /data/openwrt/bin/artifact/${{ inputs.openwrt_master && 'master' || 'stable' }}/openwrt-* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && 'master' || needs.setup.outputs.openwrt_tag }}/
+      - name: Set tag
+        if: ${{ ! inputs.openwrt_master }}
+        run: |
+          git tag ${{ needs.setup.outputs.openwrt_tag }} --force
+          git push https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} ${{ needs.setup.outputs.openwrt_tag }} --force
 
+  release:
+    name: Release target
+    runs-on: self-hosted
+    needs: [setup,build,post]
+    strategy:
+       fail-fast: false
+       matrix:
+         target: ${{fromJson(needs.setup.outputs.targets)}}
+    steps:
       - name: Upload to GitHub
+        if: ${{ ! inputs.openwrt_master }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.setup.outputs.openwrt_tag }}
