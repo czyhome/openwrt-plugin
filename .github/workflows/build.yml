@@ -54,10 +54,10 @@ jobs:
           cd ${{ inputs.openwrt_dir }}
           git fetch --all --tags --force
           if [ "${{ inputs.openwrt_master }}" == "true" ];then
-            git branch --points-at HEAD | grep "$openwrt_branch" -q  || ./scripts/feeds clean -a
+            git branch --points-at HEAD | grep "$openwrt_branch" -q || ./scripts/feeds clean -a
             git checkout -B ${{ steps.init.outputs.openwrt_branch }} origin/${{ steps.init.outputs.openwrt_branch }} --force
           else
-            git tag --points-at HEAD | grep "$openwrt_tag" -q  || ./scripts/feeds clean -a
+            git tag --points-at HEAD | grep "$openwrt_tag" -q || ./scripts/feeds clean -a
             git checkout ${{ steps.init.outputs.openwrt_tag }} --force
           fi
 
@@ -71,7 +71,10 @@ jobs:
 
       - name: Update
         working-directory: ${{ inputs.openwrt_dir }}
-        run: ./scripts/feeds update -af && ./scripts/feeds install -af && ./feeds/plugin/main.sh install
+        run: |
+          ./scripts/feeds update -af || true
+          ./scripts/feeds install -a
+          ./feeds/plugin/main.sh install
 
       - name: Config
         working-directory: ${{ inputs.openwrt_dir }}
