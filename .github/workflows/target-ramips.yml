@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stable_subtarget: [newifi-d2]
-        master_subtarget: [newifi-d2]
+        stable_subtarget: [mt7621]
+        master_subtarget: [mt7621]
     with:
       target: ramips
       subtarget: ${{ inputs.openwrt_master && matrix.master_subtarget || matrix.stable_subtarget }}
