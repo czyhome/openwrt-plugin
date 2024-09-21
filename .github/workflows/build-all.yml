@@ -71,8 +71,8 @@ jobs:
           access_key: ${{ secrets.MINIO_ACCESS_KEY }}
           secret_key: ${{ secrets.MINIO_SECRET_KEY }}
           bucket: ${{ secrets.MINIO_BUCKET }}
-          source: ${{ inputs.openwrt_dir }}/bin/artifact/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || 'stable' }}
-          target: ${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}
+          source: /data/openwrt/bin/artifact/${{ inputs.openwrt_master && 'master' || 'stable' }}
+          target: ${{ inputs.openwrt_master && 'master' || steps.init.outputs.openwrt_tag }}
           recursive: true
           insecure: true
       
