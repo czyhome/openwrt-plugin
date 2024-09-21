@@ -53,7 +53,7 @@ jobs:
           if [ "${{ inputs.openwrt_master }}" == "true" ];then
             git checkout -B ${{ steps.init.outputs.openwrt_branch }} origin/${{ steps.init.outputs.openwrt_branch }} --force
           else
-            git checkout ${{ steps.init.outputs.openwrt_tag } --force
+            git checkout ${{ steps.init.outputs.openwrt_tag }} --force
           fi
 
           sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
