@@ -59,7 +59,7 @@ jobs:
           sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
           
           echo "
-          src-git helloworld $git_repo/fw876/helloworld;main
+          src-git helloworld https://github.com/fw876/helloworld;main
           src-git openclash  https://github.com/vernesong/OpenClash.git;master
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
