@@ -1,4 +1,4 @@
-name: Build sunxi target
+name: Build sunxi
 
 on:
   workflow_dispatch:

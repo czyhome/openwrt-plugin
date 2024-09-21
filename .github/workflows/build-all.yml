@@ -1,4 +1,4 @@
-name: Build all target
+name: Build all
 
 on:
   schedule:

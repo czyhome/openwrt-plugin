@@ -1,4 +1,4 @@
-name: Build ramips target
+name: Build ramips
 
 on:
   workflow_dispatch:
