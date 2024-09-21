@@ -1,4 +1,4 @@
-name: Build rockchip target
+name: Build sunxi target
 
 on:
   workflow_dispatch:
@@ -14,11 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stable_subtarget: [armv8]
-        master_subtarget: [armv8]
+        stable_subtarget: []
+        master_subtarget: [cortexa53]
     with:
-      target: rockchip
+      target: sunxi
       subtarget: ${{ inputs.openwrt_master && matrix.master_subtarget || matrix.stable_subtarget }}
-      output_image_type: squashfs-sysupgrade
+      output_image_type: squashfs-combined-efi
       openwrt_tag: ${{ inputs.openwrt_tag }}
       openwrt_master: ${{ inputs.openwrt_master }}
