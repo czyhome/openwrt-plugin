@@ -83,6 +83,7 @@ jobs:
           else
             cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
           fi
+          sed -n 's|.*${{ inputs.subtarget }}_DEVICE_\(.*\)=y|\1|p' .config | xargs echo Devices:
           rm -rf tmp && make defconfig
 
       - name: Download
@@ -93,7 +94,7 @@ jobs:
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
           mkdir -p logs
-          (make -j$(nproc) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+          # (make -j$(nproc) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
       - name: Artifact
         working-directory: ${{ inputs.openwrt_dir }}
@@ -102,3 +103,15 @@ jobs:
           mkdir -p $artifact_dir
           find bin/targets/${{ inputs.target }} -type f -name "openwrt-*${{ inputs.subtarget }}*${{ inputs.output_image_type }}*" -exec cp -rv {} $artifact_dir \;
           find bin/targets/${{ inputs.target }} -type f -name "openwrt-*${{ inputs.subtarget }}*.manifest" -exec cp -rv {} $artifact_dir \;
+
+      - name: Upload to MinIO
+        uses: yakubique/minio-upload@v1.1.3
+        with:
+          endpoint: ${{ secrets.MINIO_ENDPOINT }}
+          access_key: ${{ secrets.MINIO_ACCESS_KEY }}
+          secret_key: ${{ secrets.MINIO_SECRET_KEY }}
+          bucket: ${{ secrets.MINIO_BUCKET }}
+          source: ${{ inputs.openwrt_dir }}/bin/artifact/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || 'stable' }}
+          target: ${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}
+          recursive: true
+          insecure: true
