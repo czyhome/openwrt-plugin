@@ -19,5 +19,6 @@ jobs:
     with:
       target: sunxi
       subtarget: ${{ inputs.openwrt_master && matrix.master_subtarget || matrix.stable_subtarget }}
+      output_image_type: squashfs-sdcard
       openwrt_tag: ${{ inputs.openwrt_tag }}
       openwrt_master: ${{ inputs.openwrt_master }}

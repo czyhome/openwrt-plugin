@@ -16,4 +16,5 @@ jobs:
     with:
       target: ramips
       subtarget: ${{ matrix.stable_subtarget }}
+      output_image_type: squashfs-sysupgrade
       openwrt_tag: ${{ inputs.openwrt_tag }}

@@ -11,7 +11,6 @@ on:
         type: string
       output_image_type:
         type: string
-        default: squashfs-sysupgrade
       openwrt_dir:
         type: string
         default: /data/openwrt
