@@ -5,8 +5,6 @@ on:
     inputs:
       openwrt_tag:
         type: string
-      openwrt_master:
-        type: boolean
 
 jobs:
   build_ext:
@@ -15,10 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         stable_subtarget: [64]
-        master_subtarget: [64]
     with:
       target: x86
-      subtarget: ${{ inputs.openwrt_master && matrix.master_subtarget || matrix.stable_subtarget }}
+      subtarget: ${{ matrix.stable_subtarget }}
       output_image_type: squashfs-combined-efi
       openwrt_tag: ${{ inputs.openwrt_tag }}
-      openwrt_master: ${{ inputs.openwrt_master }}
