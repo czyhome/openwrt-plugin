@@ -1,4 +1,4 @@
-name: Build sunxi
+name: Build bcm27xx
 
 on:
   workflow_dispatch:
@@ -12,10 +12,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        master_subtarget: [cortexa53]
+        master_subtarget: [bcm2710]
     with:
-      target: sunxi
+      target: bcm27xx
       subtarget: ${{ matrix.master_subtarget }}
-      output_image_type: squashfs-sdcard
+      output_image_type: squashfs
       openwrt_tag: ${{ inputs.openwrt_tag }}
       openwrt_master: true
