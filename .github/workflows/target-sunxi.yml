@@ -2,9 +2,6 @@ name: Build sunxi
 
 on:
   workflow_dispatch:
-    inputs:
-      openwrt_tag:
-        type: string
 
 jobs:
   build_ext:
@@ -17,5 +14,4 @@ jobs:
       target: sunxi
       subtarget: ${{ matrix.master_subtarget }}
       output_image_type: squashfs-sdcard
-      openwrt_tag: ${{ inputs.openwrt_tag }}
       openwrt_master: true

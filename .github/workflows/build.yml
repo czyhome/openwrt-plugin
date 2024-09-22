@@ -94,7 +94,7 @@ jobs:
         working-directory: ${{ inputs.openwrt_dir }}
         run: |
           mkdir -p logs
-          (make -j$(nproc) || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+          (make -j8 || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
       - name: Artifact
         working-directory: ${{ inputs.openwrt_dir }}
