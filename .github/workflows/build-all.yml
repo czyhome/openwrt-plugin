@@ -30,8 +30,9 @@ jobs:
           openwrt_tag=${{ inputs.openwrt_tag }}
           openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
           openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')
+          openwrt_master=${{ inputs.openwrt_master }}
 
-          if [ "${{ inputs.openwrt_master }}" == "true" ];then
+          if [ "${openwrt_master}" == "true" ];then
             openwrt_branch=master
             openwrt_dir=${openwrt_dir}-${openwrt_branch}
           fi

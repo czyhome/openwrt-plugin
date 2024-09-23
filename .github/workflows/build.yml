@@ -33,8 +33,9 @@ jobs:
           openwrt_tag=${{ inputs.openwrt_tag }}
           openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
           openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')
+          openwrt_master=${{ inputs.openwrt_master }}
 
-          if [ "${{ inputs.openwrt_master }}" == "true" ];then
+          if [ "${openwrt_master}" == "true" ];then
             openwrt_branch=master
             openwrt_dir=${openwrt_dir}-${openwrt_branch}
           fi
@@ -53,7 +54,9 @@ jobs:
           cd ${{ steps.init.outputs.openwrt_dir }}
           git fetch --all --tags --force
           
-          if [ "${{ inputs.openwrt_master }}" == "true" ];then
+          openwrt_master=${{ inputs.openwrt_master }}
+
+          if [ "${openwrt_master}" == "true" ];then
             git checkout -B ${{ steps.init.outputs.openwrt_branch }} origin/${{ steps.init.outputs.openwrt_branch }} --force
           else
             git checkout ${{ steps.init.outputs.openwrt_tag }} --force
@@ -74,7 +77,9 @@ jobs:
       - name: Config
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
-          if [[ "${{ inputs.openwrt_master }}" == "true" && -f "feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }}" ]];then
+          openwrt_master=${{ inputs.openwrt_master }}
+
+          if [[ "${openwrt_master}" == "true" && -f "feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }}" ]];then
             cp -rv feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }} .config
           else
             cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
