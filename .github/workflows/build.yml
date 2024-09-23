@@ -11,9 +11,6 @@ on:
         type: string
       output_image_type:
         type: string
-      openwrt_dir:
-        type: string
-        default: /data/openwrt
       openwrt_tag:
         type: string
       openwrt_master:
@@ -31,12 +28,14 @@ jobs:
       - name: Init
         id: init
         run: |
+          openwrt_dir=/data/openwrt
           openwrt_tag=${{ inputs.openwrt_tag }}
           [ -n "${openwrt_tag}" ] || openwrt_tag=$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')" >> "$GITHUB_OUTPUT"
-          
+
           if [ "${{ inputs.openwrt_master }}" == "true" ];then
+            echo "openwrt_dir=${openwrt_dir}-master" >> "$GITHUB_OUTPUT"
             echo "openwrt_branch=master" >> "$GITHUB_OUTPUT"
           fi
           
@@ -45,23 +44,19 @@ jobs:
           # git_repo=https://github.com
           git_repo=http://gitea.czy21-internal.com
 
-          openwrt_branch=${{ steps.init.outputs.openwrt_branch }}
-          openwrt_tag=${{ steps.init.outputs.openwrt_tag }}
-          if [ ! -d "${{ inputs.openwrt_dir }}/.git" ];then
-            git clone $git_repo/openwrt/openwrt.git ${{ inputs.openwrt_dir }}
+          if [ ! -d "${{ steps.init.outputs.openwrt_dir }}/.git" ];then
+            git clone $git_repo/openwrt/openwrt.git ${{ steps.init.outputs.openwrt_dir }}
           fi
           
-          cd ${{ inputs.openwrt_dir }}
+          cd ${{ steps.init.outputs.openwrt_dir }}
           git fetch --all --tags --force
           if [ "${{ inputs.openwrt_master }}" == "true" ];then
-            git branch --points-at HEAD | grep "$openwrt_branch" -q || ./scripts/feeds clean -a
             git checkout -B ${{ steps.init.outputs.openwrt_branch }} origin/${{ steps.init.outputs.openwrt_branch }} --force
           else
-            git tag --points-at HEAD | grep "$openwrt_tag" -q || ./scripts/feeds clean -a
             git checkout ${{ steps.init.outputs.openwrt_tag }} --force
           fi
 
-          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" -e "s|\^.*|;${openwrt_branch}|" feeds.conf.default
+          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" -e "s|\^.*|;${{ steps.init.outputs.openwrt_branch }}|" feeds.conf.default
           
           echo "
           src-git helloworld https://github.com/fw876/helloworld;main
@@ -70,13 +65,13 @@ jobs:
           " >> feeds.conf.default
 
       - name: Update
-        working-directory: ${{ inputs.openwrt_dir }}
+        working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           sed -i -e "s|; exit 1|;|" ./scripts/feeds
           ./scripts/feeds update -af && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
 
       - name: Config
-        working-directory: ${{ inputs.openwrt_dir }}
+        working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           if [[ "${{ inputs.openwrt_master }}" == "true" && -f "feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }}" ]];then
             cp -rv feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }} .config
@@ -87,19 +82,19 @@ jobs:
           rm -rf tmp && make defconfig
 
       - name: Download
-        working-directory: ${{ inputs.openwrt_dir }}
+        working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: make download -j8
           
       - name: Compile
-        working-directory: ${{ inputs.openwrt_dir }}
+        working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           mkdir -p logs
           (make -j8 || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
 
       - name: Artifact
-        working-directory: ${{ inputs.openwrt_dir }}
+        working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
-          artifact_dir=bin/artifact/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || 'stable' }}
+          artifact_dir=bin/artifact
           mkdir -p $artifact_dir
           find bin/targets/${{ inputs.target }} -type f -name "openwrt-*${{ inputs.subtarget }}*${{ inputs.output_image_type }}*" -exec cp -rv {} $artifact_dir \;
           find bin/targets/${{ inputs.target }} -type f -name "openwrt-*${{ inputs.subtarget }}*.manifest" -exec cp -rv {} $artifact_dir \;
