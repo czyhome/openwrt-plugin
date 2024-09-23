@@ -74,7 +74,7 @@ jobs:
         if: ${{ ! inputs.openwrt_master }}
         run: |
           git tag ${{ needs.setup.outputs.openwrt_tag }} --force
-          git push https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} ${{ needs.setup.outputs.openwrt_tag }} --force
+          git push https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} refs/tags/${{ needs.setup.outputs.openwrt_tag }} --force
 
   release:
     name: Release
