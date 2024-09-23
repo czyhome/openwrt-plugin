@@ -13,5 +13,5 @@ jobs:
     with:
       target: bcm27xx
       subtarget: ${{ matrix.master_subtarget }}
-      output_image_type: squashfs
+      output_image_type: squashfs-sysupgrade
       openwrt_master: true
