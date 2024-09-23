@@ -28,14 +28,18 @@ jobs:
         run: |
           openwrt_dir=/data/openwrt
           openwrt_tag=${{ inputs.openwrt_tag }}
-          [ -n "${openwrt_tag}" ] || openwrt_tag=$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')
-          echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
-          echo "openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')" >> "$GITHUB_OUTPUT"
+          openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
+          openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')
 
           if [ "${{ inputs.openwrt_master }}" == "true" ];then
-            echo "openwrt_dir=${openwrt_dir}-master" >> "$GITHUB_OUTPUT"
-            echo "openwrt_branch=master" >> "$GITHUB_OUTPUT"
+            openwrt_branch=master
+            openwrt_dir=${openwrt_dir}-${openwrt_branch}
           fi
+
+          echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+          
       - name: Get targets
         id: get_targets
         run: python3 -B ./.github/workflows/scripts/get_targets.py ${{ inputs.openwrt_master && '--openwrt-master' || '' }} | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
