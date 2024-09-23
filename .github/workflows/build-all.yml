@@ -65,16 +65,11 @@ jobs:
     runs-on: self-hosted
     needs: [setup,build]
     steps:
-      - name: Upload to MinIO
-        env: 
-          MC_HOST_TARGET: http://${{ secrets.MINIO_ACCESS_KEY }}:${{ secrets.MINIO_SECRET_KEY }}@${{ secrets.MINIO_ENDPOINT }}
-        run: |
-          mc cp --json ${{ needs.setup.outputs.openwrt_dir }}/bin/artifact/openwrt-* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && 'master' || needs.setup.outputs.openwrt_tag }}/
       - name: Set tag
         if: ${{ ! inputs.openwrt_master }}
         run: |
           git tag ${{ needs.setup.outputs.openwrt_tag }} --force
-          git push https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} ${{ needs.setup.outputs.openwrt_tag }} --force
+          git push https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} refs/tags/${{ needs.setup.outputs.openwrt_tag }} --force
 
   release:
     name: Release
