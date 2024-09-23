@@ -72,7 +72,7 @@ jobs:
 
       - name: Update
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
-        run: ./scripts/feeds update -a || (./scripts/feeds clean -a && ./scripts/feeds update -a) && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
+        run: ./scripts/feeds update -af || (./scripts/feeds clean -a && ./scripts/feeds update -a) && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
 
       - name: Config
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
