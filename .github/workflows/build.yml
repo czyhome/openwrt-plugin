@@ -47,12 +47,11 @@ jobs:
           # git_repo=https://github.com
           git_repo=http://gitea.czy21-internal.com
 
-          if [ ! -d "${{ steps.init.outputs.openwrt_dir }}/.git" ];then
-            git clone $git_repo/openwrt/openwrt.git ${{ steps.init.outputs.openwrt_dir }}
-          fi
+          [ -d "${{ steps.init.outputs.openwrt_dir }}/.git" ] || git clone $git_repo/openwrt/openwrt.git ${{ steps.init.outputs.openwrt_dir }}
           
           cd ${{ steps.init.outputs.openwrt_dir }}
           git fetch --all --tags --force
+          
           if [ "${{ inputs.openwrt_master }}" == "true" ];then
             git checkout -B ${{ steps.init.outputs.openwrt_branch }} origin/${{ steps.init.outputs.openwrt_branch }} --force
           else
@@ -97,6 +96,6 @@ jobs:
         run: |
           artifact_dir=bin/artifact
           mkdir -p $artifact_dir
-          rm -rf $artifact_dir/openwrt-${{ inputs.target }}-${{ inputs.subtarget }}*
+          rm -rfv $artifact_dir/openwrt-${{ inputs.target }}-${{ inputs.subtarget }}*
           find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${{ inputs.subtarget }}*${{ inputs.output_image_type }}*" -exec cp -rv {} $artifact_dir \;
           find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${{ inputs.subtarget }}*.manifest" -exec cp -rv {} $artifact_dir \;
