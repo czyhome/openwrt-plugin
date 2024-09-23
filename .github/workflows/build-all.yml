@@ -47,7 +47,6 @@ jobs:
   build:
     name: Build
     needs: setup
-    continue-on-error: ${{ inputs.openwrt_master }}
     strategy:
        fail-fast: false
        matrix:
