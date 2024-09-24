@@ -4,7 +4,7 @@ on:
   schedule:
     # 每周月一号零点
     - cron: '0 0 1 * *'
-    
+
   workflow_dispatch:
     inputs:
       openwrt_tag:
@@ -30,12 +30,6 @@ jobs:
           openwrt_tag=${{ inputs.openwrt_tag }}
           openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
           openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')
-          openwrt_master=${{ inputs.openwrt_master }}
-
-          if [ "${openwrt_master}" == "true" ];then
-            openwrt_branch=master
-            openwrt_dir=${openwrt_dir}-${openwrt_branch}
-          fi
 
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
@@ -65,7 +59,6 @@ jobs:
     needs: [setup,build]
     steps:
       - name: Set tag
-        if: ${{ ! inputs.openwrt_master }}
         run: |
           git tag ${{ needs.setup.outputs.openwrt_tag }} --force
           git push https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY} refs/tags/${{ needs.setup.outputs.openwrt_tag }} --force
@@ -80,7 +73,6 @@ jobs:
          target: ${{fromJson(needs.setup.outputs.targets)}}
     steps:
       - name: Upload to GitHub
-        if: ${{ ! inputs.openwrt_master }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.setup.outputs.openwrt_tag }}
