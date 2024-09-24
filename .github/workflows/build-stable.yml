@@ -1,4 +1,4 @@
-name: Build all
+name: Build Stable
 
 on:
   schedule:
@@ -7,8 +7,6 @@ on:
     inputs:
       openwrt_tag:
         type: string
-      openwrt_master:
-        type: boolean
 
 jobs:
   setup:
@@ -40,26 +38,24 @@ jobs:
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
-          
       - name: Get targets
         id: get_targets
-        run: python3 -B ./.github/workflows/scripts/get_targets.py ${{ inputs.openwrt_master && '--openwrt-master' || '' }} | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
+        run: python3 -B ./.github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
   
   build:
     name: Build
     needs: setup
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
     strategy:
        fail-fast: false
        matrix:
          include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
-    uses: ./.github/workflows/build.yml
-    secrets: inherit
     with:
       target: ${{ matrix.target }}
       subtarget: ${{ matrix.subtarget }}
       output_image_type: ${{ matrix.output_image_type }}
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
-      openwrt_master: ${{ inputs.openwrt_master }}
 
   post:
     name: Post
