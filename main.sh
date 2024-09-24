@@ -62,6 +62,11 @@ endef \
   sed -i -e "/define Package\/dnsproxy\/install/{:a;N;/endef/!ba;s|\(define Package/dnsproxy/install\)\n\(.*\)\n\(endef\)||}" ../packages/net/dnsproxy/Makefile
   sed -i -e "/define Package\/dnsproxy\/conffiles/{:a;N;/endef/!ba;s|\(define Package/dnsproxy/conffiles\)\n\(.*\)\n\(endef\)|\1\n/etc/dnsproxy/\n/etc/config/dnsproxy\n\3|}" ../packages/net/dnsproxy/Makefile
   sed -i -e "s|define Package/dnsproxy/conffiles|${dnsproxy_install}\n\0|" -e 's|USERID:=dnsproxy=411:dnsproxy=411||' ../packages/net/dnsproxy/Makefile
+
+  if [ "$2" == "--openwrt-master" ];then
+    # set ruby version
+    sed -i -e "s|^\(PKG_VERSION\)\(.*\)|\1:=3.2.5|" -e "s|^\(PKG_HASH\)\(.*\)|\1:=ef0610b498f60fb5cfd77b51adb3c10f4ca8ed9a17cb87c61e5bea314ac34a16|" ../packages/lang/ruby/Makefile
+  fi
 fi
 
 if [ "$1" == "check" ];then
