@@ -24,7 +24,6 @@ jobs:
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
-    continue-on-error: ${{ inputs.openwrt_master }}
     steps:
       - name: Init
         id: init
