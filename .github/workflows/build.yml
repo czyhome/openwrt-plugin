@@ -25,8 +25,6 @@ jobs:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Init
         id: init
         run: |
