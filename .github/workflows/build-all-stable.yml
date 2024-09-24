@@ -2,7 +2,9 @@ name: Build all stable
 
 on:
   schedule:
+    # 每周月一号零点
     - cron: '0 0 1 * *'
+    
   workflow_dispatch:
     inputs:
       openwrt_tag:
