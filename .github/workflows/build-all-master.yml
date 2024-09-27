@@ -12,12 +12,12 @@ jobs:
     name: Setup
     runs-on: self-hosted
     outputs:
-      targets: ${{ steps.get_targets.outputs.targets }}
-      targets_devices: ${{ steps.get_targets.outputs.targets_devices }}
+      targets: ${{ steps.get_devices.outputs.targets }}
+      targets_devices: ${{ steps.get_devices.outputs.targets_devices }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get targets
+      - name: Get devices
         id: get_devices
         run: python3 -B ./.github/workflows/scripts/get_devices.py --openwrt-master | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
   
