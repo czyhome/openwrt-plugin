@@ -14,5 +14,5 @@ jobs:
     with:
       target: sunxi
       subtarget: ${{ matrix.master_subtarget }}
-      output_image_type: squashfs-sdcard
+      device_image_type: squashfs-sdcard
       openwrt_master: true

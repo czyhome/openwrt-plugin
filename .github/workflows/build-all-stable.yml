@@ -16,7 +16,7 @@ jobs:
     runs-on: self-hosted
     outputs:
       targets: ${{ steps.get_targets.outputs.targets }}
-      targets_subtargets: ${{ steps.get_targets.outputs.targets_subtargets }}
+      targets_devices: ${{ steps.get_targets.outputs.targets_devices }}
       openwrt_dir: ${{ steps.set_env.outputs.openwrt_dir }}
       openwrt_tag: ${{ steps.set_env.outputs.openwrt_tag }}
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
@@ -46,11 +46,11 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+         include: ${{fromJson(needs.setup.outputs.targets_devices)}}
     with:
       target: ${{ matrix.target }}
-      subtarget: ${{ matrix.subtarget }}
-      output_image_type: ${{ matrix.output_image_type }}
+      device: ${{ matrix.device }}
+      device_image_type: ${{ matrix.device_image_type }}
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
 
   post:

@@ -10,9 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        master_subtarget: [bcm2710]
+        master_device: [bcm2710]
     with:
       target: bcm27xx
-      subtarget: ${{ matrix.master_subtarget }}
-      output_image_type: squashfs-sysupgrade
+      device: ${{ matrix.master_device }}
+      device_image_type: squashfs-sysupgrade
       openwrt_master: true

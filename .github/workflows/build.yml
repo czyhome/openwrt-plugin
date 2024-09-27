@@ -6,10 +6,10 @@ on:
       target:
         required: true
         type: string
-      subtarget:
+      device:
         required: true
         type: string
-      output_image_type:
+      device_image_type:
         type: string
       openwrt_tag:
         type: string
@@ -22,7 +22,7 @@ defaults:
   
 jobs:
   build:
-    name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
+    name: Build ${{ inputs.target }}/${{ inputs.device }}
     runs-on: self-hosted
     steps:
       - name: Init
@@ -42,6 +42,9 @@ jobs:
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+
+          subtarget=$(echo '${{ inputs.device }}' | cut -d"-" -f1)
+          echo "subtarget=${subtarget}" >> "$GITHUB_OUTPUT"
           
       - name: Checkout openwrt
         run: |
@@ -83,12 +86,13 @@ jobs:
         run: |
           openwrt_master=${{ inputs.openwrt_master }}
 
-          if [[ "${openwrt_master}" == "true" && -f "feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }}" ]];then
-            cp -rv feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.subtarget }} .config
+          if [[ "${openwrt_master}" == "true" && -f "feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.device }}" ]];then
+            cp -rv feeds/plugin/config/master/${{ inputs.target }}/${{ inputs.device }} .config
           else
-            cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.subtarget }} .config
+            cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.device }} .config
           fi
-          openwrt_devices=$(sed -n 's|.*${{ inputs.subtarget }}_DEVICE_\(.*\)=y|\1|p' .config | xargs)
+
+          openwrt_devices=$(sed -n 's|.*${{ steps.init.outputs.subtarget }}_DEVICE_\(.*\)=y|\1|p' .config | xargs)
           echo ${openwrt_devices}
           echo "openwrt_devices=${openwrt_devices}" >> "$GITHUB_OUTPUT"
           rm -rf tmp && make defconfig
@@ -101,7 +105,7 @@ jobs:
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           mkdir -p logs
-          (make -j8 || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+          (make -j8 || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ steps.init.outputs.subtarget }}.log
 
       - name: Artifact
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
@@ -110,11 +114,10 @@ jobs:
         run: |
           artifact_dir=bin/artifact
           mkdir -p $artifact_dir
-          subtarget=$(echo '${{ inputs.subtarget }}' | cut -d"-" -f1)
-          openwrt_devices=${{ steps.config.outputs.openwrt_devices }}
-          for d in "$openwrt_devices";do
-            rm -rfv $artifact_dir/openwrt-${{ inputs.target }}-*$d*
-            find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${subtarget}-*$d*${{ inputs.output_image_type }}*" -exec cp -rv {} $artifact_dir \;
-            find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${subtarget}.manifest" -exec cp -rv {} $artifact_dir/openwrt-${{ inputs.target }}-${subtarget}-$d.manifest \;
-            mc cp --json $artifact_dir/openwrt-${{ inputs.target }}-${subtarget}* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}/
+          openwrt_devices="${{ steps.config.outputs.openwrt_devices }}"
+          for d in $openwrt_devices;do
+            rm -rfv $artifact_dir/openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}*$d*
+            find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}-*$d*${{ inputs.device_image_type }}*" -exec cp -rv {} $artifact_dir \;
+            find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}.manifest" -exec cp -rv {} $artifact_dir/openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}-$d.manifest \;
+            mc cp --json $artifact_dir/openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}*$d* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}/
           done

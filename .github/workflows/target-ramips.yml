@@ -13,9 +13,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stable_subtarget: [mt7621]
+        stable_device: [mt7621]
     with:
       target: ramips
-      subtarget: ${{ matrix.stable_subtarget }}
-      output_image_type: squashfs-sysupgrade
+      device: ${{ matrix.stable_device }}
+      device_image_type: squashfs-sysupgrade
       openwrt_tag: ${{ inputs.openwrt_tag }}

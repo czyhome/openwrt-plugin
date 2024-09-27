@@ -17,5 +17,5 @@ jobs:
     with:
       target: x86
       subtarget: ${{ matrix.stable_subtarget }}
-      output_image_type: squashfs-combined-efi
+      device_image_type: squashfs-combined-efi
       openwrt_tag: ${{ inputs.openwrt_tag }}

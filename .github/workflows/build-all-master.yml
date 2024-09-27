@@ -13,13 +13,13 @@ jobs:
     runs-on: self-hosted
     outputs:
       targets: ${{ steps.get_targets.outputs.targets }}
-      targets_subtargets: ${{ steps.get_targets.outputs.targets_subtargets }}
+      targets_devices: ${{ steps.get_targets.outputs.targets_devices }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Get targets
-        id: get_targets
-        run: python3 -B ./.github/workflows/scripts/get_targets.py --openwrt-master | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
+        id: get_devices
+        run: python3 -B ./.github/workflows/scripts/get_devices.py --openwrt-master | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
   
   build:
     name: Build
@@ -29,9 +29,9 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+         include: ${{fromJson(needs.setup.outputs.targets_devices)}}
     with:
       target: ${{ matrix.target }}
-      subtarget: ${{ matrix.subtarget }}
-      output_image_type: ${{ matrix.output_image_type }}
+      device: ${{ matrix.device }}
+      device_image_type: ${{ matrix.device_image_type }}
       openwrt_master: true
