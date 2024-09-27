@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stable_subtarget: [armv8]
+        stable_subtarget: [armv8,armv8-r2s]
         master_subtarget: [armv8]
     with:
       target: rockchip
