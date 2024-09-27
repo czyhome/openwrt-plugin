@@ -113,8 +113,8 @@ jobs:
           subtarget=$(echo '${{ inputs.subtarget }}' | cut -d"-" -f1)
           openwrt_devices=${{ steps.config.outputs.openwrt_devices }}
           for d in "$openwrt_devices";do
-            rm -rfv $artifact_dir/openwrt-${{ inputs.target }}-$d*
-            find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${subtarget}-$d*${{ inputs.output_image_type }}*" -exec cp -rv {} $artifact_dir \;
+            rm -rfv $artifact_dir/openwrt-${{ inputs.target }}-*$d*
+            find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${subtarget}-*$d*${{ inputs.output_image_type }}*" -exec cp -rv {} $artifact_dir \;
             find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${subtarget}.manifest" -exec cp -rv {} $artifact_dir/openwrt-${{ inputs.target }}-${subtarget}-$d.manifest \;
             mc cp --json $artifact_dir/openwrt-${{ inputs.target }}-${subtarget}* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}/
           done
