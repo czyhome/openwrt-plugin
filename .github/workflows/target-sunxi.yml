@@ -10,9 +10,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        master_subtarget: [cortexa53]
+        master_device: [cortexa53]
     with:
       target: sunxi
-      subtarget: ${{ matrix.master_subtarget }}
+      device: ${{ matrix.master_device }}
       device_image_type: squashfs-sdcard
       openwrt_master: true
