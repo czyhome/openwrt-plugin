@@ -17,5 +17,4 @@ jobs:
     with:
       target: mediatek
       device: ${{ matrix.stable_device }}
-      device_image_type: squashfs-sysupgrade
       openwrt_tag: ${{ inputs.openwrt_tag }}
