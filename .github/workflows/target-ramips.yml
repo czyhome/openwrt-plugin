@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stable_device: [mt7621]
+        stable_device: [mt7621-newifi-d2]
     with:
       target: ramips
       device: ${{ matrix.stable_device }}
