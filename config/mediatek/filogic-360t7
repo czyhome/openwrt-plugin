@@ -2,6 +2,35 @@ CONFIG_TARGET_mediatek=y
 CONFIG_TARGET_mediatek_filogic=y
 CONFIG_TARGET_mediatek_filogic_DEVICE_qihoo_360t7=y
 
-# CONFIG_PACKAGE_dnsmasq is not set
 CONFIG_LUCI_LANG_zh_Hans=y
-CONFIG_PACKAGE_luci-app-bundle-base=y
+
+CONFIG_PACKAGE_bash=y
+# CONFIG_PACKAGE_dnsmasq is not set
+CONFIG_PACKAGE_dnsmasq-full=y
+CONFIG_PACKAGE_openssh-client=y
+CONFIG_PACKAGE_netdata=y
+CONFIG_PACKAGE_iperf3=y
+
+CONFIG_PACKAGE_kmod-tcp-bbr=y
+
+CONFIG_PACKAGE_luci=y
+CONFIG_PACKAGE_luci-compat=y
+
+CONFIG_PACKAGE_luci-proto-wireguard=y
+CONFIG_PACKAGE_qrencode=y
+CONFIG_PACKAGE_luci-app-acme=y
+CONFIG_PACKAGE_acme-acmesh-dnsapi=y
+CONFIG_PACKAGE_acme-sync=y
+CONFIG_PACKAGE_luci-app-ddns=y
+CONFIG_PACKAGE_ddns-scripts=y
+CONFIG_PACKAGE_ddns-scripts-aliyun=y 
+CONFIG_PACKAGE_ddns-scripts-cloudflare=y
+CONFIG_PACKAGE_luci-app-wol=y
+CONFIG_PACKAGE_luci-app-snmpd=y
+CONFIG_PACKAGE_luci-app-qos=y
+CONFIG_PACKAGE_luci-app-sqm=y
+CONFIG_PACKAGE_luci-app-watchcat=y
+CONFIG_PACKAGE_luci-app-omcproxy=y
+CONFIG_PACKAGE_luci-app-udpxy=y
+CONFIG_PACKAGE_luci-app-nlbwmon=y
+CONFIG_PACKAGE_luci-app-upnp=y
