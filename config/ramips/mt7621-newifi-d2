@@ -2,9 +2,10 @@ CONFIG_TARGET_ramips=y
 CONFIG_TARGET_ramips_mt7621=y
 CONFIG_TARGET_ramips_mt7621_DEVICE_d-team_newifi-d2=y
 
-# CONFIG_PACKAGE_dnsmasq is not set
 CONFIG_LUCI_LANG_zh_Hans=y
 CONFIG_PACKAGE_bash=y
+# CONFIG_PACKAGE_dnsmasq is not set
+CONFIG_PACKAGE_dnsmasq-full=y
 CONFIG_PACKAGE_fdisk=y
 CONFIG_PACKAGE_cfdisk=y
 CONFIG_PACKAGE_blockd=y
