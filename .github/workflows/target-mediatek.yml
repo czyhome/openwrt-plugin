@@ -2,6 +2,9 @@ name: Build mediatek
 
 on:
   workflow_dispatch:
+    inputs:
+      openwrt_tag:
+        type: string
 
 jobs:
   build_ext:
@@ -10,8 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        master_device: [filogic-360t7]
+        stable_device: [filogic-360t7]
     with:
       target: mediatek
-      device: ${{ matrix.master_device }}
-      openwrt_master: true
+      device: ${{ matrix.stable_device }}
+      openwrt_tag: ${{ inputs.openwrt_tag }}

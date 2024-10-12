@@ -1,0 +1,7 @@
+CONFIG_TARGET_mediatek=y
+CONFIG_TARGET_mediatek_filogic=y
+CONFIG_TARGET_mediatek_filogic_DEVICE_qihoo_360t7=y
+
+# CONFIG_PACKAGE_dnsmasq is not set
+CONFIG_LUCI_LANG_zh_Hans=y
+CONFIG_PACKAGE_luci-app-bundle-simple=y
