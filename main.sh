@@ -9,20 +9,43 @@ function cp_pkg(){
   [ -f "package/${pkg_name}/Makefile.override" ] && cp -rv package/${pkg_name}/Makefile.override ../packages/${pkg_path}/Makefile    
 }
 
+function sparse_checkout(){
+  feed_dir=$1
+  feed_url=$2
+  feed_pkg=$3
+  rm -rf $feed_dir && mkdir -p $feed_dir
+  (
+   cd $feed_dir;
+   git init
+   git remote add origin $feed_url
+   git config core.sparsecheckout true
+   git sparse-checkout set $feed_pkg
+   git pull origin master
+  )
+}
+
 ################################################
 if [ "$1" == "update" ];then
-  # lede luci
-  for i in "applications/luci-app-vlmcsd" "applications/luci-app-socat" "applications/luci-app-nfs"; do
-    svn export --force "https://github.com/coolsnowwolf/luci/trunk/$i" luci/$(basename $i)
-  done
 
-  # lede packages
-  for i in "net/vlmcsd"; do
-    svn export --force "https://github.com/coolsnowwolf/packages/trunk/$i" package/$(basename $i)
-  done
+  ## 
+  coolsnowwolf_lede_dir=feeds/coolsnowwolf/lede
+  coolsnowwolf_lede_pkg="package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/lean/autocore"
+  sparse_checkout $coolsnowwolf_lede_dir "https://github.com/coolsnowwolf/lede" "$coolsnowwolf_lede_pkg"
+  cp -rv $coolsnowwolf_lede_dir/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
+  cp -rv $coolsnowwolf_lede_dir/package/lean/autocore/ package/
 
-  # custom
-  svn export --force https://github.com/coolsnowwolf/lede/trunk/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
+  ## 
+  coolsnowwolf_luci_dir=feeds/coolsnowwolf/luci
+  coolsnowwolf_luci_pkg="applications/luci-app-vlmcsd applications/luci-app-socat applications/luci-app-nfs"
+  sparse_checkout $coolsnowwolf_luci_dir "https://github.com/coolsnowwolf/luci" "$coolsnowwolf_luci_pkg"
+
+  cp -rv $coolsnowwolf_luci_dir/applications/* luci/
+
+  ## 
+  coolsnowwolf_packages_dir=feeds/coolsnowwolf/packages
+  coolsnowwolf_packages_pkg="net/vlmcsd"
+  sparse_checkout $coolsnowwolf_packages_dir "https://github.com/coolsnowwolf/packages" "$coolsnowwolf_packages_pkg"
+  cp -rv $coolsnowwolf_packages_dir/net/* package/
 
   find -name 'Makefile' -type f -exec sed -i "s|include ../../luci.mk|include $\(TOPDIR\)/feeds/luci/luci.mk|g" {} \;
 
