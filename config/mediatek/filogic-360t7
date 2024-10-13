@@ -4,6 +4,5 @@ CONFIG_TARGET_mediatek_filogic_DEVICE_qihoo_360t7=y
 
 # CONFIG_PACKAGE_dnsmasq is not set
 CONFIG_LUCI_LANG_zh_Hans=y
-CONFIG_PACKAGE_autocore-arm=y
 CONFIG_PACKAGE_luci-app-bundle-simple=y
 CONFIG_PACKAGE_luci-app-bundle-wifi=y

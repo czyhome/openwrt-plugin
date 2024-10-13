@@ -28,24 +28,29 @@ function sparse_checkout(){
 if [ "$1" == "update" ];then
 
   ## 
-  coolsnowwolf_lede_dir=feeds/coolsnowwolf/lede
-  coolsnowwolf_lede_pkg="package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/lean/autocore"
-  sparse_checkout $coolsnowwolf_lede_dir "https://github.com/coolsnowwolf/lede" "$coolsnowwolf_lede_pkg"
-  cp -rv $coolsnowwolf_lede_dir/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
-  cp -rv $coolsnowwolf_lede_dir/package/lean/autocore/ package/
+  lede_dir=feeds/coolsnowwolf/lede
+  lede_pkg="package/lean/ddns-scripts_aliyun/update_aliyun_com.sh"
+  sparse_checkout $lede_dir "https://github.com/coolsnowwolf/lede" "$lede_pkg"
+  cp -rv $lede_dir/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
 
   ## 
-  coolsnowwolf_luci_dir=feeds/coolsnowwolf/luci
-  coolsnowwolf_luci_pkg="applications/luci-app-vlmcsd applications/luci-app-socat applications/luci-app-nfs"
-  sparse_checkout $coolsnowwolf_luci_dir "https://github.com/coolsnowwolf/luci" "$coolsnowwolf_luci_pkg"
+  lede_luci_dir=feeds/coolsnowwolf/luci
+  lede_luci_pkg="applications/luci-app-vlmcsd applications/luci-app-socat applications/luci-app-nfs"
+  sparse_checkout $lede_luci_dir "https://github.com/coolsnowwolf/luci" "$lede_luci_pkg"
 
-  cp -rv $coolsnowwolf_luci_dir/applications/* luci/
+  cp -rv $lede_luci_dir/applications/* luci/
 
   ## 
-  coolsnowwolf_packages_dir=feeds/coolsnowwolf/packages
-  coolsnowwolf_packages_pkg="net/vlmcsd"
-  sparse_checkout $coolsnowwolf_packages_dir "https://github.com/coolsnowwolf/packages" "$coolsnowwolf_packages_pkg"
-  cp -rv $coolsnowwolf_packages_dir/net/* package/
+  lede_packages_dir=feeds/coolsnowwolf/packages
+  lede_packages_pkg="net/vlmcsd"
+  sparse_checkout $lede_packages_dir "https://github.com/coolsnowwolf/packages" "$lede_packages_pkg"
+  cp -rv $lede_packages_dir/net/* package/
+
+  ##
+  immortalwrt_dir=feeds/immortalwrt/immortalwrt
+  immortalwrt_pkg="package/emortal/autocore"
+  sparse_checkout $immortalwrt_dir "https://github.com/immortalwrt/immortalwrt" "$immortalwrt_pkg"
+  cp -rv $immortalwrt_dir/package/emortal/autocore package/
 
   find -name 'Makefile' -type f -exec sed -i "s|include ../../luci.mk|include $\(TOPDIR\)/feeds/luci/luci.mk|g" {} \;
 
