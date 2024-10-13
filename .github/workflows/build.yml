@@ -64,7 +64,7 @@ jobs:
             git checkout ${{ steps.init.outputs.openwrt_tag }} --force
           fi
 
-          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" -e "s|\^.*|;${{ steps.init.outputs.openwrt_branch }}|" feeds.conf.default
+          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" feeds.conf.default
           
           echo "
           src-git helloworld https://github.com/fw876/helloworld;main
