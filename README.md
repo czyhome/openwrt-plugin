@@ -11,3 +11,7 @@
 ## Screenshot
 ![avatar](./static/openwrt-info.png)
 ![avatar](./static/openwrt-app.png)
+
+## Q&A
+- RPC call to luci/getFeatures failed with error 
+  - https://github.com/openwrt/luci/issues/6078
