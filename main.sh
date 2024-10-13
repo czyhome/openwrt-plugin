@@ -47,10 +47,10 @@ if [ "$1" == "update" ];then
   cp -rv $lede_packages_dir/net/* package/
 
   ##
-  immortalwrt_dir=feeds/immortalwrt/immortalwrt
-  immortalwrt_pkg="package/emortal/autocore"
-  sparse_checkout $immortalwrt_dir "https://github.com/immortalwrt/immortalwrt" "$immortalwrt_pkg"
-  cp -rv $immortalwrt_dir/package/emortal/autocore package/
+  # immortalwrt_dir=feeds/immortalwrt/immortalwrt
+  # immortalwrt_pkg="package/emortal/autocore"
+  # sparse_checkout $immortalwrt_dir "https://github.com/immortalwrt/immortalwrt" "$immortalwrt_pkg"
+  # cp -rv $immortalwrt_dir/package/emortal/autocore package/
 
   find -name 'Makefile' -type f -exec sed -i "s|include ../../luci.mk|include $\(TOPDIR\)/feeds/luci/luci.mk|g" {} \;
 
