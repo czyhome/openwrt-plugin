@@ -110,7 +110,6 @@ jobs:
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           mkdir -p logs
-          rm -rfv bin/targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}}/
           (make -j8 || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.device }}.log
 
       - name: Artifact Device
