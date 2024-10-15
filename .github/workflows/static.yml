@@ -3,7 +3,7 @@ name: Deploy static content to Pages
 on:
   push:
     paths:
-      - static
+      - 'static/**'
   workflow_dispatch:
 
 jobs:
