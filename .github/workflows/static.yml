@@ -1,0 +1,32 @@
+name: Deploy static content to Pages
+
+on:
+  push:
+    paths:
+      - www
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout firmware-selector-openwrt-org
+        uses: actions/checkout@v4
+        with: 
+          repository: openwrt/firmware-selector-openwrt-org
+
+      - name: Setup config.json
+        run: |
+          sed -i "s;%GIT_VERSION%;$(git describe --tags);" www/index.js
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: static
+          path: www
+
+      - name: Deploy to local
+        run: cp -r www/* /data/firmware/
