@@ -17,18 +17,18 @@ jobs:
         uses: actions/checkout@v4
         with: 
           repository: openwrt/firmware-selector-openwrt-org
-          path: firmware-selector-openwrt-org
+          path: feeds/firmware-selector-openwrt-org
       
       - name: Setup config.json
         run: |
-          cp -rv static/firmware/* firmware-selector-openwrt-org/www/
-          sed -i "s;%GIT_VERSION%;$(git describe --tags);" firmware-selector-openwrt-org/www/index.js
+          cp -rv static/firmware/* feeds/firmware-selector-openwrt-org/www/
+          sed -i "s;%GIT_VERSION%;$(git describe --tags);" feeds/firmware-selector-openwrt-org/www/index.js
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: static
-          path: firmware-selector-openwrt-org/www/index.js
+          path: feeds/firmware-selector-openwrt-org/www/
 
       - name: Deploy to local
-        run: cp -rv firmware-selector-openwrt-org/www/* /data/firmware/
+        run: cp -rv feeds/firmware-selector-openwrt-org/www/* /data/firmware/
