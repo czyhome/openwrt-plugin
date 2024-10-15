@@ -125,6 +125,7 @@ jobs:
       - name: Artifact Download
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
-          artifact_dir=/data/download/${{ inputs.openwrt_master && snapshots || releases/steps.init.outputs.openwrt_tag_number }}
-          mkdir -p $artifact_dir
+          artifact_dir=/data/download/
+          artifact_dst=$([ "${{ inputs.openwrt_master }}" == "true" ] && echo $artifact_dir/snapshots || echo $artifact_dir/releases/${{ steps.init.outputs.openwrt_tag_number }})
+          mkdir -p $artifact_dst
           (cd bin;cp --parents -rf targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}} $artifact_dst)
