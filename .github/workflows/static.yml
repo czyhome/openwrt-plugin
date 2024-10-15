@@ -31,4 +31,4 @@ jobs:
           path: firmware-selector-openwrt-org/www/index.js
 
       - name: Deploy to local
-        run: cp -r firmware-selector-openwrt-org/www//* /data/firmware/
+        run: cp -rv firmware-selector-openwrt-org/www/* /data/firmware/
