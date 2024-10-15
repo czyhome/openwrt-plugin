@@ -31,6 +31,7 @@ jobs:
           openwrt_dir=/data/openwrt
           openwrt_tag=${{ inputs.openwrt_tag }}
           openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
+          openwrt_tag_number=$(echo $openwrt_tag | sed -e 's|^v\(.*\)|\1|')
           openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')
           openwrt_master=${{ inputs.openwrt_master }}
 
@@ -41,6 +42,7 @@ jobs:
 
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_tag_number=${openwrt_tag_number}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
 
           subtarget=$(echo '${{ inputs.device }}' | cut -d"-" -f1)
@@ -106,12 +108,11 @@ jobs:
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           mkdir -p logs
+          rm -rfv bin/targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}})/
           (make -j8 || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.device }}.log
 
-      - name: Artifact
+      - name: Artifact Device
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
-        env:
-          MC_HOST_TARGET: http://${{ secrets.MINIO_ACCESS_KEY }}:${{ secrets.MINIO_SECRET_KEY }}@${{ secrets.MINIO_ENDPOINT }}
         run: |
           artifact_dir=bin/artifact
           mkdir -p $artifact_dir
@@ -119,7 +120,11 @@ jobs:
           for d in $openwrt_devices;do
             rm -rfv $artifact_dir/openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}*$d*
             find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}-*$d*${{ inputs.device_image_type }}*" -not -name "*.manifest" -exec cp -rv {} $artifact_dir \;
-            find bin/targets/${{ inputs.target }} -type f -name "openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}*.manifest" \
-              -exec sh -c "f={};(echo $f | grep \"$d\" -q) && cp -rv $f $artifact_dir/ || cp -rv {} $artifact_dir/openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}-$d.manifest"  \;
-            mc cp --json $artifact_dir/openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}*$d* TARGET/${{ secrets.MINIO_BUCKET }}/${{ inputs.openwrt_master && steps.init.outputs.openwrt_branch || steps.init.outputs.openwrt_tag }}/
           done
+
+      - name: Artifact Download
+        working-directory: ${{ steps.init.outputs.openwrt_dir }}
+        run: |
+          artifact_dir=/data/download/${{ inputs.openwrt_master && snapshots || releases/${{ steps.init.outputs.openwrt_tag_number}} }}
+          mkdir -p $artifact_dir
+          (cd bin;cp --parents -rf targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}} $artifact_dst)
