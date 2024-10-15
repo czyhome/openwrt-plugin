@@ -8,7 +8,7 @@ def gen_overview(release_name, release_dir):
         "release": release_name,
         "profiles": []
     }
-    version_overview_file = release_dir.joinpath("overview.json")
+    version_overview_file = release_dir.joinpath(".overview.json")
     for p in t.rglob("profiles.json"):
         profile_obj = json.loads(p.read_text())
         profile_obj_profiles: dict[str, dict] = profile_obj["profiles"]
