@@ -3,7 +3,7 @@ name: Deploy static content to Pages
 on:
   push:
     paths:
-      - www
+      - static
   workflow_dispatch:
 
 jobs:
@@ -17,16 +17,18 @@ jobs:
         uses: actions/checkout@v4
         with: 
           repository: openwrt/firmware-selector-openwrt-org
-
+          path: firmware-selector-openwrt-org
+      
       - name: Setup config.json
         run: |
-          sed -i "s;%GIT_VERSION%;$(git describe --tags);" www/index.js
+          cp -rv static/firmware/* firmware-selector-openwrt-org/www/
+          sed -i "s;%GIT_VERSION%;$(git describe --tags);" firmware-selector-openwrt-org/www/index.js
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: static
-          path: www
+          path: firmware-selector-openwrt-org/www/index.js
 
       - name: Deploy to local
-        run: cp -r www/* /data/firmware/
+        run: cp -r firmware-selector-openwrt-org/www//* /data/firmware/
