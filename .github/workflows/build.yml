@@ -108,7 +108,7 @@ jobs:
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           mkdir -p logs
-          rm -rfv bin/targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}})/
+          rm -rfv bin/targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}}/
           (make -j8 || make -j1 V=s) | tee logs/${{ inputs.target }}-${{ inputs.device }}.log
 
       - name: Artifact Device
@@ -126,6 +126,11 @@ jobs:
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
           artifact_dir=/data/download/
-          artifact_dst=$([ "${{ inputs.openwrt_master }}" == "true" ] && echo $artifact_dir/snapshots || echo $artifact_dir/releases/${{ steps.init.outputs.openwrt_tag_number }})
+          artifact_snapshot_dir=$artifact_dir/snapshots
+          artifact_release_dir=$artifact_dir/releases/${{ steps.init.outputs.openwrt_tag_number }}
+          artifact_dst=$artifact_snapshot_dir
+          if [ "${{ inputs.openwrt_master }}" == "true" ];then
+            artifact_dst=$artifact_release_dir
+          fi
           mkdir -p $artifact_dst
           (cd bin;cp --parents -rf targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}} $artifact_dst)
