@@ -796,7 +796,7 @@ function insertSnapshotVersions(versions) {
 
 async function init() {
   url_params = new URLSearchParams(window.location.search);
-
+  
   $("#all-downloads a").href = config.image_url;
   $("#ofs-version").innerText = ofs_version;
 
