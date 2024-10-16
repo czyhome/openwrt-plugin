@@ -94,8 +94,8 @@ jobs:
             cp -rv feeds/plugin/config/${{ inputs.target }}/${{ inputs.device }} .config
           fi
 
-          echo "CONFIG_IB=y" >> .config
-          echo "CONFIG_SDK=y" >> .config
+          echo -e "CONFIG_IB=y" >> .config
+          echo -e "CONFIG_SDK=y" >> .config
 
           openwrt_devices=$(sed -n 's|.*${{ steps.init.outputs.subtarget }}_DEVICE_\(.*\)=y|\1|p' .config | xargs)
           echo ${openwrt_devices}
