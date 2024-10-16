@@ -139,4 +139,4 @@ jobs:
           fi
           mkdir -p $artifact_dst
           (cd bin;cp --parents -r targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}} $artifact_dst)
-          python3 -B ${{ github.workspace }}/.github/workflows/scripts/gen_version.py --download-dir $artifact_dir ${{ inputs.openwrt_master && '--openwrt-master' || '' }}
+          python3 -B ${{ github.workspace }}/.github/workflows/scripts/gen_version.py --download-dir $artifact_dir
