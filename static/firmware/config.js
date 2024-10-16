@@ -5,7 +5,7 @@ var config = {
   show_help: true,
 
   // Image download URL (e.g. "https://downloads.openwrt.org")
-  image_url: "https://openwrt-download.czy21-internal.com",
+  image_url: "download",
 
   // Insert snapshot versions (optional)
   show_snapshots: true,
