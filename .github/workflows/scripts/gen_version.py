@@ -8,7 +8,7 @@ def gen_overview(release_name, release_dir):
         "release": release_name,
         "profiles": []
     }
-    version_overview_file = release_dir.joinpath("overview.json")
+    version_overview_file = release_dir.joinpath(".overview.json")
     for p in t.rglob("profiles.json"):
         profile_obj = json.loads(p.read_text())
         profile_obj_profiles: dict[str, dict] = profile_obj["profiles"]
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     else:
         version_list = []
         for t in sorted(filter(lambda f: f.is_dir(), download_releases_dir.glob("[0-9]*")), reverse=True, key=lambda x: x.name):
-            gen_overview(t.name, download_releases_dir)
+            gen_overview(t.name, t)
             version_list.append(t.name)
         stable_version = version_list[0]
 
