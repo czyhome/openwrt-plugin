@@ -24,7 +24,6 @@ def gen_overview(release_name, release_dir):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--openwrt-master', action="store_true")
     parser.add_argument('--download-dir', required=True, type=str, help='Path to the download directory')
     args: argparse.Namespace = parser.parse_args()
 
@@ -35,17 +34,17 @@ if __name__ == '__main__':
     download_releases_dir = download_dir.joinpath("releases")
     download_snapshots_dir = download_dir.joinpath("snapshots")
 
-    if args.openwrt_master:
-        gen_overview("SNAPSHOT", download_snapshots_dir)
-    else:
-        version_list = []
-        for t in sorted(filter(lambda f: f.is_dir(), download_releases_dir.glob("[0-9]*")), reverse=True, key=lambda x: x.name):
-            gen_overview(t.name, t)
-            version_list.append(t.name)
-        stable_version = version_list[0]
+    version_list = []
+    for t in sorted(filter(lambda f: f.is_dir(), download_releases_dir.glob("[0-9]*")), reverse=True, key=lambda x: x.name):
+        gen_overview(t.name, t)
+        version_list.append(t.name)
+    stable_version = version_list[0]
 
-        download_versions_obj = {
-            'stable_version': stable_version,
-            'versions_list': version_list
-        }
-        download_versions_file.write_text(json.dumps(download_versions_obj))
+    download_versions_obj = {
+        'stable_version': stable_version,
+        'versions_list': version_list
+    }
+    download_versions_file.write_text(json.dumps(download_versions_obj))
+
+    # snapshot
+    gen_overview("SNAPSHOT", download_snapshots_dir)
