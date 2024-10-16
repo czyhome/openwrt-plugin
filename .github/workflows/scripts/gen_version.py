@@ -9,7 +9,7 @@ def gen_overview(release_name, release_dir):
         "profiles": []
     }
     version_overview_file = release_dir.joinpath(".overview.json")
-    for p in t.rglob("profiles.json"):
+    for p in release_dir.rglob("profiles.json"):
         profile_obj = json.loads(p.read_text())
         profile_obj_profiles: dict[str, dict] = profile_obj["profiles"]
         for pk, pv in profile_obj_profiles.items():
