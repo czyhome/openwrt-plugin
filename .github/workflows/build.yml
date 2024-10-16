@@ -79,10 +79,7 @@ jobs:
       - name: Update
         working-directory: ${{ steps.init.outputs.openwrt_dir }}
         run: |
-          reset_feeds=(feeds/packages)
-          for t in ${reset_feeds[@]};do
-            [ -d "$t/.git" ] && (cd $t && git reset --hard && git clean -xdf)
-          done
+          [ -d "feeds" ] && find feeds -maxdepth 2 -name ".git" -exec sh -c 't=$(realpath {}/../);cd $t;pwd;git reset --hard;git clean -xdf' \;
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install ${{ inputs.openwrt_master && '--openwrt-master' || '' }}
 
       - name: Config
@@ -138,5 +135,10 @@ jobs:
             artifact_finally_dir=$artifact_snapshot_dir
           fi
           mkdir -p $artifact_finally_dir
-          (cd bin;cp --parents -r targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget}} $artifact_finally_dir)
+          bin_dir=targets/${{ inputs.target }}/${{ steps.init.outputs.subtarget }}
+          (
+           cd bin
+           find $bin_dir -maxdepth 1 -name "openwrt-${{ inputs.target }}-${{ steps.init.outputs.subtarget }}-*" -exec cp --parents -r {} $artifact_finally_dir \;
+           find $bin_dir -maxdepth 1 -not -path $bin_dir -not -name "openwrt-*" -exec cp --parents -r {}  $artifact_finally_dir \;
+          )
           python3 -B ${{ github.workspace }}/.github/workflows/scripts/gen_version.py --artifact-dir $artifact_dir
