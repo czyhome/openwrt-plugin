@@ -18,7 +18,6 @@ jobs:
         with: 
           repository: openwrt/firmware-selector-openwrt-org
           path: feeds/firmware-selector-openwrt-org
-          ref: "refs/tags/"
       
       - name: Setup config.json
         run: |
