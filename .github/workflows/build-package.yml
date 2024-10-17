@@ -55,29 +55,30 @@ jobs:
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
-          mkdir -p logs
-
-          PACKAGES=$(cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec basename {} \; | xargs)
-          PACKAGES+=$(cd feeds/plugin/;find luci -maxdepth 1 -not -path luci -not -name '*bundle*' -exec basename {} \; | xargs)
+          PACKAGES=
+          PACKAGES+=$(echo;cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec basename {} \; | xargs)
+          PACKAGES+=$(echo;cd feeds/plugin/;find luci -maxdepth 1 -not -path luci -not -name '*bundle*' -exec basename {} \; | xargs)
           PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
 
           echo "Custom packages: $PACKAGES"
           
           for PKG in $PACKAGES;do
-            make BUILD_LOG=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" \
-            "package/$PKG/compile" || {
-              RET=$?
-              break
-            }
+            make BUILD_LOG=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" "package/$PKG/compile"
           done
 
-      - name: Upload artifact
+          artifact_dir=/builder/bin/artifact
+          mkdir -p $artifact_dir
+          for PKG in $PACKAGES;do
+            (cd bin;find -name "$t*.ipk" -exec cp --parents -rv {} $artifact_dir \;)
+          done
+
+      - name: Store packages
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.target }}-${{ inputs.subtarget }}-packages
-          path: "/builder/bin/packages/"
+          path: "/builder/bin/artifact/"
 
-      - name: Upload logs
+      - name: Store logs
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.target }}-${{ inputs.subtarget }}-logs
