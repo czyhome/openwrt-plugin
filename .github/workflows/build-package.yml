@@ -12,6 +12,8 @@ on:
       openwrt_branch:
         type: string
 
+
+jobs:
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: ubuntu-latest
