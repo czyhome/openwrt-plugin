@@ -63,6 +63,24 @@ jobs:
 
           echo "Custom packages: $PACKAGES"
           
-          for t in $PACKAGES;do
-            (make -j8 package/$t/compile || make -j1 package/$t/compile V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
+          for PKG in $PACKAGES;do
+            make BUILD_LOG=1 CONFIG_AUTOREMOVE=y V=s -j "$(nproc)" \
+            "package/$PKG/compile" || {
+              RET=$?
+              break
+            }
           done
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        working-directory: /builder
+        with:
+          name: ${{ inputs.target }}-${{ inputs.subtarget }}-packages
+          path: "bin/packages/"
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        working-directory: /builder
+        with:
+          name: ${{ inputs.target }}-${{ inputs.subtarget }}-logs
+          path: "logs/"
