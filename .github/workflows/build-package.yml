@@ -35,10 +35,10 @@ jobs:
           " >> feeds.conf.default
 
       - name: Update
-        working-directory: ${{ needs.init.outputs.openwrt_dir }}
+        working-directory: /builder
         run: |
           [ -d "feeds" ] && find feeds -maxdepth 2 -name ".git" -exec sh -c 't=$(realpath {}/../);cd $t;pwd;git reset --hard;git clean -xdf' \;
-          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install ${{ inputs.openwrt_master && '--openwrt-master' || '' }}
+          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install ${{ inputs.openwrt_branch == 'master' && '--openwrt-master' || '' }}
 
       - name: Config
         working-directory: /builder
