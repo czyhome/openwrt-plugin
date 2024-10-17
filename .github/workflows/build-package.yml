@@ -18,7 +18,7 @@ jobs:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: ubuntu-latest
     container:
-      image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}:${{ inputs.openwrt_branch }}
+      image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
     steps:
       - name: Checkout openwrt
         working-directory: /builder
