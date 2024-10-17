@@ -73,14 +73,12 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
-        working-directory: /builder
         with:
           name: ${{ inputs.target }}-${{ inputs.subtarget }}-packages
-          path: "bin/packages/"
+          path: "/builder/bin/packages/"
 
       - name: Upload logs
         uses: actions/upload-artifact@v4
-        working-directory: /builder
         with:
           name: ${{ inputs.target }}-${{ inputs.subtarget }}-logs
-          path: "logs/"
+          path: "/builder/logs/"
