@@ -16,7 +16,6 @@ jobs:
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: ubuntu-latest
-    needs: [init]
     container:
       image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
     steps:
@@ -24,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with: 
           path: /tmp/${{ github.repository }}
-          
+
       - name: Set env
         id: set_env
         working-directory: /tmp/${{ github.repository }}
