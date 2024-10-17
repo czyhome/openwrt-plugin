@@ -62,5 +62,5 @@ jobs:
           echo "Custom packages: $PACKAGES"
           
           for t in $PACKAGES;do
-            (make -j8 package/$t/compile || make -j1 package/$t/compile V=s) | tee logs/${{ inputs.target }}-${{ inputs.device }}.log
+            (make -j8 package/$t/compile || make -j1 package/$t/compile V=s) | tee logs/${{ inputs.target }}-${{ inputs.subtarget }}.log
           done
