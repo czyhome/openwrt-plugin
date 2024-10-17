@@ -1,0 +1,64 @@
+name: Build packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        required: true
+        type: string
+      subtarget:
+        required: true
+        type: string
+      openwrt_tag:
+        type: string
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.get_devices.outputs.targets }}
+      targets_subtargets: ${{ steps.get_devices.outputs.targets_subtargets }}
+      targets_devices: ${{ steps.get_devices.outputs.targets_devices }}
+      openwrt_dir: ${{ steps.set_env.outputs.openwrt_dir }}
+      openwrt_tag: ${{ steps.set_env.outputs.openwrt_tag }}
+      openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set env
+        id: set_env
+        run: |
+          openwrt_dir=/data/openwrt
+          openwrt_tag=${{ inputs.openwrt_tag }}
+          openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
+          openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')
+
+          echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+          
+          PACKAGES=$(find package -maxdepth 1 -not -path package -exec basename {} \; | xargs)
+          PACKAGES+=$(find luci -maxdepth 1 -not -path luci -not -name '*bundle*' -exec basename {} \; | xargs)
+          
+          PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
+
+          echo "Custom packages: $PACKAGES"
+          echo "custom_packages=$PACKAGES" >> "$GITHUB_OUTPUT"
+
+      - name: Get devices
+        id: get_devices
+        run: python3 -B ./.github/workflows/scripts/get_devices.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
+  
+  build:
+    name: Build
+    needs: setup
+    uses: ./.github/workflows/build-package.yml
+    strategy:
+       fail-fast: false
+       matrix:
+         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+    with:
+      target: ${{ matrix.target }}
+      subtarget: ${{ matrix.subtarget }}
+      openwrt_branch: ${{ needs.setup.outputs.openwrt_branch }}

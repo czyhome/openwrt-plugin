@@ -1,0 +1,51 @@
+name: Build package
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
+      subtarget:
+        required: true
+        type: string
+      openwrt_branch:
+        type: string
+
+  build:
+    name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
+    runs-on: ubuntu-latest
+    container:
+      image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}:${{ inputs.openwrt_branch }}
+    steps:
+      - name: Checkout openwrt
+        working-directory: /builder
+        run: |
+          id;pwd;ls -al
+          git_repo=https://github.com
+
+          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" feeds.conf.default
+          
+          echo "
+          src-git helloworld https://github.com/fw876/helloworld;main
+          src-git openclash  https://github.com/vernesong/OpenClash.git;master
+          src-git plugin https://github.com/czy21/openwrt-plugin.git
+          " >> feeds.conf.default
+
+      - name: Update
+        working-directory: ${{ needs.init.outputs.openwrt_dir }}
+        run: |
+          [ -d "feeds" ] && find feeds -maxdepth 2 -name ".git" -exec sh -c 't=$(realpath {}/../);cd $t;pwd;git reset --hard;git clean -xdf' \;
+          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install ${{ inputs.openwrt_master && '--openwrt-master' || '' }}
+
+      - name: Config
+        working-directory: /builder
+        run: make defconfig
+          
+      # - name: Compile
+      #   working-directory: /builder
+      #   run: |
+      #     mkdir -p logs
+      #     for t in ${{ needs.init.outputs.custom_packages }};do
+      #       (make -j8 package/$t/compile || make -j1 package/$t/compile V=s) | tee logs/${{ inputs.target }}-${{ inputs.device }}.log
+      #     done

@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stable_device: [64]
+        stable_device: ['64']
     with:
       target: x86
       device: ${{ matrix.stable_device }}
