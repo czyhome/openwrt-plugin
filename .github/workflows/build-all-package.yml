@@ -3,12 +3,6 @@ name: Build all packages
 on:
   workflow_dispatch:
     inputs:
-      target:
-        required: true
-        type: string
-      subtarget:
-        required: true
-        type: string
       openwrt_tag:
         type: string
 
