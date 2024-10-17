@@ -12,6 +12,10 @@ on:
       openwrt_branch:
         type: string
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
