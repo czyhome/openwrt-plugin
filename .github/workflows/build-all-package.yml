@@ -31,14 +31,6 @@ jobs:
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
-          
-          PACKAGES=$(find package -maxdepth 1 -not -path package -exec basename {} \; | xargs)
-          PACKAGES+=$(find luci -maxdepth 1 -not -path luci -not -name '*bundle*' -exec basename {} \; | xargs)
-          
-          PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
-
-          echo "Custom packages: $PACKAGES"
-          echo "custom_packages=$PACKAGES" >> "$GITHUB_OUTPUT"
 
       - name: Get devices
         id: get_devices
