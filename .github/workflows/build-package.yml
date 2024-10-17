@@ -38,6 +38,7 @@ jobs:
           src-git openclash  https://github.com/vernesong/OpenClash.git;master
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
+          cat feeds.conf.default
 
       - name: Update
         shell: su buildbot -c "bash {0}"
