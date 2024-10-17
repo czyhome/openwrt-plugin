@@ -55,6 +55,8 @@ jobs:
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
+          mkdir -p logs
+
           PACKAGES=$(cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec basename {} \; | xargs)
           PACKAGES+=$(cd feeds/plugin/;find luci -maxdepth 1 -not -path luci -not -name '*bundle*' -exec basename {} \; | xargs)
           PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
