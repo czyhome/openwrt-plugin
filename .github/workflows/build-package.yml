@@ -22,10 +22,13 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
+      options: --user root
     steps:
       - name: Set feed.conf
         working-directory: /builder
         run: |
+          id;pwd;ls -al
+          su buildbot
           id;pwd;ls -al
           ls -al /tmp
           git_repo=https://github.com
@@ -41,16 +44,20 @@ jobs:
       - name: Update
         working-directory: /builder
         run: |
+          su buildbot
           [ -d "feeds" ] && find feeds -maxdepth 2 -name ".git" -exec sh -c 't=$(realpath {}/../);cd $t;pwd;git reset --hard;git clean -xdf' \;
           ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install ${{ inputs.openwrt_branch == 'master' && '--openwrt-master' || '' }}
 
       - name: Config
         working-directory: /builder
-        run: make defconfig
+        run: 
+          su buildbot
+          make defconfig
           
       - name: Compile
         working-directory: /builder
         run: |
+          su buildbot
           PACKAGES=$(cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec basename {} \; | xargs)
           PACKAGES+=$(cd feeds/plugin/;find luci -maxdepth 1 -not -path luci -not -name '*bundle*' -exec basename {} \; | xargs)
           PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
@@ -58,6 +65,5 @@ jobs:
           echo "Custom packages: $PACKAGES"
           
           for t in $PACKAGES;do
-            echo $t
-            # (make -j8 package/$t/compile || make -j1 package/$t/compile V=s) | tee logs/${{ inputs.target }}-${{ inputs.device }}.log
+            (make -j8 package/$t/compile || make -j1 package/$t/compile V=s) | tee logs/${{ inputs.target }}-${{ inputs.device }}.log
           done
