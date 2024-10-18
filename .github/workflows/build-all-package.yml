@@ -5,8 +5,7 @@ on:
     inputs:
       openwrt_tag:
         type: string
-      openwrt_master:
-        type: boolean
+
 jobs:
   setup:
     name: Setup
@@ -54,27 +53,19 @@ jobs:
     name: Deploy
     runs-on: self-hosted
     needs: [setup,build]
-    strategy:
-       fail-fast: false
-       matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
     steps:
-      - name: Create folder
-        id: create_artifact_dir
+      - name: Sync upstream packages
+        id: sync_upstream
+        working-directory: /volume2/storage/docker-data/ubuntu-openwrt/data/download
         run: |
-          artifact_dir=/data/download
-          artifact_snapshot_dir=$artifact_dir/snapshots
-          artifact_version_dir=$artifact_dir/releases/packages-$(echo '${{ needs.setup.outputs.openwrt_branch }}' | sed 's|openwrt-||')
-          artifact_finally_dir=$artifact_version_dir
-          if [ "${{ inputs.openwrt_master }}" == "true" ];then
-            artifact_finally_dir=$artifact_snapshot_dir
-          fi
-          mkdir -p $artifact_finally_dir
-          
-          echo "artifact_dir=${artifact_dir}" >> "$GITHUB_OUTPUT"
+          artifact_version_dir=releases/packages-$(echo '${{ needs.setup.outputs.openwrt_branch }}' | sed 's|openwrt-||')
+          echo $artifact_version_dir
+          rsync -aR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$artifact_version_dir .
+          echo "artifact_dir=$(pwd)/${artifact_dir}" >> "$GITHUB_OUTPUT"
 
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ matrix.target }}-${{ matrix.subtarget }}-packages
-          path: ${{ steps.outputs.create_artifact_dir }}
+          path: ${{ steps.outputs.sync_upstream.artifact_dir }}
+          pattern: '*-packages'
+          merge-multiple: true
