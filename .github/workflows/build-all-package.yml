@@ -16,7 +16,9 @@ jobs:
       targets_devices: ${{ steps.get_devices.outputs.targets_devices }}
       openwrt_dir: ${{ steps.set_env.outputs.openwrt_dir }}
       openwrt_tag: ${{ steps.set_env.outputs.openwrt_tag }}
+      openwrt_tag_version: ${{ steps.set_env.outputs.openwrt_tag_version }}
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
+      openwrt_branch_version: ${{ steps.set_env.outputs.openwrt_branch_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,11 +28,14 @@ jobs:
           openwrt_dir=/data/openwrt
           openwrt_tag=${{ inputs.openwrt_tag }}
           openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
+          openwrt_tag_version=$(echo $openwrt_tag | sed 's|^v||')
           openwrt_branch=$(echo ${openwrt_tag} | sed 's/^v\([0-9][0-9]\.[0-9][0-9]\)\..\+/openwrt-\1/')
+          openwrt_branch_version=$(echo $openwrt_branch | sed 's|openwrt-||')
 
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
       - name: Get devices
         id: get_devices
@@ -58,9 +63,14 @@ jobs:
         id: sync_upstream
         working-directory: /volume2/storage/docker-data/ubuntu-openwrt/data/download
         run: |
-          artifact_dir=releases/$(echo '${{ needs.setup.outputs.openwrt_branch }}' | sed 's|openwrt-|packages-|')
-          echo $artifact_dir
+          artifact_dir=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
+          
           rsync -aR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$artifact_dir .
+
+          for t in $(ls releases | grep '^${{ needs.setup.outputs.openwrt_branch_version }}');do
+            (cd releases/$t;ln -snf ../$(basename $artifact_dir) packages)
+          done
+
           echo "artifact_dir=$(pwd)/${artifact_dir}" >> "$GITHUB_OUTPUT"
 
       - name: Download artifact
