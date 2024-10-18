@@ -59,7 +59,7 @@ jobs:
           OFFICIAL_PACKAGES=$(echo;cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec sh -c 'd={};[ ! -f "$d/Makefile" ] && basename $d' \;| xargs)
           PACKAGES=
           PACKAGES+=$OFFICIAL_PACKAGES
-          CUSTOM_FEEDS="openclash plugin"
+          CUSTOM_FEEDS="helloworld openclash plugin"
           
           for t in $CUSTOM_FEEDS;do
             PACKAGES+=$(echo;./scripts/feeds list -r $t | sed '/i18n/d' | awk '{print $1}' | xargs)
