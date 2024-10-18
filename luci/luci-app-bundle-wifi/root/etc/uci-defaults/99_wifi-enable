@@ -1,6 +1,0 @@
-#!/bin/sh
-
-uci -q batch <<-EOF
-    set wireless.radio0.disabled=0
-    commit wireless
-EOF
