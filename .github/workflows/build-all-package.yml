@@ -58,9 +58,9 @@ jobs:
         id: sync_upstream
         working-directory: /volume2/storage/docker-data/ubuntu-openwrt/data/download
         run: |
-          artifact_version_dir=releases/packages-$(echo '${{ needs.setup.outputs.openwrt_branch }}' | sed 's|openwrt-||')
-          echo $artifact_version_dir
-          rsync -aR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$artifact_version_dir .
+          artifact_dir=releases/$(echo '${{ needs.setup.outputs.openwrt_branch }}' | sed 's|openwrt-|packages-|')
+          echo $artifact_dir
+          rsync -aR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$artifact_dir .
           echo "artifact_dir=$(pwd)/${artifact_dir}" >> "$GITHUB_OUTPUT"
 
       - name: Download artifact
