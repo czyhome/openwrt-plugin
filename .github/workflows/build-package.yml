@@ -57,8 +57,18 @@ jobs:
         working-directory: /builder
         run: |
           PACKAGES=
-          PACKAGES+=$(echo;cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec basename {} \; | xargs)
-          PACKAGES+=$(echo;cd feeds/plugin/;find luci -maxdepth 1 -not -path luci -not -name '*bundle*' -exec basename {} \; | xargs)
+
+          extra_feeds="helloworld openclash plugin"
+          
+          for f in $extra_feeds;do
+            PACKAGES+=$(echo;./scripts/feeds list -r $f | awk '{print $1}' | xargs)
+          done
+
+          plugin_package_dirs="package luci"
+          for f in $plugin_package_dirs;do
+            PACKAGES+=$(echo;cd feeds/plugin/;find $f -maxdepth 1 -not -path $f -exec sh -c 'd={};[ ! -f "$d/Makefile" ] && basename $d' \;| xargs)
+          done
+          
           PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
 
           echo "Custom packages: $PACKAGES"
