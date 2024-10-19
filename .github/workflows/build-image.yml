@@ -25,15 +25,21 @@ defaults:
     shell: bash
 
 jobs:
+  init:
+    runs-on: self-hosted
+    steps:
+      - run: docker volume rm ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }} | true
+
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
+    needs: [init]
     container:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       volumes:
         - ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}:/builder
         - ${{ inputs.artifact_dir }}/arch-targets/:/builder/bin/targets/
-      options: --user root --privileged --pull always --rm
+      options: --user root --privileged --pull always
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,15 +53,15 @@ jobs:
         working-directory: /builder
         run: |
           id;pwd;ls -al
-          sleep 10m
           sed -i -e "s|https://downloads.openwrt.org|http://openwrt-firmware.czy21-internal.com/download|" -e "s|releases.*-SNAPSHOT|releases/${{ inputs.openwrt_tag_version }}|" repositories.conf
           cat repositories.conf
 
       - name: Generate
         shell: su buildbot -c "bash {0}"
         run: python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ inputs.target }}/${{ inputs.subtarget }}
+
   clean:
     runs-on: self-hosted
-    needs: [build]
+    needs: [init,build]
     steps:
-      - run: docker volume rm ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
+      - run: docker volume rm ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }} | true
