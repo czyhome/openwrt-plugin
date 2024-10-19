@@ -11,6 +11,8 @@ on:
         type: string
       openwrt_tag:
         type: string
+      openwrt_tag_version:
+        type: string
       artifact_dir: 
         required: false
         type: string
@@ -24,6 +26,11 @@ jobs:
   init:
     runs-on: self-hosted
     steps:
+      - name: Sync upstream
+        working-directory: ${{ inputs.artifact_dir }}
+        run: |
+          targets_dir=releases/${{ input.openwrt_tag_version }}/targets/${{ inputs.target }}/${{ inputs.subtarget }}
+          rsync -avR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$targets_dir .
       - name: Clean
         run: |
           volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}' || true | xargs )
