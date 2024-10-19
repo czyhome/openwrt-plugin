@@ -35,7 +35,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Init
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
@@ -46,6 +45,6 @@ jobs:
 
       - name: Generate
         shell: su buildbot -c "bash {0}"
-        working-directory: /builder
         run: |
-          ls -al
+          python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ inputs.target }}/${{ inputs.subtarget }}
+          pwd

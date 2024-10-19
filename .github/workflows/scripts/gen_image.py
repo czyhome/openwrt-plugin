@@ -5,6 +5,7 @@ import pathlib
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--openwrt-dir', required=True, help="openwrt workspace")
     parser.add_argument('--config', required=True, help='config directory')
     parser.add_argument('--target', required=True, help='target directory')
     args: argparse.Namespace = parser.parse_args()
@@ -19,6 +20,7 @@ if __name__ == '__main__':
     profiles = profiles_obj['profiles']
     for pk, pv in profiles.items():
         cmd_array = [
+            f"cd {args.openwrt_dir}",
             "make",
             f"PROFILE=\"{pk}\""
         ]
