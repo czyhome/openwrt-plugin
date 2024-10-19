@@ -29,7 +29,7 @@ jobs:
       - name: Sync upstream
         working-directory: ${{ inputs.artifact_dir }}
         run: |
-          targets_dir=releases/${{ input.openwrt_tag_version }}/targets/${{ inputs.target }}/${{ inputs.subtarget }}
+          targets_dir=releases/${{ inputs.openwrt_tag_version }}/targets/${{ inputs.target }}/${{ inputs.subtarget }}
           rsync -avR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$targets_dir .
       - name: Clean
         run: |
