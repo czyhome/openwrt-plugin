@@ -33,6 +33,7 @@ jobs:
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
+          exit 0
 
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -73,3 +74,4 @@ jobs:
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
+          exit 0
