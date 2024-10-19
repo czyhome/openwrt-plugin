@@ -1,0 +1,22 @@
+{
+    "arch_packages": "aarch64_generic",
+    "profiles": {
+        "friendlyarm_nanopi-r2s": {
+            "image_builder_config": [
+                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024"
+            ],
+            "install_packages": [
+                "-dnsmasq"
+            ]
+        },
+        "friendlyarm_nanopi-r4s": {
+            "image_builder_config": [
+                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024"
+            ],
+            "install_packages": [
+                "-dnsmasq"
+            ]
+        }
+    },
+    "target": "rockchip/armv8"
+}

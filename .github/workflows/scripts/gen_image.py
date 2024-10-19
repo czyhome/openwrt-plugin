@@ -20,7 +20,7 @@ if __name__ == '__main__':
     profiles = profiles_obj['profiles']
     for pk, pv in profiles.items():
         cmd_array = [
-            f"cd {args.openwrt_dir}",
+            f"cd {args.openwrt_dir};",
             "make",
             f"PROFILE=\"{pk}\""
         ]
@@ -28,4 +28,5 @@ if __name__ == '__main__':
         if packages:
             cmd_array.append(f"PACKAGES=\"{packages}\"")
         cmd = " ".join(cmd_array)
+        print(cmd)
         os.system(cmd)
