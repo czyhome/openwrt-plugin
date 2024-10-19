@@ -65,11 +65,12 @@ jobs:
 
           echo "
           # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_MosDNS is not set
+          # CONFIG_PACKAGE_mosdns is not set
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Server=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client=y
           " >> .config
 
-          make BUILD_LOG=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" defconfig world || true
+          make BUILD_LOG=1 IGNORE_ERRORS=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" defconfig world
 
           artifact_dir=/builder/bin/artifact
           mkdir -p $artifact_dir
