@@ -28,7 +28,10 @@ jobs:
   init:
     runs-on: self-hosted
     steps:
-      - run: docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' | xargs --no-run-if-empty docker volume rm
+      - run: |
+          id
+          docker ps -a
+          docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' | xargs --no-run-if-empty docker volume rm
 
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
