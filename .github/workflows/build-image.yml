@@ -17,7 +17,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: ${{ github.workflow }}-${{ inputs.target }}-${{ inputs.subtarget }}
+  group: ${{ inputs.target }}-${{ inputs.subtarget }}
   cancel-in-progress: true
 
 jobs:
@@ -28,8 +28,9 @@ jobs:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       options: --user root --privileged --pull always --rm
     steps:
-      - name: Set feed.conf
+      - name: Init
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
           id;pwd;ls -al
+          cat repositories.conf

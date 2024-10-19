@@ -24,7 +24,7 @@ jobs:
       image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       options: --user root --privileged --pull always --rm
     steps:
-      - name: Set feed.conf
+      - name: Init
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
