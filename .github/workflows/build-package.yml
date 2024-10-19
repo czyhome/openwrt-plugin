@@ -43,41 +43,34 @@ jobs:
       - name: Update
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
-        run: |
-          [ -d "feeds" ] && find feeds -maxdepth 2 -name ".git" -exec sh -c 't=$(realpath {}/../);cd $t;pwd;git reset --hard;git clean -xdf' \;
-          ./scripts/feeds update -a && ./scripts/feeds install -a && ./feeds/plugin/main.sh install
+        run: ./scripts/feeds update -a
 
-      - name: Config
-        shell: su buildbot -c "bash {0}"
-        working-directory: /builder
-        run: make defconfig
-          
       - name: Compile
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
           OFFICIAL_PACKAGES=$(echo;cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec sh -c 'd={};[ ! -f "$d/Makefile" ] && basename $d' \;| xargs)
-          PACKAGES=
-          PACKAGES+=$OFFICIAL_PACKAGES
+
+          for t in $OFFICIAL_PACKAGES;do
+            ./scripts/feeds install -p packages -f "$t"
+          done
+
           CUSTOM_FEEDS="helloworld openclash plugin"
-          
+
           for t in $CUSTOM_FEEDS;do
-            PACKAGES+=$(echo;./scripts/feeds list -r $t | sed '/i18n/d' | awk '{print $1}' | xargs)
-          done
-          
-          PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
-
-          echo "Build packages: $PACKAGES"
-
-          FAILED_PACKAGES=
-          for t in $PACKAGES;do
-            make BUILD_LOG=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" \
-            "package/$t/compile" || {
-                 FAILED_PACKAGES+=" $t"
-            }
+            ./scripts/feeds install -p "$t" -f -a
           done
 
-          echo "Failed packages: $FAILED_PACKAGES"
+          ./feeds/plugin/main.sh install
+
+          echo "
+          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_MosDNS is not set
+          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Server=y
+          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client=y
+          " >> .config
+
+          make BUILD_LOG=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" defconfig world || true
+
           artifact_dir=/builder/bin/artifact
           mkdir -p $artifact_dir
           
@@ -88,7 +81,7 @@ jobs:
           for t in $CUSTOM_FEEDS;do
             (cd bin/packages;find -maxdepth 2 -type d -name "$t" -exec cp --parents -rv {} $artifact_dir \;)
           done
-
+        
       - name: Store packages
         uses: actions/upload-artifact@v4
         with:
