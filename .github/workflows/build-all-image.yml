@@ -1,4 +1,4 @@
-name: Build all packages
+name: Build all images
 
 on:
   workflow_dispatch:
@@ -44,7 +44,7 @@ jobs:
   build:
     name: Build
     needs: setup
-    uses: ./.github/workflows/build-package.yml
+    uses: ./.github/workflows/build-image.yml
     strategy:
        fail-fast: false
        matrix:
@@ -53,29 +53,3 @@ jobs:
       target: ${{ matrix.target }}
       subtarget: ${{ matrix.subtarget }}
       openwrt_branch: ${{ needs.setup.outputs.openwrt_branch }}
-
-  deploy:
-    name: Deploy
-    runs-on: self-hosted
-    needs: [setup,build]
-    env: 
-      artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          path: ${{ env.artifact_dir }}/arch-packages/
-          pattern: '*-packages'
-          merge-multiple: true
-
-      - name: Sync upstream
-        id: sync_upstream
-        working-directory: ${{ env.artifact_dir }}
-        run: |
-          packages_dir=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
-
-          find arch-packages -maxdepth 1 -type d -not -path arch-packages -exec basename {} \; > arch-packages-upstream.txt
-          
-          rsync -aR --include-from=arch-packages-upstream.txt --exclude=$packages_dir/* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_dir .
-
-          mv arch-packages/* $packages_dir/

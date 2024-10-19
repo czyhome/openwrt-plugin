@@ -66,6 +66,7 @@ jobs:
           echo "
           # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_MosDNS is not set
           # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Server is not set
+          # CONFIG_PACKAGE_mosdns is not set
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Server=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client=y
           " >> .config
