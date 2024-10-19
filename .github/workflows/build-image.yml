@@ -9,6 +9,8 @@ on:
       subtarget:
         required: true
         type: string
+      openwrt_tag:
+        type: string
       openwrt_branch:
         type: string
       artifact_dir: 
@@ -31,10 +33,19 @@ jobs:
         - ${{ inputs.artifact_dir }}/arch-targets/:/builder/bin/targets/
       options: --user root --privileged --pull always --rm
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Init
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
-          id;pwd;ls -al
-          ls -alR bin
+          id;pwd;ls -al;ls -alR bin
+          sed -i -e 's|https://downloads.openwrt.org|http://openwrt-firmware.czy21-internal.com/download|' -e 's|releases.*-SNAPSHOT|releases/${{ inputs.openwrt_tag }}|' repositories.conf
           cat repositories.conf
+
+      - name: Generate
+        shell: su buildbot -c "bash {0}"
+        working-directory: /builder
+        run: |
+          ls -al
