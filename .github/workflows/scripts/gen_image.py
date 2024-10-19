@@ -15,7 +15,7 @@ if __name__ == '__main__':
     target_profiles_file = target_path.joinpath('profiles.json')
     if not target_profiles_file.exists():
         print(f"{target_profiles_file} not found")
-        exit(1)
+        exit(0)
     profiles_obj = json.load(open(target_profiles_file, 'r'))
     profiles = profiles_obj['profiles']
     for pk, pv in profiles.items():
