@@ -16,13 +16,12 @@ defaults:
   run:
     shell: bash
 
-env: 
-  artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
-
 jobs:
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
+    env: 
+      artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
     container:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       volumes:
