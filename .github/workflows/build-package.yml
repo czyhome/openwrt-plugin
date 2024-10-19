@@ -34,7 +34,6 @@ jobs:
           sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" feeds.conf.default
           
           echo "
-          src-git helloworld https://github.com/fw876/helloworld;main
           src-git openclash  https://github.com/vernesong/OpenClash.git;master
           src-git plugin https://github.com/czy21/openwrt-plugin.git
           " >> feeds.conf.default
@@ -55,21 +54,13 @@ jobs:
             ./scripts/feeds install -p packages -f "$t"
           done
 
-          CUSTOM_FEEDS="helloworld openclash plugin"
+          CUSTOM_FEEDS="openclash plugin"
 
           for t in $CUSTOM_FEEDS;do
             ./scripts/feeds install -p "$t" -f -a
           done
 
           ./feeds/plugin/main.sh install
-
-          echo "
-          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_MosDNS is not set
-          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Libev_Server is not set
-          # CONFIG_PACKAGE_mosdns is not set
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Server=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Rust_Client=y
-          " >> .config
 
           make BUILD_LOG=1 IGNORE_ERRORS=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" defconfig world
 
