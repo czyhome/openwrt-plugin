@@ -16,6 +16,9 @@ defaults:
   run:
     shell: bash
 
+env: 
+  artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
+
 jobs:
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -24,6 +27,7 @@ jobs:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       volumes:
         - ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}:/builder
+        - ${{ env.artifact_dir }}/arch-targets/:builder/bin/targets/
       options: --user root --privileged --pull always --rm
     steps:
       - name: Init
@@ -31,4 +35,5 @@ jobs:
         working-directory: /builder
         run: |
           id;pwd;ls -al
+          ls -alR bin
           cat repositories.conf
