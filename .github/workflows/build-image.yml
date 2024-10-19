@@ -28,7 +28,7 @@ jobs:
   init:
     runs-on: self-hosted
     steps:
-      - run: docker volume rm ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }} | true
+      - run: docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' | xargs --no-run-if-empty docker volume rm
 
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -64,4 +64,4 @@ jobs:
     runs-on: self-hosted
     needs: [init,build]
     steps:
-      - run: docker volume rm ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }} | true
+      - run: docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' | xargs --no-run-if-empty docker volume rm
