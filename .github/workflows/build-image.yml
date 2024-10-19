@@ -29,11 +29,10 @@ jobs:
     runs-on: self-hosted
     steps:
       - run: |
-          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' | xargs )
+          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' || true | xargs )
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
-          exit 0
 
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -70,8 +69,7 @@ jobs:
     needs: [init,build]
     steps:
       - run: |
-          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' | xargs )
+          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' || true | xargs )
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
-          exit 0
