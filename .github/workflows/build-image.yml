@@ -11,6 +11,9 @@ on:
         type: string
       openwrt_branch:
         type: string
+      artifact_dir: 
+        type: string
+        default: /volume2/storage/docker-data/ubuntu-openwrt/data/download
 
 defaults:
   run:
@@ -21,12 +24,12 @@ jobs:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
     env: 
-      artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
+      
     container:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       volumes:
         - ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}:/builder
-        - ${{ env.artifact_dir }}/arch-targets/:builder/bin/targets/
+        - ${{ inputs.artifact_dir }}/arch-targets/:builder/bin/targets/
       options: --user root --privileged --pull always --rm
     steps:
       - name: Init
