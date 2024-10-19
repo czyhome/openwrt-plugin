@@ -52,4 +52,5 @@ jobs:
     with:
       target: ${{ matrix.target }}
       subtarget: ${{ matrix.subtarget }}
+      openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
       openwrt_branch: ${{ needs.setup.outputs.openwrt_branch }}
