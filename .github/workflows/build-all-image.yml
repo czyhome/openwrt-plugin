@@ -57,3 +57,4 @@ jobs:
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
       openwrt_tag_version: ${{ needs.setup.outputs.openwrt_tag_version }}
       openwrt_branch: ${{ needs.setup.outputs.openwrt_branch }}
+      openwrt_branch_version: ${{ needs.setup.outputs.openwrt_branch_version }}

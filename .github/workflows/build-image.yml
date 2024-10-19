@@ -40,9 +40,7 @@ jobs:
 
       - name: Modify permission
         working-directory: /builder
-        run: |
-          apt install vim procps -y
-          chown buildbot:buildbot bin
+        run: chown buildbot:buildbot bin
 
       - name: Init
         shell: su buildbot -c "bash {0}"
@@ -56,3 +54,8 @@ jobs:
       - name: Generate
         shell: su buildbot -c "bash {0}"
         run: python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ inputs.target }}/${{ inputs.subtarget }}
+  clean:
+    runs-on: self-hosted
+    needs: [build]
+    steps:
+      - run: docker volume rm ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
