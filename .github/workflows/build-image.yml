@@ -12,6 +12,7 @@ on:
       openwrt_branch:
         type: string
       artifact_dir: 
+        required: false
         type: string
         default: /volume2/storage/docker-data/ubuntu-openwrt/data/download
 
@@ -23,8 +24,6 @@ jobs:
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
-    env: 
-      
     container:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       volumes:
