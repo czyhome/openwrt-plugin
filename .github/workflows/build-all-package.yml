@@ -58,24 +58,24 @@ jobs:
     name: Deploy
     runs-on: self-hosted
     needs: [setup,build]
+    env: 
+      artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
     steps:
-      - name: Sync upstream packages
-        id: sync_upstream
-        working-directory: /volume2/storage/docker-data/ubuntu-openwrt/data/download
-        run: |
-          artifact_dir=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
-          
-          rsync -aR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$artifact_dir .
-
-          for t in $(ls releases | grep '^${{ needs.setup.outputs.openwrt_branch_version }}');do
-            (cd releases/$t;ln -snf ../$(basename $artifact_dir) packages)
-          done
-
-          echo "artifact_dir=$(pwd)/${artifact_dir}" >> "$GITHUB_OUTPUT"
-
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          path: ${{ steps.sync_upstream.outputs.artifact_dir }}
+          path: ${{ env.artifact_dir }}/artifact-packages/
           pattern: '*-packages'
           merge-multiple: true
+
+      - name: Sync upstream
+        id: sync_upstream
+        working-directory: ${{ env.artifact_dir }}
+        run: |
+          packages_dir=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
+
+          find artifact-packages -maxdepth 1 -type d -not -path artifact-packages -exec basename {} \; > arch-upstream.txt
+          
+          rsync -aR --include-from=arch-upstream.txt --exclude=$packages_dir/* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_dir .
+
+          mv artifact-packages/* $packages_dir/
