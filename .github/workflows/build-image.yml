@@ -28,7 +28,7 @@ jobs:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
       volumes:
         - ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}:/builder
-        - ${{ inputs.artifact_dir }}/arch-targets/:builder/bin/targets/
+        - ${{ inputs.artifact_dir }}/arch-targets/:/builder/bin/targets/
       options: --user root --privileged --pull always --rm
     steps:
       - name: Init
