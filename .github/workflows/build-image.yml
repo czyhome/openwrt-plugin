@@ -11,10 +11,6 @@ on:
         type: string
       openwrt_tag:
         type: string
-      openwrt_tag_version:
-        type: string
-      openwrt_branch:
-        type: string
       artifact_dir: 
         required: false
         type: string
@@ -28,8 +24,9 @@ jobs:
   init:
     runs-on: self-hosted
     steps:
-      - run: |
-          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' || true | xargs )
+      - name: Clean
+        run: |
+          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}' || true | xargs )
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
@@ -39,9 +36,9 @@ jobs:
     runs-on: self-hosted
     needs: [init]
     container:
-      image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
+      image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}
       volumes:
-        - ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}:/builder
+        - ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}:/builder
         - ${{ inputs.artifact_dir }}/arch-targets/:/builder/bin/targets/
       options: --user root --privileged --pull always
     steps:
@@ -52,12 +49,12 @@ jobs:
         working-directory: /builder
         run: chown buildbot:buildbot bin
 
-      - name: Init
+      - name: Modify repositories.conf
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
           id;pwd;ls -al
-          sed -i -e "s|https://downloads.openwrt.org|http://openwrt-firmware.czy21-internal.com/download|" -e "s|releases.*-SNAPSHOT|releases/${{ inputs.openwrt_tag_version }}|" repositories.conf
+          sed -i -e "s|https://downloads.openwrt.org|http://openwrt-firmware.czy21-internal.com/download|" repositories.conf
           cat repositories.conf
 
       - name: Generate
@@ -69,7 +66,7 @@ jobs:
     needs: [init,build]
     steps:
       - run: |
-          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}' || true | xargs )
+          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}' || true | xargs )
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
