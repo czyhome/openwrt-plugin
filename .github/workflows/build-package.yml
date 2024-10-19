@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
-      options: --user root
+      options: --user root --privileged --pull always --rm
     steps:
       - name: Set feed.conf
         shell: su buildbot -c "bash {0}"
