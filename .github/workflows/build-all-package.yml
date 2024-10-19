@@ -34,6 +34,7 @@ jobs:
 
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_tag_version=${openwrt_tag_version}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
