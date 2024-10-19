@@ -19,14 +19,15 @@ if __name__ == '__main__':
     profiles_obj = json.load(open(target_profiles_file, 'r'))
     profiles = profiles_obj['profiles']
     for pk, pv in profiles.items():
-        cmd_array = [
+        cmd_arr = [
             f"cd {args.openwrt_dir};",
-            "make",
+            "make image",
             f"PROFILE=\"{pk}\""
         ]
         packages = pv.get("install_packages", [])
+        packages_str = " ".join(packages)
         if packages:
-            cmd_array.append(f"PACKAGES=\"{packages}\"")
-        cmd = " ".join(cmd_array)
-        print(cmd)
-        os.system(cmd)
+            cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
+        cmd_str = " ".join(cmd_arr)
+        os.system(f"echo {cmd_str}")
+        os.system(cmd_str)
