@@ -40,15 +40,17 @@ jobs:
 
       - name: Modify permission
         working-directory: /builder
-        run: chown buildbot:buildbot bin
+        run: |
+          apt install vim procps -y
+          chown buildbot:buildbot bin
 
       - name: Init
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
           id;pwd;ls -al
-          sed -i -e "s|https://downloads.openwrt.org|http://openwrt-firmware.czy21-internal.com/download|" -e "s|releases.*-SNAPSHOT|releases/${{ inputs.openwrt_tag_version }}|" repositories.conf
           sleep 10m
+          sed -i -e "s|https://downloads.openwrt.org|http://openwrt-firmware.czy21-internal.com/download|" -e "s|releases.*-SNAPSHOT|releases/${{ inputs.openwrt_tag_version }}|" repositories.conf
           cat repositories.conf
 
       - name: Generate
