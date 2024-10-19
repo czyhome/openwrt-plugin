@@ -29,5 +29,5 @@ if __name__ == '__main__':
         if packages:
             cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
         cmd_str = " ".join(cmd_arr)
-        os.system(f"echo {cmd_str}")
+        os.system(f"echo \'{cmd_str}\'")
         os.system(cmd_str)
