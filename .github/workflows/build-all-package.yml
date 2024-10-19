@@ -77,6 +77,6 @@ jobs:
 
           find arch-packages -maxdepth 1 -type d -not -path arch-packages -exec basename {} \; > arch-packages-upstream.txt
           
-          rsync -aR --include-from=arch-packages-upstream.txt --exclude=$packages_dir/* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_dir .
+          rsync -avR --include-from=arch-packages-upstream.txt --exclude=$packages_dir/* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_dir .
 
-          mv arch-packages/* $packages_dir/
+          rsync -av --remove-source-files arch-packages/* $packages_dir/
