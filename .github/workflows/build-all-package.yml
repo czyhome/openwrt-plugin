@@ -7,7 +7,7 @@ on:
         type: string
       packages:
         type: string
-        description: "empty only build changed\ninput special package names\ninput all will build all"
+        description: "empty only build changed or input special package names or input all will build all"
 
 jobs:
   setup:
