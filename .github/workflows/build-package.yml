@@ -3,10 +3,7 @@ name: Build packages
 on:
   workflow_call:
     inputs:
-      target:
-        required: true
-        type: string
-      subtarget:
+      arch:
         required: true
         type: string
       openwrt_branch:
@@ -18,71 +15,26 @@ defaults:
 
 jobs:
   build:
-    name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
+    name: Build ${{ inputs.arch }}
     runs-on: ubuntu-latest
-    container:
-      image: openwrt/sdk:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_branch }}
-      options: --user root --privileged --pull always --rm
     steps:
-      - name: Init
-        shell: su buildbot -c "bash {0}"
-        working-directory: /builder
-        run: |
-          id;pwd;ls -al
-          git_repo=https://github.com
-
-          sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$git_repo/openwrt/\1.git|" feeds.conf.default
-          
-          echo "
-          src-git openclash  https://github.com/vernesong/OpenClash.git;master
-          src-git plugin https://github.com/czy21/openwrt-plugin.git
-          " >> feeds.conf.default
-          cat feeds.conf.default
-
-      - name: Update
-        shell: su buildbot -c "bash {0}"
-        working-directory: /builder
-        run: ./scripts/feeds update -a
-
-      - name: Compile
-        shell: su buildbot -c "bash {0}"
-        working-directory: /builder
-        run: |
-          OFFICIAL_PACKAGES=$(echo;cd feeds/plugin/;find package -maxdepth 1 -not -path package -exec sh -c 'd={};[ ! -f "$d/Makefile" ] && basename $d' \;| xargs)
-
-          for t in $OFFICIAL_PACKAGES;do
-            ./scripts/feeds install -p packages -f "$t"
-          done
-
-          CUSTOM_FEEDS="openclash plugin"
-
-          for t in $CUSTOM_FEEDS;do
-            ./scripts/feeds install -p "$t" -f -a
-          done
-
-          ./feeds/plugin/main.sh install
-
-          make BUILD_LOG=1 IGNORE_ERRORS=1 CONFIG_AUTOREMOVE=y -j "$(nproc)" defconfig world
-
-          artifact_dir=/builder/bin/artifact
-          mkdir -p $artifact_dir
-          
-          for t in $OFFICIAL_PACKAGES;do
-            (cd bin/packages;find -maxdepth 3 -type f -name "$t*.ipk" -exec cp --parents -rv {} $artifact_dir \;)
-          done
-
-          for t in $CUSTOM_FEEDS;do
-            (cd bin/packages;find -maxdepth 2 -type d -name "$t" -exec cp --parents -rv {} $artifact_dir \;)
-          done
-        
-      - name: Store packages
-        uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v4
         with:
-          name: ${{ inputs.target }}-${{ inputs.subtarget }}-packages
-          path: "/builder/bin/artifact/"
+          fetch-depth: 0
+      - name: Determine changed packages
+        run: |
+          # fallback to test packages if nothing explicitly changes this is
+          # should run if other mechanics in packages.git changed
+          PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
 
-      - name: Store logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.target }}-${{ inputs.subtarget }}-logs
-          path: "/builder/logs/"
+          echo "Building $PACKAGES"
+          echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
+
+      - name: Build
+        uses: openwrt/gh-action-sdk@v5
+        env:
+          ARCH: ${{ inputs.arch }}-${{ inputs.openwrt_branch }}
+          FEEDNAME: packages_ci
+
+      - name: Move created packages to project dir
+        run: cp bin/packages/${{ inputs.arch }}/packages_ci/* . || true

@@ -14,11 +14,13 @@ jobs:
       targets: ${{ steps.get_devices.outputs.targets }}
       targets_subtargets: ${{ steps.get_devices.outputs.targets_subtargets }}
       targets_devices: ${{ steps.get_devices.outputs.targets_devices }}
+      archs: ${{ steps.get_devices.outputs.archs }}
       openwrt_dir: ${{ steps.set_env.outputs.openwrt_dir }}
       openwrt_tag: ${{ steps.set_env.outputs.openwrt_tag }}
       openwrt_tag_version: ${{ steps.set_env.outputs.openwrt_tag_version }}
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
       openwrt_branch_version: ${{ steps.set_env.outputs.openwrt_branch_version }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,34 +51,33 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+         include: ${{fromJson(needs.setup.outputs.archs)}}
     with:
-      target: ${{ matrix.target }}
-      subtarget: ${{ matrix.subtarget }}
+      arch: ${{ matrix.arch }}
       openwrt_branch: ${{ needs.setup.outputs.openwrt_branch }}
 
-  deploy:
-    name: Deploy
-    runs-on: self-hosted
-    needs: [setup,build]
-    env: 
-      artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          path: ${{ env.artifact_dir }}/arch-packages/
-          pattern: '*-packages'
-          merge-multiple: true
-
-      - name: Sync upstream
-        id: sync_upstream
-        working-directory: ${{ env.artifact_dir }}
-        run: |
-          packages_dir=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
-
-          find arch-packages -maxdepth 1 -type d -not -path arch-packages -exec basename {} \; > arch-packages-upstream.txt
-          
-          rsync -avR --include-from=arch-packages-upstream.txt --exclude=$packages_dir/* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_dir .
-
-          rsync -av --remove-source-files arch-packages/* $packages_dir/
+#  deploy:
+#    name: Deploy
+#    runs-on: self-hosted
+#    needs: [setup,build]
+#    env:
+#      artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
+#    steps:
+#      - name: Download artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          path: ${{ env.artifact_dir }}/arch-packages/
+#          pattern: '*-packages'
+#          merge-multiple: true
+#
+#      - name: Sync upstream
+#        id: sync_upstream
+#        working-directory: ${{ env.artifact_dir }}
+#        run: |
+#          packages_dir=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
+#
+#          find arch-packages -maxdepth 1 -type d -not -path arch-packages -exec basename {} \; > arch-packages-upstream.txt
+#
+#          rsync -avR --include-from=arch-packages-upstream.txt --exclude=$packages_dir/* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_dir .
+#
+#          rsync -av --remove-source-files arch-packages/* $packages_dir/
