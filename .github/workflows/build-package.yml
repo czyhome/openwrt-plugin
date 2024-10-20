@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine branch name
+      - name: Determine branch
         run: |
           BRANCH="${GITHUB_REF#refs/heads/}"
           echo "GithubRef for $BRANCH"
@@ -32,7 +32,7 @@ jobs:
           echo "Building for $BRANCH"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
 
-      - name: Determine changed packages
+      - name: Determine packages
         run: |
           EXTRA_FEEDS="src-git|openclash|https://github.com/vernesong/OpenClash.git;master"
           echo "EXTRA_FEEDS=$EXTRA_FEEDS" >> $GITHUB_ENV
