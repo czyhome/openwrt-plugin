@@ -30,7 +30,7 @@ jobs:
         working-directory: ${{ inputs.artifact_dir }}
         run: |
           targets_dir=releases/${{ inputs.openwrt_tag_version }}/targets/${{ inputs.target }}/${{ inputs.subtarget }}
-          rsync -avR --exclude=$targets_dir/openwrt-* --delete rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$targets_dir .
+          rsync -avR --exclude=$targets_dir/openwrt-* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$targets_dir .
       - name: Clean
         run: |
           volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}' || true | xargs )
