@@ -24,9 +24,9 @@ if __name__ == '__main__':
             "make image",
             f"PROFILE=\"{pk}\""
         ]
-        image_builder_config=pv.get("image_builder_config",[])
+        image_builder_config = pv.get("image_builder_config", [])
         if image_builder_config:
-            pathlib.Path(args.openwrt_dir).joinpath(".config").write_text('\n'.join(image_builder_config), encoding='utf-8')
+            pathlib.Path(args.openwrt_dir).joinpath(".config").open(mode="a+", encoding="utf-8").write('\n'.join(image_builder_config))
         packages = pv.get("install_packages", [])
         packages_str = " ".join(packages)
         if packages:
