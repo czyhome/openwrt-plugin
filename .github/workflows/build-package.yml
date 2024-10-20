@@ -79,15 +79,15 @@ jobs:
         run: |
           ls -alR bin/packages
           
-          artifact_dir=bin/artifact/${{ matrix.arch }}/plugin
+          artifact_dir=bin/artifact/${{ inputs.arch }}/plugin
           mkdir -p ${artifact_dir}
           
           for EXTRA_FEED in $EXTRA_FEEDS; do
               EXTRA_FEED_NAME="$(echo "$EXTRA_FEED" | cut -d'|' -f2)"
-              cp bin/packages/${{ matrix.arch }}/$EXTRA_FEED_NAME/*.ipk $artifact_dir || true
+              cp bin/packages/${{ inputs.arch }}/$EXTRA_FEED_NAME/*.ipk $artifact_dir || true
           done
           
-          cp bin/packages/${{ matrix.arch }}/packages_ci/*.ipk ${artifact_dir} || true
+          cp bin/packages/${{ inputs.arch }}/packages_ci/*.ipk ${artifact_dir} || true
 
       - name: Store packages
         uses: actions/upload-artifact@v4
