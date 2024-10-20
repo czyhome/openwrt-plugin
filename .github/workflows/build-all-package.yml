@@ -91,4 +91,4 @@ jobs:
         run: |
           packages_rel=${{ steps.init.outputs.artifact_packages_rel }}
           find ${packages_rel} -maxdepth 1 -type d -not -path ${packages_rel} -exec basename {} \; > upstream-packages.txt
-          rsync -avR --include-from=upstream-packages.txt --exclude=$packages_rel/* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_rel .
+          rsync -avR --include-from=upstream-packages.txt --exclude=$packages_rel/* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_rel .
