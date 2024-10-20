@@ -3,7 +3,8 @@
     "profiles": {
         "friendlyarm_nanopi-r2s": {
             "image_builder_config": [
-                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024"
+                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024",
+                "CONFIG_LUCI_LANG_zh_Hans=y"
             ],
             "install_packages": [
                 "-dnsmasq"

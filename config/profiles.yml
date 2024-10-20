@@ -1,0 +1,10 @@
+
+bundle-packages:
+  simple:
+    - ""
+    - ""
+    - ""
+  base:
+    - ""
+    - ""
+    - ""

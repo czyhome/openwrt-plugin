@@ -3,6 +3,7 @@
   "profiles": {
     "d-team_newifi-d2": {
       "image_builder_config": [
+        "CONFIG_LUCI_LANG_zh_Hans=y"
       ],
       "install_packages": [
         "-dnsmasq"
