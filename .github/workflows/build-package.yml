@@ -25,7 +25,7 @@ jobs:
         run: |
           # fallback to test packages if nothing explicitly changes this is
           # should run if other mechanics in packages.git changed
-          PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"
+          PACKAGES="${PACKAGES:-luci-app-adguardhome}"
 
           echo "Building $PACKAGES"
           echo "PACKAGES=$PACKAGES" >> $GITHUB_ENV
@@ -36,10 +36,6 @@ jobs:
           ARCH: ${{ inputs.arch }}-${{ inputs.openwrt_branch }}
           FEEDNAME: packages_ci
           V: s
-
-#      - name: Move created packages to project dir
-#        if: always()
-#        run: cp bin/packages/${{ inputs.arch }}/packages_ci/* . || true
 
       - name: Store packages
         uses: actions/upload-artifact@v4
