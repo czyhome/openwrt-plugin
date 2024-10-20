@@ -75,7 +75,6 @@ jobs:
         env:
           ARCH: ${{ inputs.arch }}-${{ inputs.openwrt_branch }}
           FEEDNAME: packages_ci
-          V: s
 
       - name: Move created packages to project dir
         run: |
