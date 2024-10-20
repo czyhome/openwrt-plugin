@@ -1,6 +1,10 @@
 name: Build all packages
 
 on:
+  push:
+    paths:
+      - luci/**
+      - package/**
   workflow_dispatch:
     inputs:
       openwrt_tag:
@@ -64,24 +68,27 @@ jobs:
     name: Deploy
     runs-on: self-hosted
     needs: [setup,build]
-    env:
-      artifact_dir: /volume2/storage/docker-data/ubuntu-openwrt/data/download
     steps:
+      - name: Init
+        id: init
+        run: |
+          artifact_dir=/volume2/storage/docker-data/ubuntu-openwrt/data/download
+          artifact_packages_rel=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
+          
+          echo "artifact_dir=${artifact_dir}" >> "$GITHUB_OUTPUT"
+          echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          path: ${{ env.artifact_dir }}/arch-packages/
+          path: ${{ steps.init.outputs.artifact_dir }}/${{ steps.init.outputs.artifact_packages_rel }}
           pattern: '*-packages'
           merge-multiple: true
 
       - name: Sync upstream
         id: sync_upstream
-        working-directory: ${{ env.artifact_dir }}
+        working-directory: ${{ steps.init.outputs.artifact_dir }}
         run: |
-          packages_dir=releases/packages-${{ needs.setup.outputs.openwrt_branch_version }}
-
-          find arch-packages -maxdepth 1 -type d -not -path arch-packages -exec basename {} \; > arch-packages-upstream.txt
-
-          rsync -avR --include-from=arch-packages-upstream.txt --exclude=$packages_dir/* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_dir .
-
-          rsync -av --remove-source-files arch-packages/* $packages_dir/
+          packages_rel=${{ steps.init.outputs.artifact_packages_rel }}
+          find ${packages_rel} -maxdepth 1 -type d -not -path ${packages_rel} -exec basename {} \; > upstream-packages.txt
+          rsync -avR --include-from=upstream-packages.txt --exclude=$packages_rel/* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$packages_rel .

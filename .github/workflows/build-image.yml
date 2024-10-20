@@ -24,19 +24,14 @@ defaults:
 
 jobs:
   init:
+    name: Init
     runs-on: self-hosted
     steps:
       - name: Sync upstream
         working-directory: ${{ inputs.artifact_dir }}
         run: |
-          targets_dir=releases/${{ inputs.openwrt_tag_version }}/targets/${{ inputs.target }}/${{ inputs.subtarget }}
-          rsync -avR --exclude=$targets_dir/openwrt-* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$targets_dir .
-      - name: Clean
-        run: |
-          volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}' || true | xargs )
-          if [ -n "${volume_names}" ];then
-            docker volume rm $volume_names
-          fi
+          targets_rel=releases/${{ inputs.openwrt_tag_version }}/targets/${{ inputs.target }}/${{ inputs.subtarget }}
+          rsync -avR --exclude=$targets_rel/openwrt-* --delete-excluded rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$targets_rel .
 
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
@@ -73,6 +68,7 @@ jobs:
   clean:
     runs-on: self-hosted
     needs: [init,build]
+    if: always()
     steps:
       - run: |
           volume_names=$(docker volume ls -q | grep '${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}' || true | xargs )
