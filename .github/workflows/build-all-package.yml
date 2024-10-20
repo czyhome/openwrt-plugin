@@ -51,7 +51,7 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.setup.outputs.archs)}}
+         arch: ${{fromJson(needs.setup.outputs.archs)}}
     with:
       arch: ${{ matrix.arch }}
       openwrt_branch: ${{ needs.setup.outputs.openwrt_branch }}
