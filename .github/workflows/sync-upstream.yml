@@ -79,3 +79,7 @@ jobs:
         run: |
           arch_rel=${{ needs.setup.outputs.artifact_packages_rel }}/${{ matrix.arch }}
           rsync -avR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$arch_rel .
+
+          for t in $(ls releases | grep '^${{ needs.setup.outputs.openwrt_branch_version }}');do
+            (cd releases/$t;ln -snf ../$(basename ${{ needs.setup.outputs.artifact_packages_rel }}) packages)
+          done
