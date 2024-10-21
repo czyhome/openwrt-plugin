@@ -95,17 +95,17 @@ jobs:
         run: |
           git_repo=http://gitea.czy21-internal.com
           [ -d "${{ needs.setup.outputs.openwrt_dir }}/.git" ] || git clone $git_repo/openwrt/openwrt.git ${{ needs.setup.outputs.openwrt_dir }}
+          
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           path: /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
           pattern: '*-packages'
           merge-multiple: true
-          
+
       - working-directory: /data/openwrt
         shell: su buildbot -c "bash {0}"
         run: |
-          plugin_dir=/data/download/${{ needs.setup.outputs.artifact_packages_rel }}/${{ matrix.arch }}/plugin
-          if [ -d "$plugin_dir" ];then
-            make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$plugin_dir
-          fi
+          for t in $(find /data/download/${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
+            make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
+          done
