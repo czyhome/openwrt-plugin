@@ -94,10 +94,9 @@ jobs:
         - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
       options: --user root --privileged --pull always
     steps:
-      - name: Checkout openwrt
+      - name: Clone openwrt
         uses: actions/checkout@v4
         with:
-          github-server-url: http://gitea.czy21-internal.com
           repository: openwrt/openwrt
           ref: ${{ needs.setup.outputs.openwrt_branch }}
 
