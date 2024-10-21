@@ -65,6 +65,7 @@ jobs:
       - working-directory: ${{ needs.setup.outputs.artifact_dir }}
         run: |
           subtarget_rel=${{ needs.setup.outputs.artifact_targets_rel }}/${{ matrix.target }}/${{ matrix.subtarget }}
+          mkdir -p $subtarget_rel
           rsync -avR --exclude=$subtarget_rel/openwrt-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
 
   package:
@@ -78,4 +79,5 @@ jobs:
       - working-directory: ${{ needs.setup.outputs.artifact_dir }}
         run: |
           arch_rel=${{ needs.setup.outputs.artifact_packages_rel }}/${{ matrix.arch }}
+          mkdir -p $arch_rel
           rsync -avR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$arch_rel .
