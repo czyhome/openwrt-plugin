@@ -43,7 +43,7 @@ jobs:
           echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
           artifact_dir=/volume2/storage/docker-data/ubuntu-openwrt/data/download
-          artifact_targets_rel=release/$openwrt_tag_version/targets
+          artifact_targets_rel=releases/$openwrt_tag_version/targets
           artifact_packages_rel=releases/packages-$openwrt_branch_version
           
           echo "artifact_dir=${artifact_dir}" >> "$GITHUB_OUTPUT"
@@ -65,12 +65,11 @@ jobs:
       - working-directory: ${{ needs.setup.outputs.artifact_dir }}
         run: |
           subtarget_rel=${{ needs.setup.outputs.artifact_targets_rel }}/${{ matrix.target }}/${{ matrix.subtarget }}
-          mkdir -p $subtarget_rel
           rsync -avR --exclude=$subtarget_rel/openwrt-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
 
   package:
     runs-on: self-hosted
-    needs: setup
+    needs: [setup,target]
     strategy:
        fail-fast: false
        matrix:
@@ -79,5 +78,4 @@ jobs:
       - working-directory: ${{ needs.setup.outputs.artifact_dir }}
         run: |
           arch_rel=${{ needs.setup.outputs.artifact_packages_rel }}/${{ matrix.arch }}
-          mkdir -p $arch_rel
           rsync -avR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$arch_rel .
