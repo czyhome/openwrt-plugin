@@ -97,7 +97,8 @@ jobs:
       - name: Checkout openwrt
         uses: actions/checkout@v4
         with:
-          repository: http://gitea.czy21-internal.com/openwrt/openwrt
+          github-server-url: http://gitea.czy21-internal.com
+          repository: openwrt/openwrt
           ref: ${{ needs.setup.outputs.openwrt_branch }}
 
       - name: Modify permission
