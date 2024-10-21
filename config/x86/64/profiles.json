@@ -62,7 +62,6 @@
                 "luci-app-commands",
                 "kmod-macvlan",
                 "dockerd",
-                "docker-compose",
                 "luci-app-dockerman",
                 "luci-app-openclash"
             ]
