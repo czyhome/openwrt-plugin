@@ -26,6 +26,7 @@ jobs:
       openwrt_tag_version: ${{ steps.set_env.outputs.openwrt_tag_version }}
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
       openwrt_branch_version: ${{ steps.set_env.outputs.openwrt_branch_version }}
+      openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
       artifact_dir: ${{ steps.set_env.outputs.artifact_dir }}
       artifact_targets_rel: ${{ steps.set_env.outputs.artifact_targets_rel }}
       artifact_packages_rel: ${{ steps.set_env.outputs.artifact_packages_rel }}
@@ -48,11 +49,12 @@ jobs:
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
-          artifact_dir=/volume2/storage/docker-data/openwrt-builder/data/download
+          openwrt_builder_volume=/volume2/storage/docker-data/openwrt-builder/data/
+          echo "openwrt_builder_volume=${openwrt_builder_volume}" >> "$GITHUB_OUTPUT"
+
           artifact_targets_rel=releases/$openwrt_tag_version/targets
           artifact_packages_rel=releases/packages-$openwrt_branch_version
           
-          echo "artifact_dir=${artifact_dir}" >> "$GITHUB_OUTPUT"
           echo "artifact_targets_rel=${artifact_targets_rel}" >> "$GITHUB_OUTPUT"
           echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
 
@@ -67,8 +69,14 @@ jobs:
        fail-fast: false
        matrix:
          include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+    container:
+      image: czy21/openwrt-builder
+      volumes:
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
+      options: --user root --privileged --pull always
     steps:
-      - working-directory: ${{ needs.setup.outputs.artifact_dir }}
+      - working-directory: /data/download
+        shell: su buildbot -c "bash {0}"
         run: |
           subtarget_rel=${{ needs.setup.outputs.artifact_targets_rel }}/${{ matrix.target }}/${{ matrix.subtarget }}
           rsync -avR --exclude=$subtarget_rel/openwrt-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
@@ -80,8 +88,19 @@ jobs:
        fail-fast: false
        matrix:
          arch: ${{fromJson(needs.setup.outputs.archs)}}
+    container:
+      image: czy21/openwrt-builder
+      volumes:
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
+      options: --user root --privileged --pull always
     steps:
-      - working-directory: ${{ needs.setup.outputs.artifact_dir }}
+      - name: Checkout openwrt
+        uses: actions/checkout@v4
+        with:
+          path: /data/openwrt1
+          ref: ${{ needs.setup.outputs.openwrt_branch }}
+      - working-directory: /data/download
+        shell: su buildbot -c "bash {0}"
         run: |
           arch_rel=${{ needs.setup.outputs.artifact_packages_rel }}/${{ matrix.arch }}
           rsync -avR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$arch_rel .
