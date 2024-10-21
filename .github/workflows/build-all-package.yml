@@ -12,7 +12,9 @@ on:
       packages:
         type: string
         description: "empty only build changed or input special package names or input all will build all"
-
+      debug:
+        type: boolean
+        default: false
 jobs:
   setup:
     name: Setup
@@ -63,6 +65,7 @@ jobs:
       arch: ${{ matrix.arch }}
       openwrt_branch: ${{ needs.setup.outputs.openwrt_branch }}
       packages: ${{ inputs.packages }}
+      debug: ${{ inputs.debug }}
 
   deploy:
     name: Deploy
