@@ -4,11 +4,9 @@
         "generic": {
             "image_builder_config": [
                 "CONFIG_TARGET_ROOTFS_PARTSIZE=1024",
-                "CONFIG_VMDK_IMAGES=y",
-                "CONFIG_LUCI_LANG_zh_Hans=y"
+                "CONFIG_VMDK_IMAGES=y"
             ],
             "install_packages": [
-                "luci-i18n-base-zh-cn",
                 "-dnsmasq",
                 "fdisk",
                 "cfdisk",
