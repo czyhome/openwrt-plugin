@@ -27,7 +27,6 @@ if __name__ == '__main__':
         config_file.write_text(config_bak_file.read_text())
         cmd_arr = [
             f"cd {args.openwrt_dir};",
-            "cat .config;"
             "make image",
             f"PROFILE=\"{pk}\""
         ]
