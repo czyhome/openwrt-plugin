@@ -2,9 +2,7 @@
   "arch_packages": "aarch64_cortex-a53",
   "profiles": {
     "qihoo_360t7": {
-      "image_builder_config": [
-        "CONFIG_LUCI_LANG_zh_Hans=y"
-      ],
+      "image_builder_config": [],
       "install_packages": [
                 "-dnsmasq",
                 "bash",
