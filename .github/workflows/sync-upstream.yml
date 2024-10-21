@@ -1,10 +1,16 @@
 name: Sync upstream
 
 on:
+  schedule:
+    - cron: '0 1 * * *'
   workflow_dispatch:
     inputs:
       openwrt_tag:
         type: string
+  workflow_run:
+    workflows: [Build all packages]
+    types:
+      - completed
 
 jobs:
   setup:
@@ -42,7 +48,7 @@ jobs:
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
-          artifact_dir=/volume2/storage/docker-data/ubuntu-openwrt/data/download
+          artifact_dir=/volume2/storage/docker-data/openwrt-builder/data/download
           artifact_targets_rel=releases/$openwrt_tag_version/targets
           artifact_packages_rel=releases/packages-$openwrt_branch_version
           

@@ -16,7 +16,7 @@ on:
       artifact_dir: 
         required: false
         type: string
-        default: /volume2/storage/docker-data/ubuntu-openwrt/data/download
+        default: /volume2/storage/docker-data/openwrt-builder/data/download
 
 defaults:
   run:

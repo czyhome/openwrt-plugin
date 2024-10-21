@@ -1,10 +1,6 @@
 name: Build all master
 
 on:
-  schedule:
-    # 每周五零点
-    - cron: '0 0 * * 5'
-
   workflow_dispatch:
 
 jobs:

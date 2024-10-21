@@ -52,7 +52,7 @@ jobs:
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
-          artifact_dir=/volume2/storage/docker-data/ubuntu-openwrt/data/download
+          artifact_dir=/volume2/storage/docker-data/openwrt-builder/data/download
           artifact_targets_rel=release/$openwrt_tag_version/targets
           artifact_packages_rel=releases/packages-$openwrt_branch_version
           
