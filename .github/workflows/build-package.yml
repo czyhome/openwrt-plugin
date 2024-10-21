@@ -39,7 +39,11 @@ jobs:
           EXTRA_FEEDS="src-git|openclash|https://github.com/vernesong/OpenClash.git;master"
           echo "EXTRA_FEEDS=$EXTRA_FEEDS" >> $GITHUB_ENV
           
+          PACKAGES=
           INPUT_PACKAGES="${{ inputs.packages }}"
+          if [[ "$INPUT_PACKAGES" =~ "luci" ]];then
+            PACKAGES+="luci-base "
+          fi
           if [[ ! "$INPUT_PACKAGES" =~ "all" ]];then
             # only detect packages with changes
             PKG_ROOTS=$(find . -name Makefile | grep -v ".*/src/Makefile" | sed -e 's@./\(.*\)/Makefile@\1/@')
@@ -63,7 +67,7 @@ jobs:
                 fi
               done
               if [ $flag == "false" ];then
-                PACKAGES+=" $t"
+                PACKAGES+="$t "
               fi
             done
             PACKAGES="${PACKAGES:-luci-app-attendedsysupgrade}"

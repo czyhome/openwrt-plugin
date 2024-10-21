@@ -23,16 +23,6 @@ defaults:
     shell: bash
 
 jobs:
-  init:
-    name: Init
-    runs-on: self-hosted
-    steps:
-      - name: Sync upstream
-        working-directory: ${{ inputs.artifact_dir }}
-        run: |
-          targets_rel=releases/${{ inputs.openwrt_tag_version }}/targets/${{ inputs.target }}/${{ inputs.subtarget }}
-          rsync -avR --exclude=$targets_rel/openwrt-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$targets_rel .
-
   build:
     name: Build ${{ inputs.target }}/${{ inputs.subtarget }}
     runs-on: self-hosted
