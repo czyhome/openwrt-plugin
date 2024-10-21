@@ -97,8 +97,12 @@ jobs:
       - name: Checkout openwrt
         uses: actions/checkout@v4
         with:
-          repository: openwrt/openwrt
+          repository: http://gitea.czy21-internal.com/openwrt/openwrt
           ref: ${{ needs.setup.outputs.openwrt_branch }}
+
+      - name: Modify permission
+        run: chown -R buildbot:buildbot openwrt
+
       - working-directory: /data/download
         shell: su buildbot -c "bash {0}"
         run: |
@@ -108,3 +112,11 @@ jobs:
           for t in $(ls releases | grep '^${{ needs.setup.outputs.openwrt_branch_version }}');do
             (cd releases/$t;ln -snf ../$(basename ${{ needs.setup.outputs.artifact_packages_rel }}) packages)
           done
+
+      - working-directory: openwrt
+        shell: su buildbot -c "bash {0}"
+        run: |
+          plugin_dir=/data/download/${{ needs.setup.outputs.artifact_packages_rel }}/${{ matrix.arch }}/plugin
+          if [ -d "$plugin_dir" ];then
+            make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$plugin_dir
+          fi
