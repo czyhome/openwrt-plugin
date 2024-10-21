@@ -60,7 +60,7 @@ jobs:
     strategy:
        fail-fast: false
        matrix:
-         include: ${{fromJson(needs.setup.outputs.subtargets)}}
+         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
     steps:
       - working-directory: ${{ needs.setup.outputs.artifact_dir }}
         run: |
