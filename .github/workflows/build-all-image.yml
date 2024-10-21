@@ -71,3 +71,20 @@ jobs:
       openwrt_tag_version: ${{ needs.setup.outputs.openwrt_tag_version }}
       openwrt_builder_volume: ${{ needs.setup.outputs.openwrt_builder_volume }}
       artifact_targets_rel: ${{ needs.setup.outputs.artifact_targets_rel }}
+
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    needs: [setup,build]
+    container:
+      image: czy21/openwrt-builder
+      volumes:
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
+      options: --user root --privileged --pull always
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Generate version
+        shell: su buildbot -c "bash {0}"
+        run: |
+          python3 -B .github/workflows/scripts/gen_version.py --artifact-dir /data/download

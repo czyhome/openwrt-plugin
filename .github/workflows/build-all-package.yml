@@ -9,6 +9,7 @@ on:
     inputs:
       openwrt_tag:
         type: string
+        description: "eg: v23.05.5"
       packages:
         type: string
         description: "empty only build changed or input special package names or input all will build all"
@@ -95,7 +96,7 @@ jobs:
         run: |
           git_repo=http://gitea.czy21-internal.com
           [ -d "${{ needs.setup.outputs.openwrt_dir }}/.git" ] || git clone $git_repo/openwrt/openwrt.git ${{ needs.setup.outputs.openwrt_dir }}
-          
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
