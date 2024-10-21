@@ -55,7 +55,7 @@ jobs:
         run: python3 -B ./.github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
   
   targets:
-    runs-on: self-host
+    runs-on: self-hosted
     needs: setup
     strategy:
        fail-fast: false
@@ -68,7 +68,7 @@ jobs:
           rsync -avR --exclude=$subtarget_rel/openwrt-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
 
   packages:
-    runs-on: self-host
+    runs-on: self-hosted
     needs: setup
     strategy:
        fail-fast: false
