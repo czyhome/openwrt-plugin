@@ -69,5 +69,5 @@ jobs:
       subtarget: ${{ matrix.subtarget }}
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
       openwrt_tag_version: ${{ needs.setup.outputs.openwrt_tag_version }}
-      openwrt_builder_targets_dir: ${{ needs.setup.outputs.openwrt_builder_targets_dir }}
+      openwrt_builder_volume: ${{ needs.setup.outputs.openwrt_builder_volume }}
       artifact_targets_rel: ${{ needs.setup.outputs.artifact_targets_rel }}
