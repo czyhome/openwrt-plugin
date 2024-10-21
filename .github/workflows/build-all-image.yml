@@ -21,7 +21,7 @@ jobs:
       openwrt_tag_version: ${{ steps.set_env.outputs.openwrt_tag_version }}
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
       openwrt_branch_version: ${{ steps.set_env.outputs.openwrt_branch_version }}
-      artifact_dir: ${{ steps.set_env.outputs.artifact_dir }}
+      openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
       artifact_targets_rel: ${{ steps.set_env.outputs.artifact_targets_rel }}
       artifact_packages_rel: ${{ steps.set_env.outputs.artifact_packages_rel }}
     steps:
@@ -43,11 +43,12 @@ jobs:
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
-          artifact_dir=/volume2/storage/docker-data/openwrt-builder/data/download
-          artifact_targets_rel=release/$openwrt_tag_version/targets
+          openwrt_builder_volume=/volume2/storage/docker-data/openwrt-builder/data/
+          echo "openwrt_builder_volume=${openwrt_builder_volume}" >> "$GITHUB_OUTPUT"
+
+          artifact_targets_rel=releases/$openwrt_tag_version/targets
           artifact_packages_rel=releases/packages-$openwrt_branch_version
           
-          echo "artifact_dir=${artifact_dir}" >> "$GITHUB_OUTPUT"
           echo "artifact_targets_rel=${artifact_targets_rel}" >> "$GITHUB_OUTPUT"
           echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
 
@@ -68,3 +69,5 @@ jobs:
       subtarget: ${{ matrix.subtarget }}
       openwrt_tag: ${{ needs.setup.outputs.openwrt_tag }}
       openwrt_tag_version: ${{ needs.setup.outputs.openwrt_tag_version }}
+      openwrt_builder_targets_dir: ${{ needs.setup.outputs.openwrt_builder_targets_dir }}
+      artifact_targets_rel: ${{ needs.setup.outputs.artifact_targets_rel }}
