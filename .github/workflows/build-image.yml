@@ -58,7 +58,7 @@ jobs:
 
   clean:
     runs-on: self-hosted
-    needs: [init,build]
+    needs: [build]
     if: always()
     steps:
       - run: |
