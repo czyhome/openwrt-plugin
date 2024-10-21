@@ -97,7 +97,7 @@ jobs:
       - name: Checkout openwrt
         uses: actions/checkout@v4
         with:
-          path: /data/openwrt1
+          repository: openwrt/openwrt
           ref: ${{ needs.setup.outputs.openwrt_branch }}
       - working-directory: /data/download
         shell: su buildbot -c "bash {0}"
