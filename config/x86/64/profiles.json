@@ -5,10 +5,10 @@
             "image_builder_config": [
                 "CONFIG_TARGET_ROOTFS_PARTSIZE=1024",
                 "CONFIG_VMDK_IMAGES=y",
-                "CONFIG_LUCI_LANG_zh_Hans=y",
-                "CONFIG_PACKAGE_luci-i18n-base-zh-cn=y"
+                "CONFIG_LUCI_LANG_zh_Hans=y"
             ],
             "install_packages": [
+                "luci-i18n-base-zh-cn",
                 "-dnsmasq",
                 "fdisk",
                 "cfdisk",
@@ -62,8 +62,9 @@
                 "luci-app-ttyd",
                 "luci-app-commands",
                 "kmod-macvlan",
-                "dockerd",
                 "luci-app-dockerman",
+                "dockerd",
+                "docker-compose",
                 "luci-app-openclash"
             ]
         }
