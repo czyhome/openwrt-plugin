@@ -83,7 +83,7 @@ jobs:
           rsync -avR --ignore-missing-args \
             --exclude=$subtarget_rel/profiles.json \
             --exclude=$subtarget_rel/openwrt-* \
-            --exclude=$subtarget_rel/sha256-* \
+            --exclude=$subtarget_rel/sha256sums* \
             rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
 
   package:
