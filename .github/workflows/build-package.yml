@@ -10,6 +10,8 @@ on:
         type: string
       packages:
         type: string
+      debug: 
+        type: boolean
 
 defaults:
   run:
@@ -75,6 +77,7 @@ jobs:
         env:
           ARCH: ${{ inputs.arch }}-${{ inputs.openwrt_branch }}
           FEEDNAME: packages_ci
+          V: ${{ inputs.debug && 's' || '' }}
 
       - name: Move created packages to project dir
         run: |
