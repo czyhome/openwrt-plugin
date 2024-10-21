@@ -32,7 +32,7 @@ jobs:
       image: openwrt/imagebuilder:${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}
       volumes:
         - ${{ inputs.target }}-${{ inputs.subtarget }}-${{ inputs.openwrt_tag }}:/builder
-        - ${{ inputs.openwrt_builder_volume }}/${{ inputs.artifact_targets_rel }}/:/builder/bin/targets/
+        - ${{ inputs.openwrt_builder_volume }}/download/${{ inputs.artifact_targets_rel }}/:/builder/bin/targets/
       options: --user root --privileged --pull always
     steps:
       - name: Checkout
