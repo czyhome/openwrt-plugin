@@ -27,6 +27,7 @@ if __name__ == '__main__':
         config_file.write_text(config_bak_file.read_text())
         cmd_arr = [
             f"cd {args.openwrt_dir};",
+            "cat .config;"
             "make image",
             f"PROFILE=\"{pk}\""
         ]
@@ -39,5 +40,5 @@ if __name__ == '__main__':
         if packages:
             cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
         cmd_str = " ".join(cmd_arr)
-        os.system(f"cat .config;echo \'{cmd_str}\'")
+        os.system(f"echo \'{cmd_str}\'")
         os.system(cmd_str)
