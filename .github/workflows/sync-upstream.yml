@@ -80,7 +80,11 @@ jobs:
         shell: su buildbot -c "bash {0}"
         run: |
           subtarget_rel=${{ needs.setup.outputs.artifact_targets_rel }}/${{ matrix.target }}/${{ matrix.subtarget }}
-          rsync -avR --ignore-missing-args --exclude=$subtarget_rel/openwrt-* --exclude=$subtarget_rel/sha256-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
+          rsync -avR --ignore-missing-args \
+            --exclude=$subtarget_rel/profiles.json \
+            --exclude=$subtarget_rel/openwrt-* \
+            --exclude=$subtarget_rel/sha256-* \
+            rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
 
   package:
     runs-on: self-hosted
