@@ -91,7 +91,7 @@ jobs:
           mkdir -p ${artifact_dir}
 
           for t in $PACKAGES;do
-            find bin/packages/${{ inputs.arch }}/packages -name "$t*.ipk" -exec cp -rv ${artifact_dir} \; || true
+            find bin/packages/${{ inputs.arch }}/packages -name "$t*.ipk" -exec cp -rv {} ${artifact_dir} \; || true
           done
 
           for EXTRA_FEED in $EXTRA_FEEDS; do
