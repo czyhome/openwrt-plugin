@@ -80,7 +80,7 @@ jobs:
         shell: su buildbot -c "bash {0}"
         run: |
           subtarget_rel=${{ needs.setup.outputs.artifact_targets_rel }}/${{ matrix.target }}/${{ matrix.subtarget }}
-          rsync -avR --exclude=$subtarget_rel/openwrt-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
+          rsync -avR --ignore-missing-args --exclude=$subtarget_rel/openwrt-* --exclude=$subtarget_rel/sha256-* rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
 
   package:
     runs-on: self-hosted
@@ -99,7 +99,7 @@ jobs:
         shell: su buildbot -c "bash {0}"
         run: |
           arch_rel=${{ needs.setup.outputs.artifact_packages_rel }}/${{ matrix.arch }}
-          rsync -avR rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$arch_rel .
+          rsync -avR --ignore-missing-args rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$arch_rel .
 
           for t in $(ls releases | grep '^${{ needs.setup.outputs.openwrt_branch_version }}');do
             (cd releases/$t;ln -snf ../$(basename ${{ needs.setup.outputs.artifact_packages_rel }}) packages)
