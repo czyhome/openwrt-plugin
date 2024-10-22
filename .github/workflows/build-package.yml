@@ -35,7 +35,7 @@ jobs:
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
 
-          openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}/
+          openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}
           echo "openwrt_builder_volume=${openwrt_builder_volume}" >> "$GITHUB_OUTPUT"
 
           artifact_packages_rel=releases/packages-$(echo $openwrt_branch | sed 's|openwrt-||')

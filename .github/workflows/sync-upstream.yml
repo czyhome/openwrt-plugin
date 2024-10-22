@@ -44,7 +44,7 @@ jobs:
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch_version=${openwrt_branch_version}" >> "$GITHUB_OUTPUT"
 
-          openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}/
+          openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}
           echo "openwrt_builder_volume=${openwrt_builder_volume}" >> "$GITHUB_OUTPUT"
 
           artifact_targets_rel=releases/$openwrt_tag_version/targets
