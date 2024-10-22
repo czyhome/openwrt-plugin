@@ -41,7 +41,7 @@ jobs:
           openwrt_builder_volume=/volume2/storage/docker-data/openwrt-builder/data/
           echo "openwrt_builder_volume=${openwrt_builder_volume}" >> "$GITHUB_OUTPUT"
 
-          artifact_packages_rel=releases/packages-$openwrt_branch_version
+          artifact_packages_rel=releases/packages-$(echo $openwrt_branch | sed 's|openwrt-||')
 
           if [ "${openwrt_branch}" == "main" ];then
             artifact_packages_rel=snapshots/packages
@@ -110,7 +110,7 @@ jobs:
       - name: Build
         uses: openwrt/gh-action-sdk@v7
         env:
-          ARCH: ${{ matrix.arch }}-${{ inputs.openwrt_branch }}
+          ARCH: ${{ matrix.arch }}-${{ needs.setup.outputs.openwrt_branch }}
           FEEDNAME: packages_ci
           V: ${{ inputs.debug && 's' || '' }}
 
