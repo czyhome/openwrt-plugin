@@ -1,39 +1,70 @@
 name: Build packages
 
 on:
-  workflow_call:
+  push:
+    paths:
+      - luci/**
+      - package/**
+    branchs:
+      - main
+      - openwrt-*
+  workflow_dispatch:
     inputs:
-      arch:
-        required: true
-        type: string
-      openwrt_branch:
-        type: string
       packages:
         type: string
-      debug: 
+        description: "empty only build changed or input special package names or input all will build all"
+      debug:
         type: boolean
-
-defaults:
-  run:
-    shell: bash
+        default: false
 
 jobs:
-  build:
-    name: Build ${{ inputs.arch }}
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
+    outputs:
+      archs: ${{ steps.get_targets.outputs.archs }}
+      openwrt_dir: ${{ steps.set_env.outputs.openwrt_dir }}
+      openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
+      openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
+      artifact_packages_rel: ${{ steps.set_env.outputs.artifact_packages_rel }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set env
+        id: set_env
+        run: |
+          openwrt_dir=/data/openwrt
+          openwrt_branch="${GITHUB_REF#refs/heads/}"
+          echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+
+          openwrt_builder_volume=/volume2/storage/docker-data/openwrt-builder/data/
+          echo "openwrt_builder_volume=${openwrt_builder_volume}" >> "$GITHUB_OUTPUT"
+
+          artifact_packages_rel=releases/packages-$openwrt_branch_version
+
+          if [ "${openwrt_branch}" == "main" ];then
+            artifact_packages_rel=snapshots/packages
+          fi
+
+          echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
+
+      - name: Get targets
+        id: get_targets
+        run: python3 -B ./.github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
+  
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+       fail-fast: false
+       matrix:
+         arch: ${{fromJson(needs.setup.outputs.archs)}}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Determine branch
-        run: |
-          BRANCH="${GITHUB_REF#refs/heads/}"
-          echo "GithubRef for $BRANCH"
-          BRANCH=${BRANCH:-main}
-          echo "Building for $BRANCH"
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-
       - name: Determine packages
         run: |
           EXTRA_FEEDS="src-git|openclash|https://github.com/vernesong/OpenClash.git;master"
@@ -47,7 +78,7 @@ jobs:
           if [[ ! "$INPUT_PACKAGES" =~ "all" ]];then
             # only detect packages with changes
             PKG_ROOTS=$(find . -name Makefile | grep -v ".*/src/Makefile" | sed -e 's@./\(.*\)/Makefile@\1/@')
-            CHANGES=$(git diff --diff-filter=d --name-only origin/$BRANCH...)
+            CHANGES=$(git diff --diff-filter=d --name-only origin/${{ needs.setup.outputs.openwrt_branch }}...)
   
             for ROOT in $PKG_ROOTS; do
               for CHANGE in $CHANGES; do
@@ -79,7 +110,7 @@ jobs:
       - name: Build
         uses: openwrt/gh-action-sdk@v7
         env:
-          ARCH: ${{ inputs.arch }}-${{ inputs.openwrt_branch }}
+          ARCH: ${{ matrix.arch }}-${{ inputs.openwrt_branch }}
           FEEDNAME: packages_ci
           V: ${{ inputs.debug && 's' || '' }}
 
@@ -87,28 +118,58 @@ jobs:
         run: |
           ls -alR bin/packages
           
-          artifact_dir=bin/artifact/${{ inputs.arch }}/plugin
+          artifact_dir=bin/artifact/${{ matrix.arch }}/plugin
           mkdir -p ${artifact_dir}
 
           for t in $PACKAGES;do
-            find bin/packages/${{ inputs.arch }}/packages -name "$t*.ipk" -exec cp -rv {} ${artifact_dir} \; || true
+            find bin/packages/${{ matrix.arch }}/packages -name "$t*.ipk" -exec cp -rv {} ${artifact_dir} \; || true
           done
 
           for EXTRA_FEED in $EXTRA_FEEDS; do
               EXTRA_FEED_NAME="$(echo "$EXTRA_FEED" | cut -d'|' -f2)"
-              cp bin/packages/${{ inputs.arch }}/$EXTRA_FEED_NAME/*.ipk $artifact_dir || true
+              cp bin/packages/${{ matrix.arch }}/$EXTRA_FEED_NAME/*.ipk $artifact_dir || true
           done
    
-          cp bin/packages/${{ inputs.arch }}/packages_ci/*.ipk ${artifact_dir} || true
+          cp bin/packages/${{ matrix.arch }}/packages_ci/*.ipk ${artifact_dir} || true
 
       - name: Store packages
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.arch }}-packages
+          name: ${{ matrix.arch }}-packages
           path: bin/artifact/
 
       - name: Store logs
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.arch }}-logs
+          name: ${{ matrix.arch }}-logs
           path: "logs/"
+
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    needs: [setup,build]
+    container:
+      image: czy21/openwrt-builder
+      volumes:
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
+      options: --user root --privileged --pull always
+    steps:
+      - name: Clone openwrt
+        shell: su buildbot -c "bash {0}"
+        run: |
+          git_repo=http://gitea.czy21-internal.com
+          [ -d "${{ needs.setup.outputs.openwrt_dir }}/.git" ] || git clone $git_repo/openwrt/openwrt.git ${{ needs.setup.outputs.openwrt_dir }}
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
+          pattern: '*-packages'
+          merge-multiple: true
+
+      - working-directory: /data/openwrt
+        shell: su buildbot -c "bash {0}"
+        run: |
+          for t in $(find /data/download/${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
+            make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
+          done
