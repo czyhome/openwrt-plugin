@@ -10,7 +10,6 @@ args: argparse.Namespace = parser.parse_args()
 
 targets = []
 subtargets = []
-devices = []
 archs = []
 
 config_path = pathlib.Path(__file__).joinpath("../../../../config").resolve()
@@ -32,5 +31,4 @@ archs = list(set(archs))
 
 print("targets={0}".format(json.dumps(targets)))
 print("targets_subtargets={0}".format(json.dumps(subtargets)))
-print("targets_devices={0}".format(json.dumps(devices)))
 print("archs={0}".format(json.dumps(archs)))
