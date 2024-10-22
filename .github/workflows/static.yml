@@ -12,7 +12,7 @@ jobs:
     container:
       image: czy21/openwrt-builder
       volumes:
-        - /volume2/storage/docker-data/openwrt-builder/data/:/data/
+        - ${{ env.OPENWRT_BUILDER_VOLUME }}/:/data/
       options: --user root --privileged --pull always
     steps:
       - name: Checkout
