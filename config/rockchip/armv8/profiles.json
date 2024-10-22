@@ -192,7 +192,7 @@
                 "docker-compose",
                 "luci-app-openclash"
             ]
-        },
+        }
     },
     "target": "rockchip/armv8"
 }
