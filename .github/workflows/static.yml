@@ -9,6 +9,11 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
+    container:
+      image: czy21/openwrt-builder
+      volumes:
+        - /volume2/storage/docker-data/openwrt-builder/data/:/data/
+      options: --user root --privileged --pull always
     steps:
       - name: Checkout
         uses: actions/checkout@v4
