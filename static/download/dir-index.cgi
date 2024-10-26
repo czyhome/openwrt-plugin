@@ -197,31 +197,6 @@ sub printjson {
 
 }
 
-# printheader - print the banner at the top of the page
-# 
-sub printheader{
-    print <<EOT;
-      <header>
-      <div>
-        <img src="/images/logo.png" alt="Download OpenWrt Firmware">
-      </div>
-    </header>
-EOT
-
-}
-
-# printfooter - a place to put everything else on the page
-# Should remain within the 'container' div
-#
-sub printfooter {
-print <<EOT;
-  <footer>
-    CDN powered by <a href='https://www.fastly.com/'>fastly.com</a>
-  </footer>\n
-EOT
-
-}
-
 # printtargets - print 'targets' directories
 #   This special cases directories of LEDE image files and their associated meta-files
 sub printtargets {
