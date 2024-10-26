@@ -77,6 +77,8 @@ jobs:
             --exclude=$subtarget_rel/openwrt-* \
             --exclude=$subtarget_rel/sha256sums* \
             rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/$subtarget_rel .
+          rsync -avR --ignore-missing-args rsync://mirrors.tuna.tsinghua.edu.cn/openwrt/index.html .
+            
 
   package:
     runs-on: self-hosted
