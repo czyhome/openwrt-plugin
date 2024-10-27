@@ -1,0 +1,129 @@
+name: Build images
+
+on:
+  workflow_dispatch:
+    inputs:
+      openwrt_tag:
+        type: string
+        description: "eg: v23.05.5"
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.set_env.outputs.targets }}
+      targets_subtargets: ${{ steps.set_env.outputs.targets_subtargets }}
+      targets_devices: ${{ steps.set_env.outputs.targets_devices }}
+      archs: ${{ steps.set_env.outputs.archs }}
+      openwrt_dir: ${{ steps.set_env.outputs.openwrt_dir }}
+      openwrt_tag: ${{ steps.set_env.outputs.openwrt_tag }}
+      openwrt_tag_version: ${{ steps.set_env.outputs.openwrt_tag_version }}
+      openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
+      openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
+      artifact_targets_rel: ${{ steps.set_env.outputs.artifact_targets_rel }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set env
+        id: set_env
+        run: |
+          openwrt_dir=/data/openwrt
+          openwrt_branch="${GITHUB_REF#refs/heads/}"
+          openwrt_tag=${{ inputs.openwrt_tag }}
+
+          artifact_targets_rel=
+          if [ "${openwrt_branch}" == "main" ];then
+            openwrt_tag=$openwrt_branch
+            artifact_targets_rel=snapshots/targets
+          else
+            openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
+            openwrt_tag_version=$(echo $openwrt_tag | sed 's|^v||')
+            artifact_targets_rel=releases/$openwrt_tag_version/targets
+          fi
+
+          echo "openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}" >> "$GITHUB_OUTPUT"          
+          echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_tag_version=${openwrt_tag_version}" >> "$GITHUB_OUTPUT"
+
+          echo "artifact_targets_rel=${artifact_targets_rel}" >> "$GITHUB_OUTPUT"
+
+          python3 -B ./.github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
+
+  build:
+    name: Build ${{ matrix.target }}/${{ matrix.subtarget }}
+    needs: setup
+    runs-on: self-hosted
+    strategy:
+       fail-fast: false
+       matrix:
+         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+    container:
+      image: openwrt/imagebuilder:${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}
+      volumes:
+        - ${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}:/builder
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/download/${{ needs.setup.outputs.artifact_targets_rel }}/:/builder/bin/targets/
+      options: --user root --privileged --pull always
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Modify permission
+        working-directory: /builder
+        run: chown -R buildbot:buildbot bin
+
+      - name: Modify repositories.conf
+        shell: su buildbot -c "bash {0}"
+        working-directory: /builder
+        run: |
+          id;pwd;ls -al
+          openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
+          if [ "$openwrt_tag" == "main" ];then
+            openwrt_plugin=$(sed -n 's|openwrt_base\(.*\)base$|openwrt_plugin\1plugin|p' repositories.conf)
+            echo -e "$openwrt_plugin" | sed -e "s|https://downloads.openwrt.org|http://openwrt-download.czy21-internal.com|" >> repositories.conf            
+            sed -i -e 's|^option check_signature|# \0|' repositories.conf
+          else
+            openwrt_plugin=$(sed -n 's|openwrt_base\(.*\)base$|openwrt_plugin\1plugin|p' repositories.conf)
+            echo -e "$openwrt_plugin" >> repositories.conf
+            sed -i -e "s|https://downloads.openwrt.org|http://openwrt-download.czy21-internal.com|" -e 's|^option check_signature|# \0|' repositories.conf
+          fi
+          cat repositories.conf
+
+      - name: Generate
+        shell: su buildbot -c "bash {0}"
+        run: python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
+
+  clean:
+    name: Clean ${{ matrix.target }}/${{ matrix.subtarget }}
+    runs-on: self-hosted
+    needs: [setup,build]
+    strategy:
+       fail-fast: false
+       matrix:
+         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+    if: always()
+    steps:
+      - run: |
+          volume_names=$(docker volume ls -q | grep '${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}' || true | xargs )
+          if [ -n "${volume_names}" ];then
+            docker volume rm $volume_names
+          fi
+
+  deploy:
+    name: Deploy
+    runs-on: self-hosted
+    needs: [setup,build,clean]
+    container:
+      image: czy21/openwrt-builder
+      volumes:
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
+      options: --user root --privileged --pull always
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Generate version
+        shell: su buildbot -c "bash {0}"
+        run: |
+          python3 -B .github/workflows/scripts/gen_version.py --artifact-dir /data/download
