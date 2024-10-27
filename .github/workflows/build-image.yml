@@ -1,4 +1,4 @@
-name: Build all images
+name: Build images
 
 on:
   workflow_dispatch:
@@ -69,7 +69,7 @@ jobs:
       volumes:
         - /builder
         - ${{ needs.setup.outputs.openwrt_builder_volume }}/download/${{ needs.setup.outputs.artifact_targets_rel }}/:/builder/bin/targets/
-      options: --user root --privileged --pull always
+      options: --user root --privileged --pull always --rm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -92,20 +92,20 @@ jobs:
         shell: su buildbot -c "bash {0}"
         run: python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
 
-  clean:
-    runs-on: self-hosted
-    needs: [build]
-    strategy:
-       fail-fast: false
-       matrix:
-         include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
-    if: always()
-    steps:
-      - run: |
-          volume_names=$(docker volume ls -q | grep '${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}' || true | xargs )
-          if [ -n "${volume_names}" ];then
-            docker volume rm $volume_names
-          fi
+  # clean:
+  #   runs-on: self-hosted
+  #   needs: [build]
+  #   strategy:
+  #      fail-fast: false
+  #      matrix:
+  #        include: ${{fromJson(needs.setup.outputs.targets_subtargets)}}
+  #   if: always()
+  #   steps:
+  #     - run: |
+  #         volume_names=$(docker volume ls -q | grep '${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}' || true | xargs )
+  #         if [ -n "${volume_names}" ];then
+  #           docker volume rm $volume_names
+  #         fi
 
   deploy:
     name: Deploy
