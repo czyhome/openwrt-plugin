@@ -16,3 +16,8 @@ jobs:
         run: |
           openwrt_branch="${GITHUB_REF#refs/heads/}"
           echo ${openwrt_branch}
+          sh main.sh update
+
+      - name: Determine changes
+        run: |
+          [[ ! -z $(git status -s) ]] && git pull && git add . && git commit -m "CI: sync code" && git push
