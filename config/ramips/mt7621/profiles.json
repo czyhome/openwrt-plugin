@@ -6,7 +6,30 @@
         "CONFIG_LUCI_LANG_zh_Hans=y"
       ],
       "install_packages": [
-        "-dnsmasq"
+        "-dnsmasq",
+        "bash",
+        "dnsmasq-full",
+        "fdisk",
+        "cfdisk",
+        "blockd",
+        "iperf3",
+        "kmod-tcp-bbr",
+        "kmod-fs-ext4",
+        "kmod-usb-storage",
+        "kmod-usb-storage-extras",
+        "qrencode",
+        "ddns-scripts",
+        "ddns-scripts-aliyun",
+        "ddns-scripts-cloudflare",
+        "luci",
+        "luci-compat",
+        "luci-proto-wireguard",
+        "luci-app-ddns",
+        "luci-app-nlbwmon",
+        "luci-app-wol",
+        "luci-app-adguardhome",
+        "luci-app-upnp",
+        "luci-app-openclash"
       ]
     }
   },
