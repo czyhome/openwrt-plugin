@@ -12,14 +12,14 @@ jobs:
     strategy:
       matrix:
         branch:
-          - master
+          - main
           - openwrt-23.05
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ matrix.branch }}
-          
+
       - name: Determine branch
         run: |
           openwrt_branch="${GITHUB_REF#refs/heads/}"
