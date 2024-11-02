@@ -19,7 +19,22 @@ jobs:
         run: |
           branchs=main
           branchs+=$(echo;git ls-remote origin | sed -n 's|.*\(openwrt-*\)|\1|p' | xargs)
-          echo "branchs=[`echo ${branchs} | tr ' ' ','`]" >> "$GITHUB_OUTPUT"
+
+          JSON='['
+          FIRST=1
+          for BRANCH in $branchs; do
+            TUPLE='"'"$(echo $BRANCH | cut -d "/" -f 1)"'"'
+            [[ $FIRST -ne 1 ]] && JSON="$JSON"','
+            JSON="$JSON""$TUPLE"
+            FIRST=0
+          done
+          JSON="$JSON"']'
+
+          echo -e "\n---- branchs ----\n"
+          echo "$JSON"
+          echo -e "\n---- branchs ----\n"
+
+          echo "branchs=$JSON" >> $GITHUB_OUTPUT
 
   check:
     name: Check
