@@ -96,7 +96,9 @@ jobs:
 
       - name: Generate
         shell: su buildbot -c "bash {0}"
-        run: python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
+        run: |
+          python3 -m pip install jinja2
+          python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
 
   clean:
     name: Clean ${{ matrix.target }}/${{ matrix.subtarget }}

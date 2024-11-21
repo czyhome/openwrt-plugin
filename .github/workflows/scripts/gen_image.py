@@ -2,6 +2,9 @@ import argparse
 import json
 import os
 import pathlib
+from jinja2 import Template
+
+def flat(a) -> list: return sum(map(flat, a), []) if isinstance(a, list) else [a]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -11,6 +14,10 @@ if __name__ == '__main__':
     args: argparse.Namespace = parser.parse_args()
 
     config_path = pathlib.Path(args.config)
+
+    global_profiles=config_path.joinpath("profiles.json")
+    global_profiles_obj=json.loads(global_profiles.read_text(encoding='utf8'))
+
     target_path = config_path.joinpath(args.target)
     target_profiles_file = target_path.joinpath('profiles.json')
     if not target_profiles_file.exists():
@@ -35,6 +42,9 @@ if __name__ == '__main__':
             config_file.open(mode="a+", encoding="utf-8").write('\n'.join(image_builder_config))
 
         packages = pv.get("install_packages", [])
+        for i,t in enumerate(packages):
+            t_result=Template(t).render(global_profiles_obj["packages"])
+            packages[i] = t_result
         packages_str = " ".join(packages)
         if packages:
             cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
