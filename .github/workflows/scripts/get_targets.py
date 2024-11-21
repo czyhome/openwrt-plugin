@@ -13,8 +13,10 @@ subtargets = []
 archs = []
 
 config_path = pathlib.Path(__file__).joinpath("../../../../config").resolve()
-
-for p in config_path.rglob("profiles.json"):
+global_profiles=config_path.joinpath("profiles.json")
+for p in config_path.rglob("**/*profiles.json"):
+    if p == global_profiles:
+        continue
     profile_obj = json.loads(p.read_text())
     profile_target = profile_obj.get("target")
 
