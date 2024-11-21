@@ -1,9 +1,6 @@
 name: Build images
 
 on:
-  push:
-    paths:
-      - '**/profiles.json'
   workflow_dispatch:
     inputs:
       openwrt_tag:
@@ -73,9 +70,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Modify permission
+      - name: Initialize
         working-directory: /builder
-        run: chown -R buildbot:buildbot bin
+        run: |
+          python3 -m pip install jinja2
+          chown -R buildbot:buildbot bin
 
       - name: Modify repositories.conf
         shell: su buildbot -c "bash {0}"
