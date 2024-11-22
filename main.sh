@@ -12,7 +12,7 @@ function cp_pkg(){
 }
 
 function cp_pkg_var(){
-  keys="PKG_VERSION PKG_RELEASE PKG_MIRROR_HASH"
+  keys="PKG_VERSION PKG_RELEASE PKG_HASH PKG_MIRROR_HASH"
   source_makefile=$1
   target_makefile=package/$(basename $(dirname $source_makefile))/Makefile
 
