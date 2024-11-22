@@ -20,6 +20,7 @@ jobs:
       openwrt_tag: ${{ steps.set_env.outputs.openwrt_tag }}
       openwrt_tag_version: ${{ steps.set_env.outputs.openwrt_tag_version }}
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
+      openwrt_branch_number: ${{ steps.set_env.outputs.openwrt_branch_number }}
       openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
       artifact_targets_rel: ${{ steps.set_env.outputs.artifact_targets_rel }}
       artifact_packages_rel: ${{ steps.set_env.outputs.artifact_packages_rel }}
@@ -31,6 +32,7 @@ jobs:
         run: |
           openwrt_dir=/data/openwrt
           openwrt_branch="${GITHUB_REF#refs/heads/}"
+          openwrt_branch_number=$(echo $openwrt_branch | sed 's|openwrt-||')
           openwrt_tag=${{ inputs.openwrt_tag }}
 
           artifact_targets_rel=
@@ -40,15 +42,16 @@ jobs:
             artifact_targets_rel=snapshots/targets
             artifact_packages_rel=snapshots/packages
           else
-            openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
+            openwrt_tag=${openwrt_tag:-$(curl -sL 'https://git.openwrt.org/?p=openwrt/openwrt.git;a=summary' | sed -n "s|.*OpenWrt \(v${openwrt_branch_number}.*\) Release.*|\1|p" | head -n 1)}
             openwrt_tag_version=$(echo $openwrt_tag | sed 's|^v||')
             artifact_targets_rel=releases/$openwrt_tag_version/targets
-            artifact_packages_rel=releases/packages-$(echo $openwrt_branch | sed 's|openwrt-||')
+            artifact_packages_rel=releases/packages-${openwrt_branch_number}
           fi
 
-          echo "openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}" >> "$GITHUB_OUTPUT"          
+          echo "openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}" >> "$GITHUB_OUTPUT"
           echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
+          echo "openwrt_branch_number=${openwrt_branch_number}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag_version=${openwrt_tag_version}" >> "$GITHUB_OUTPUT"
 
