@@ -3,6 +3,11 @@ name: Sync code
 on:
   schedule:
     - cron: '0 1 * * *'
+  push:
+    paths:
+      - '.github/workflows/scripts/**'
+      - '.github/workflows/build-*'
+      - main.sh
   workflow_dispatch:
 
 jobs:
