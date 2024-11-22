@@ -156,7 +156,7 @@ jobs:
         run: |
           mkdir -p /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
-          UPSTREAM_URL=${openwrt_mirror} sh setup.sh
+          [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
 
       - name: Download artifact
         uses: actions/download-artifact@v4

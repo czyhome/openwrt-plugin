@@ -93,8 +93,9 @@ jobs:
           openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
 
+          [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
+
           if [ "$openwrt_tag" == "main" ];then
-            UPSTREAM_URL=${openwrt_mirror} sh setup.sh
 
             id;pwd;ls -al
 
