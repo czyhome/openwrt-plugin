@@ -77,15 +77,15 @@ jobs:
 
       - name: Initialize
         working-directory: /builder
-        run: |
-          python3 -m pip install jinja2
-
-      - name: Modify
+        run: python3 -m pip install jinja2
+          
+      - name: Mirror
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
           openwrt_targets=/data/download/${{ needs.setup.outputs.artifact_targets_rel }}
-          mkdir -p $openwrt_targets
+          mkdir -p $openwrt_targets bin
+          ln -snf ${openwrt_targets} bin/targets
 
           openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
@@ -107,9 +107,7 @@ jobs:
 
       - name: Generate
         shell: su buildbot -c "bash {0}"
-        run: |
-          python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
-          cp -rfv /builder/bin/targets/* /data/download/${{ needs.setup.outputs.artifact_targets_rel }}/ || true
+        run: python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
 
   clean:
     name: Clean ${{ matrix.target }}/${{ matrix.subtarget }}
