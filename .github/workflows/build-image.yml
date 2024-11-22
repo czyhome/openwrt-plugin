@@ -109,7 +109,7 @@ jobs:
         shell: su buildbot -c "bash {0}"
         run: |
           python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
-          cp -rfv bin/targets/* /data/download/${{ needs.setup.outputs.artifact_targets_rel }}/
+          cp -rfv /builder/bin/targets/* /data/download/${{ needs.setup.outputs.artifact_targets_rel }}/ || true
 
   clean:
     name: Clean ${{ matrix.target }}/${{ matrix.subtarget }}
