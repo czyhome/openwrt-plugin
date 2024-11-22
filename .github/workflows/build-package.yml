@@ -144,16 +144,18 @@ jobs:
     runs-on: self-hosted
     needs: [setup,build]
     container:
-      image: czy21/openwrt-builder
+      image: openwrt/sdk:x86-64-${{ needs.setup.outputs.openwrt_branch }}
       volumes:
+        - openwrt-sdk-x86-64-${{ needs.setup.outputs.openwrt_branch }}:/builder
         - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
       options: --user root --privileged --pull always
     steps:
-      - name: Clone openwrt
+      - name: Setup
         shell: su buildbot -c "bash {0}"
         run: |
-          git_repo=http://gitea.czy21-internal.com
-          [ -d "${{ needs.setup.outputs.openwrt_dir }}/.git" ] || git clone $git_repo/openwrt/openwrt.git ${{ needs.setup.outputs.openwrt_dir }}
+          mkdir -p /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
+          openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
+          UPSTREAM_URL=${openwrt_mirror} sh setup.sh
 
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -162,10 +164,21 @@ jobs:
           pattern: '*-packages'
           merge-multiple: true
 
-      - working-directory: /data/openwrt
-        shell: su buildbot -c "bash {0}"
+      - shell: su buildbot -c "bash {0}"
         run: |
           openwrt_branch=${{ needs.setup.outputs.openwrt_branch }}
-          for t in $(find ${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
+          for t in $(find /data/download/${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
             make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
           done
+
+  clean:
+    name: Clean
+    runs-on: self-hosted
+    needs: [setup,build,deploy]
+    if: always()
+    steps:
+      - run: |
+          volume_names=$(docker volume ls -q | grep 'openwrt-sdk-x86-64-${{ needs.setup.outputs.openwrt_branch }}' || true | xargs )
+          if [ -n "${volume_names}" ];then
+            docker volume rm $volume_names
+          fi
