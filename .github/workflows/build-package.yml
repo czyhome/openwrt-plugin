@@ -151,6 +151,7 @@ jobs:
       options: --user root --privileged --pull always
     steps:
       - name: Setup
+        working-directory: /builder
         shell: su buildbot -c "bash {0}"
         run: |
           mkdir -p /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
@@ -164,7 +165,9 @@ jobs:
           pattern: '*-packages'
           merge-multiple: true
 
-      - shell: su buildbot -c "bash {0}"
+      - name: Generate index
+        working-directory: /builder
+        shell: su buildbot -c "bash {0}"
         run: |
           openwrt_branch=${{ needs.setup.outputs.openwrt_branch }}
           for t in $(find /data/download/${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
