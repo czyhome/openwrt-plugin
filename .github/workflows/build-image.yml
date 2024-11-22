@@ -79,7 +79,6 @@ jobs:
         working-directory: /builder
         run: |
           python3 -m pip install jinja2
-          chown -R buildbot:buildbot bin
 
       - name: Modify
         shell: su buildbot -c "bash {0}"
