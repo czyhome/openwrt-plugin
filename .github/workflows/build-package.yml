@@ -143,6 +143,7 @@ jobs:
     name: Deploy
     runs-on: self-hosted
     needs: [setup,build]
+    if: always()
     container:
       image: openwrt/sdk:x86-64-${{ needs.setup.outputs.openwrt_branch }}
       volumes:
@@ -158,7 +159,7 @@ jobs:
           [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
 
           mkdir -p /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
-          
+
           #openwrt_repo=http://gitea.czy21-internal.com
           #sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$openwrt_repo/openwrt/\1.git|" feeds.conf.default
           #./scripts/feeds update -a
