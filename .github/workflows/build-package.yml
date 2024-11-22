@@ -124,7 +124,7 @@ jobs:
               EXTRA_FEED_NAME="$(echo "$EXTRA_FEED" | cut -d'|' -f2)"
               cp bin/packages/${{ matrix.arch }}/$EXTRA_FEED_NAME/*.ipk $artifact_dir || true
           done
-   
+
           cp bin/packages/${{ matrix.arch }}/packages_ci/*.ipk ${artifact_dir} || true
 
       - name: Store packages
@@ -165,6 +165,7 @@ jobs:
       - working-directory: /data/openwrt
         shell: su buildbot -c "bash {0}"
         run: |
-          for t in $(find /data/download/${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
+          openwrt_branch=${{ needs.setup.outputs.openwrt_branch }}
+          for t in $(find ${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
             make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
           done
