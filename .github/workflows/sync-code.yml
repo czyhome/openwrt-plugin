@@ -50,6 +50,23 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
 
+      - name: Checkout main
+        uses: actions/checkout@v4
+        if: ${{ matrix.branch != 'main' }}
+        with:
+          ref: main
+          path: feeds/main
+
+      - name: Sync from main
+        uses: actions/checkout@v4
+        if: ${{ matrix.branch != 'main' }}
+        run: |
+          ls -al
+          pwd
+          mkdir -p .github/workflows/
+          cp -rfv feeds/main/.github/workflows/scripts/ feeds/main/.github/workflows/build-* .github/workflows/
+          cp -rfv feeds/main/main.sh .
+
       - name: Determine update
         run: bash main.sh update
 
