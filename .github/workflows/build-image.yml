@@ -22,6 +22,7 @@ jobs:
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
       openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
       artifact_targets_rel: ${{ steps.set_env.outputs.artifact_targets_rel }}
+      artifact_packages_rel: ${{ steps.set_env.outputs.artifact_packages_rel }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,13 +34,16 @@ jobs:
           openwrt_tag=${{ inputs.openwrt_tag }}
 
           artifact_targets_rel=
+          artifact_packages_rel=
           if [ "${openwrt_branch}" == "main" ];then
             openwrt_tag=$openwrt_branch
             artifact_targets_rel=snapshots/targets
+            artifact_packages_rel=snapshots/packages
           else
             openwrt_tag=${openwrt_tag:-$(curl -sL https://github.com/openwrt/openwrt | sed -n 's/.*\/openwrt\/openwrt\/releases\/tag\/\(.*\)">/\1/p')}
             openwrt_tag_version=$(echo $openwrt_tag | sed 's|^v||')
             artifact_targets_rel=releases/$openwrt_tag_version/targets
+            artifact_packages_rel=releases/packages-$(echo $openwrt_branch | sed 's|openwrt-||')
           fi
 
           echo "openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}" >> "$GITHUB_OUTPUT"          
@@ -49,6 +53,7 @@ jobs:
           echo "openwrt_tag_version=${openwrt_tag_version}" >> "$GITHUB_OUTPUT"
 
           echo "artifact_targets_rel=${artifact_targets_rel}" >> "$GITHUB_OUTPUT"
+          echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
 
           python3 -B ./.github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
 
@@ -64,7 +69,7 @@ jobs:
       image: openwrt/imagebuilder:${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}
       volumes:
         - ${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}:/builder
-        - ${{ needs.setup.outputs.openwrt_builder_volume }}/download/${{ needs.setup.outputs.artifact_targets_rel }}/:/builder/bin/targets/
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
       options: --user root --privileged --pull always
     steps:
       - name: Checkout
@@ -76,17 +81,23 @@ jobs:
           python3 -m pip install jinja2
           chown -R buildbot:buildbot bin
 
-      - name: Modify repositories.conf
+      - name: Modify
         shell: su buildbot -c "bash {0}"
         working-directory: /builder
         run: |
-          id;pwd;ls -al
+          openwrt_targets=/data/download/${{ needs.setup.outputs.artifact_targets_rel }}
+          mkdir -p $openwrt_targets
+
           openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
 
           if [ "$openwrt_tag" == "main" ];then
             UPSTREAM_URL=${openwrt_mirror} sh setup.sh
+          else
+            (cd ${openwrt_targets}/../;ln -snf ../$(basename ${{ needs.setup.outputs.artifact_packages_rel }}) packages)
           fi
+          
+          id;pwd;ls -al
 
           openwrt_plugin=$(sed -n 's|openwrt_base\(.*\)base$|openwrt_plugin\1plugin|p' repositories.conf)
 
@@ -97,7 +108,9 @@ jobs:
 
       - name: Generate
         shell: su buildbot -c "bash {0}"
-        run: python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
+        run: |
+          python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
+          cp -rfv bin/targets/* /data/download/${{ needs.setup.outputs.artifact_targets_rel }}/
 
   clean:
     name: Clean ${{ matrix.target }}/${{ matrix.subtarget }}
