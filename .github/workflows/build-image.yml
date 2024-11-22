@@ -82,7 +82,7 @@ jobs:
         run: |
           id;pwd;ls -al
           openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
-          openwrt_mirror=https://mirrors.cernet.edu.cn/openwrt
+          openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
 
           if [ "$openwrt_tag" == "main" ];then
             UPSTREAM_URL=${openwrt_mirror} sh setup.sh
