@@ -157,6 +157,8 @@ jobs:
         run: |
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
           [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
+          make defconfig
+          
           mkdir -p /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
 
       - name: Download artifact
@@ -171,12 +173,11 @@ jobs:
         shell: su buildbot -c "bash {0}"
         run: |
           openwrt_branch=${{ needs.setup.outputs.openwrt_branch }}
+          if [ "${openwrt_branch}" == "main" ];then
+            sed -i -e 's|--sign $(BUILD_KEY_APK_SEC)|--allow-untrusted|' package/Makefile
+          fi
           for t in $(find /data/download/${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
-            if [ "${openwrt_branch}" == "main" ];then
-              ./staging_dir/host/bin/apk mkndx --allow-untrusted --output $t/packages.adb $t/*.apk
-            else
-              make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
-            fi
+            make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
           done
 
   clean:
