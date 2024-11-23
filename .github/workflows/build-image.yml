@@ -145,7 +145,7 @@ jobs:
     if: always()
     steps:
       - run: |
-          volume_names=$(docker volume ls -q | grep 'openwrt-ib-${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}' || true | xargs )
+          volume_names=$(docker volume ls -q | grep -w 'openwrt-ib-${{ matrix.target }}-${{ matrix.subtarget }}-${{ needs.setup.outputs.openwrt_tag }}' || true | xargs )
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
