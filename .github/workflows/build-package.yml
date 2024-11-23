@@ -157,13 +157,7 @@ jobs:
         run: |
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
           [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
-
           mkdir -p /data/download/${{ needs.setup.outputs.artifact_packages_rel }}
-
-          #openwrt_repo=http://gitea.czy21-internal.com
-          #sed -i -e "s|https://git.openwrt.org.*/\(.*\).git|$openwrt_repo/openwrt/\1.git|" feeds.conf.default
-          #./scripts/feeds update -a
-          make defconfig
 
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -178,7 +172,11 @@ jobs:
         run: |
           openwrt_branch=${{ needs.setup.outputs.openwrt_branch }}
           for t in $(find /data/download/${{ needs.setup.outputs.artifact_packages_rel }} -type d -name 'plugin');do
-            make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
+            if [ "${openwrt_branch}" == "main" ];then
+              ./staging_dir/host/bin/apk mkndx --allow-untrusted --output $t/packages.adb $t/*.apk
+            else
+              make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
+            fi
           done
 
   clean:
@@ -188,7 +186,7 @@ jobs:
     if: always()
     steps:
       - run: |
-          volume_names=$(docker volume ls -q | grep -w 'openwrt-sdk-x86-64-${{ needs.setup.outputs.openwrt_branch }}' || true | xargs )
+          volume_names=$(docker volume ls -q | grep 'openwrt-sdk-x86-64-${{ needs.setup.outputs.openwrt_branch }}$' || true | xargs )
           if [ -n "${volume_names}" ];then
             docker volume rm $volume_names
           fi
