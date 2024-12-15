@@ -785,12 +785,12 @@ function setup_uci_defaults() {
 }
 
 function insertSnapshotVersions(versions) {
-  for (const version of versions.slice()) {
-    let branch = version.split(".").slice(0, -1).join(".") + "-SNAPSHOT";
-    if (!versions.includes(branch)) {
-      versions.push(branch);
-    }
-  }
+  // for (const version of versions.slice()) {
+  //   let branch = version.split(".").slice(0, -1).join(".") + "-SNAPSHOT";
+  //   if (!versions.includes(branch)) {
+  //     versions.push(branch);
+  //   }
+  // }
   versions.push("SNAPSHOT");
 }
 
