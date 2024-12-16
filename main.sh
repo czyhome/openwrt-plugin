@@ -65,8 +65,18 @@ if [ "$1" == "update" ];then
   sparse_checkout $lede_packages_dir "https://github.com/coolsnowwolf/packages" "$lede_packages_pkg"
   cp -rv $lede_packages_dir/net/* package/
 
+  ##
+  immortalwrt_packages_dir=feeds/immortalwrt/packages
+  immortalwrt_packages_pkg="net/adguardhome"
+  sparse_checkout $immortalwrt_packages_dir "https://github.com/immortalwrt/packages" "$immortalwrt_packages_pkg" $([ "$branch" == "main" ] && echo master || echo $branch)
+
+  for t in `find $immortalwrt_packages_dir -name 'Makefile'`;do
+    cp_pkg_var $t
+  done
+
+  ##
   official_packages_dir=feeds/openwrt/packages
-  official_packages_pkg="net/adguardhome net/dnsproxy"
+  official_packages_pkg="net/dnsproxy"
   sparse_checkout $official_packages_dir "https://github.com/openwrt/packages" "$official_packages_pkg" $([ "$branch" == "main" ] && echo master || echo $branch)
 
   for t in `find $official_packages_dir -name 'Makefile'`;do
