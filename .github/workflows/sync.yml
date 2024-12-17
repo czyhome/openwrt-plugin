@@ -148,7 +148,7 @@ jobs:
           " > include-packages
 
           rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' \
-            rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_packages_bin }
+            rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_packages_bin }}
           
           (
             cd ${{ steps.set_env.outputs.artifact_packages_dir }}
