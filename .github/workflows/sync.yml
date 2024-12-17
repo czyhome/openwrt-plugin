@@ -1,4 +1,4 @@
-name: Sync code
+name: Sync
 
 on:
   schedule:
@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       branchs: ${{ steps.set_env.outputs.branchs }}
+      openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,8 +42,10 @@ jobs:
 
           echo "branchs=$JSON" >> $GITHUB_OUTPUT
 
-  check:
-    name: Check
+          echo "openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}" >> "$GITHUB_OUTPUT"
+
+  plugin:
+    name: Plugin
     needs: [setup]
     runs-on: ubuntu-latest
     strategy:
@@ -74,4 +77,40 @@ jobs:
           git config user.email github-actions@github.com
           if [ -n "$(git status -s)" ];then
             git pull && git add . && git commit -m "CI: sync code" && git push
+          fi
+
+  mirror:
+    name: Mirror
+    runs-on: self-hosted
+    needs: [setup]
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{fromJson(needs.setup.outputs.branchs)}}
+    container:
+      image: openwrt/sdk:x86-64-${{ matrix.branch }}
+      volumes:
+        - openwrt-sdk-x86-64-${{ needs.setup.outputs.openwrt_branch }}:/builder
+        - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
+      options: --user root --privileged --pull always
+    steps:
+      - working-directory: /builder
+        shell: su buildbot -c "bash {0}"
+        run: |
+          echo ${{ matrix.branch }}
+          
+  clean:
+    name: Clean
+    runs-on: self-hosted
+    needs: [setup,mirror]
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: ${{fromJson(needs.setup.outputs.branchs)}}
+    if: always()
+    steps:
+      - run: |
+          volume_names=$(docker volume ls -q | grep 'openwrt-sdk-x86-64-${{ matrix.branch }}$' || true | xargs )
+          if [ -n "${volume_names}" ];then
+            docker volume rm $volume_names
           fi
