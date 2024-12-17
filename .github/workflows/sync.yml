@@ -90,15 +90,36 @@ jobs:
     container:
       image: openwrt/sdk:x86-64-${{ matrix.branch }}
       volumes:
-        - openwrt-sdk-x86-64-${{ needs.setup.outputs.openwrt_branch }}:/builder
+        - openwrt-sdk-x86-64-${{ matrix.branch }}:/builder
         - ${{ needs.setup.outputs.openwrt_builder_volume }}/:/data/
       options: --user root --privileged --pull always
     steps:
-      - working-directory: /builder
+      - name: Set env
+        id: set_env
+        run: |
+          openwrt_branch_number=$(echo ${{ matrix.branch }} | sed 's|openwrt-||')
+
+          artifact_packages_rel=
+          if [ "${{ matrix.branch }}" == "main" ];then
+            artifact_packages_rel=snapshots/packages
+          else
+            artifact_packages_rel=releases/packages-${openwrt_branch_number}
+          fi
+
+          echo "openwrt_branch_number=${openwrt_branch_number}" >> "$GITHUB_OUTPUT"
+          echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
+
+      - name: Sync
+        working-directory: /builder
         shell: su buildbot -c "bash {0}"
         run: |
-          echo ${{ matrix.branch }}
-          
+          echo 'immortalwrt-org' > rsync-immortalwrt-password
+          chmod 600 rsync-immortalwrt-password
+
+          openwrt_branch_number=${{ steps.set_env.outputs.openwrt_branch_number }}
+          artifact_packages_rel=${{ steps.set_env.outputs.artifact_packages_rel }}
+
+
   clean:
     name: Clean
     runs-on: self-hosted
