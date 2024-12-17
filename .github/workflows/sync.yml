@@ -96,6 +96,7 @@ jobs:
     steps:
       - name: Set env
         id: set_env
+        shell: bash
         run: |
           openwrt_branch_number=$(echo ${{ matrix.branch }} | sed 's|openwrt-||')
 
@@ -118,7 +119,19 @@ jobs:
 
           openwrt_branch_number=${{ steps.set_env.outputs.openwrt_branch_number }}
           artifact_packages_rel=${{ steps.set_env.outputs.artifact_packages_rel }}
+          artifact_packages_bin=bin/download/
 
+          mkdir -p $artifact_packages_bin
+          
+          echo "
+          luci-app-socat*
+          luci-app-nfs*
+          *vlmcsd*
+          " > include-packages
+
+          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/$rel_packages_dir $artifact_packages_bin
+
+          ls -alR $artifact_packages_bin
 
   clean:
     name: Clean
