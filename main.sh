@@ -43,45 +43,72 @@ function sparse_checkout(){
   )
 }
 
-################################################
-if [ "$1" == "update" ];then
-
+function sparse_checkout_lede(){
   # 
   lede_dir=feeds/coolsnowwolf/lede
   lede_pkg="package/lean/ddns-scripts_aliyun/update_aliyun_com.sh"
   sparse_checkout $lede_dir "https://github.com/coolsnowwolf/lede" "$lede_pkg"
   cp -rv $lede_dir/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
 
-  ## 
+  ##
   lede_luci_dir=feeds/coolsnowwolf/luci
-  lede_luci_pkg="applications/luci-app-vlmcsd applications/luci-app-socat applications/luci-app-nfs"
+  lede_luci_pkg="applications/luci-app-socat applications/luci-app-nfs"
   sparse_checkout $lede_luci_dir "https://github.com/coolsnowwolf/luci" "$lede_luci_pkg"
 
-  cp -rv $lede_luci_dir/applications/* luci/
+  for t in $lede_luci_pkg;do
+    rm -rf luci/$(basename $t)
+    cp -rv $lede_luci_dir/$t luci/
+  done
+}
 
-  ## 
-  lede_packages_dir=feeds/coolsnowwolf/packages
-  lede_packages_pkg="net/vlmcsd"
-  sparse_checkout $lede_packages_dir "https://github.com/coolsnowwolf/packages" "$lede_packages_pkg"
-  cp -rv $lede_packages_dir/net/* package/
+function sparse_checkout_immortalwrt(){
+  ##
+  immortalwrt_luci_dir=feeds/immortalwrt/luci
+  immortalwrt_luci_pkg="applications/luci-app-vlmcsd"
+  sparse_checkout $immortalwrt_luci_dir "https://github.com/immortalwrt/luci" "$immortalwrt_luci_pkg" $([ "$branch" == "main" ] && echo master || echo $branch)
+
+  for t in $immortalwrt_luci_pkg;do
+    rm -rf luci/$(basename $t)
+    cp -rv $immortalwrt_luci_dir/$t luci/
+  done
 
   ##
   immortalwrt_packages_dir=feeds/immortalwrt/packages
-  immortalwrt_packages_pkg="net/adguardhome"
+  immortalwrt_packages_cp_var="net/adguardhome"
+  immortalwrt_packages_cp_pkg="net/vlmcsd"
+  immortalwrt_packages_pkg="$immortalwrt_packages_cp_var $immortalwrt_packages_cp_pkg"
   sparse_checkout $immortalwrt_packages_dir "https://github.com/immortalwrt/packages" "$immortalwrt_packages_pkg" $([ "$branch" == "main" ] && echo master || echo $branch)
 
-  for t in `find $immortalwrt_packages_dir -name 'Makefile'`;do
-    cp_pkg_var $t
+  for t in $immortalwrt_packages_cp_pkg;do
+    rm -rf package/$(basename $t)
+    cp -rv $immortalwrt_packages_dir/$t package/
   done
+
+  for t in $immortalwrt_packages_cp_var;do
+    cp_pkg_var $immortalwrt_packages_dir/$t/Makefile
+  done
+}
+
+
+function sparse_checkout_official(){
 
   ##
   official_packages_dir=feeds/openwrt/packages
   official_packages_pkg="net/dnsproxy"
   sparse_checkout $official_packages_dir "https://github.com/openwrt/packages" "$official_packages_pkg" $([ "$branch" == "main" ] && echo master || echo $branch)
 
-  for t in `find $official_packages_dir -name 'Makefile'`;do
-    cp_pkg_var $t
+  for t in $official_packages_pkg;do
+    cp_pkg_var $official_packages_dir/$t/Makefile
   done
+
+}
+
+################################################
+if [ "$1" == "update" ];then
+
+  sparse_checkout_lede
+  sparse_checkout_immortalwrt
+  sparse_checkout_official
 
   find -name 'Makefile' -type f -exec sed -i "s|include ../../luci.mk|include $\(TOPDIR\)/feeds/luci/luci.mk|g" {} \;
 
