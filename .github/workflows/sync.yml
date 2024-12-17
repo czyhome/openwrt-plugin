@@ -129,9 +129,7 @@ jobs:
           *vlmcsd*
           " > include-packages
 
-          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/$rel_packages_dir $artifact_packages_bin
-
-          ls -alR $artifact_packages_bin
+          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/$artifact_packages_rel $artifact_packages_bin
 
   clean:
     name: Clean
