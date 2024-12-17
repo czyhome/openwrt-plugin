@@ -107,8 +107,32 @@ jobs:
             artifact_packages_rel=releases/packages-${openwrt_branch_number}
           fi
 
+          artifact_packages_bin=/builder/bin/download
+          artifact_packages_dir=${artifact_packages_bin}/$artifact_packages_rel
+
+          download_packages_bin=/data/download
+          download_packages_dir=${download_packages_bin}/$artifact_packages_rel
+
           echo "openwrt_branch_number=${openwrt_branch_number}" >> "$GITHUB_OUTPUT"
+
           echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
+
+          echo "artifact_packages_bin=${artifact_packages_bin}" >> "$GITHUB_OUTPUT"
+          echo "artifact_packages_dir=${artifact_packages_dir}" >> "$GITHUB_OUTPUT"
+
+          echo "download_packages_bin=${download_packages_bin}" >> "$GITHUB_OUTPUT"
+          echo "download_packages_dir=${download_packages_dir}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup
+        working-directory: /builder
+        shell: su buildbot -c "bash {0}"
+        run: |
+          openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
+          [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
+          make defconfig
+
+          mkdir -p ${{ steps.set_env.outputs.artifact_packages_bin }}
+          mkdir -p ${{ steps.set_env.outputs.download_packages_dir }}
 
       - name: Sync
         working-directory: /builder
@@ -117,19 +141,33 @@ jobs:
           echo 'immortalwrt-org' > rsync-immortalwrt-password
           chmod 600 rsync-immortalwrt-password
 
-          openwrt_branch_number=${{ steps.set_env.outputs.openwrt_branch_number }}
-          artifact_packages_rel=${{ steps.set_env.outputs.artifact_packages_rel }}
-          artifact_packages_bin=bin/download/
-
-          mkdir -p $artifact_packages_bin
-          
           echo "
           luci-app-socat*
           luci-app-nfs*
           *vlmcsd*
           " > include-packages
 
-          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/$artifact_packages_rel $artifact_packages_bin
+          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' \
+            rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_packages_bin }
+          
+          (
+            cd ${{ steps.set_env.outputs.artifact_packages_dir }}
+            for t in `find -maxdepth 1 -type d -not -path .`;do
+              plugin_rel=$t/plugin
+              mkdir -p $plugin_rel
+              find $t \( -name "*.ipk" -o -name "*.apk" \) -and \( -not -path '*plugin/*' \) -exec cp -rv {} ${plugin_rel} \;
+              cp --parents -rv $plugin_rel ${{ steps.set_env.outputs.download_packages_dir }}
+            done
+          )
+
+      - name: Generate index
+        working-directory: /builder
+        shell: su buildbot -c "bash {0}"
+        run: |
+          sed -i -e 's|--sign $(BUILD_KEY_APK_SEC)|--allow-untrusted|' package/Makefile
+          for t in $(find ${{ steps.set_env.outputs.download_packages_dir }} -type d -name 'plugin');do
+            make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
+          done
 
   clean:
     name: Clean
