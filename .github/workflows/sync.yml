@@ -166,6 +166,7 @@ jobs:
         run: |
           sed -i -e 's|--sign $(BUILD_KEY_APK_SEC)|--allow-untrusted|' package/Makefile
           for t in $(find ${{ steps.set_env.outputs.download_packages_dir }} -type d -name 'plugin');do
+            echo "Generating index for package ${t}"
             make -j4 package/index V=s CONFIG_SIGNED_PACKAGES= PACKAGE_SUBDIRS=$t
           done
 
