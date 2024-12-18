@@ -16,7 +16,6 @@ jobs:
       targets_subtargets: ${{ steps.set_env.outputs.targets_subtargets }}
       targets_devices: ${{ steps.set_env.outputs.targets_devices }}
       archs: ${{ steps.set_env.outputs.archs }}
-      openwrt_dir: ${{ steps.set_env.outputs.openwrt_dir }}
       openwrt_tag: ${{ steps.set_env.outputs.openwrt_tag }}
       openwrt_tag_version: ${{ steps.set_env.outputs.openwrt_tag_version }}
       openwrt_branch: ${{ steps.set_env.outputs.openwrt_branch }}
@@ -30,7 +29,6 @@ jobs:
       - name: Set env
         id: set_env
         run: |
-          openwrt_dir=/data/openwrt
           openwrt_branch="${GITHUB_REF#refs/heads/}"
           openwrt_branch_number=$(echo $openwrt_branch | sed 's|openwrt-||')
           openwrt_tag=${{ inputs.openwrt_tag }}
@@ -49,7 +47,6 @@ jobs:
           fi
 
           echo "openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}" >> "$GITHUB_OUTPUT"
-          echo "openwrt_dir=${openwrt_dir}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch=${openwrt_branch}" >> "$GITHUB_OUTPUT"
           echo "openwrt_branch_number=${openwrt_branch_number}" >> "$GITHUB_OUTPUT"
           echo "openwrt_tag=${openwrt_tag}" >> "$GITHUB_OUTPUT"
@@ -78,23 +75,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Initialize
-        working-directory: /builder
-        run: python3 -m pip install jinja2
+      - name: Set env
+        id: set_env
+        shell: bash
+        run: |
+          python3 -m pip install jinja2
+
+          download_dir=/data/download
+          download_targets_dir=${download_dir}/${{ needs.setup.outputs.artifact_targets_rel }}
+          download_packages_dir=${download_dir}/${{ needs.setup.outputs.artifact_packages_rel }}
+
+          echo "download_dir=${download_dir}" >> "$GITHUB_OUTPUT"
+          echo "download_targets_dir=${download_targets_dir}" >> "$GITHUB_OUTPUT"
+          echo "download_packages_dir=${download_packages_dir}" >> "$GITHUB_OUTPUT"
           
-      - name: Mirror
+      - name: Setup
         working-directory: /builder
         shell: su buildbot -c "bash {0}"
         run: |
-          openwrt_targets=/data/download/${{ needs.setup.outputs.artifact_targets_rel }}
-          mkdir -p $openwrt_targets bin
-          ln -snf ${openwrt_targets} bin/targets
+          mkdir -p ${{ steps.set_env.outputs.download_targets_dir }} bin
+          
+          ln -snf ${{ steps.set_env.outputs.download_targets_dir }} bin/targets
 
           openwrt_tag=${{ needs.setup.outputs.openwrt_tag }}
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
 
           [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
-          
+
           sed -i 's|^CONFIG_SIGNATURE_CHECK|# \0|' .config
 
           if [ "$openwrt_tag" == "main" ];then
@@ -109,7 +116,7 @@ jobs:
           else
             id;pwd;ls -al
 
-            (cd ${openwrt_targets}/../;ln -snf ../$(basename ${{ needs.setup.outputs.artifact_packages_rel }}) packages)
+            (cd ${{ steps.set_env.outputs.download_targets_dir }}/../;ln -snf ../$(basename ${{ needs.setup.outputs.artifact_packages_rel }}) packages)
 
             openwrt_plugin=$(sed -n -e 's|openwrt_base\(.*\)base$|openwrt_plugin\1plugin|p' repositories.conf | sed -e "s|https://downloads.openwrt.org|http://openwrt-download.czy21-internal.com|")
             sed -i -e "s|https://downloads.openwrt.org|${openwrt_mirror}|" -e 's|^option check_signature|# \0|' -e "\$a ${openwrt_plugin}" repositories.conf
@@ -125,13 +132,13 @@ jobs:
         shell: su buildbot -c "bash {0}"
         if: always()
         run: |
-          wget https://downloads.openwrt.org/index.html -O /data/download/index.html
+          wget https://downloads.openwrt.org/index.html -O ${{ steps.set_env.outputs.download_dir }}/index.html
 
-          for t in $(ls /data/download/releases/ | grep "^[0-9]");do
-            sed -i -e "s|//archive.openwrt.org/\(releases/${t}\)|\1|" /data/download/index.html
+          for t in $(ls ${{ steps.set_env.outputs.download_dir }}/releases/ | grep "^[0-9]");do
+            sed -i -e "s|//archive.openwrt.org/\(releases/${t}\)|\1|" ${{ steps.set_env.outputs.download_dir }}/index.html
           done
 
-          python3 -B .github/workflows/scripts/gen_version.py --artifact-dir /data/download
+          python3 -B .github/workflows/scripts/gen_version.py --artifact-dir ${{ steps.set_env.outputs.download_dir }}
 
   clean:
     name: Clean ${{ matrix.target }}/${{ matrix.subtarget }}
