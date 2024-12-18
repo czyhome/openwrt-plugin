@@ -143,6 +143,7 @@ jobs:
 
           echo "
           *vlmcsd*
+          luci-app-openclash*
           " > include-packages
 
           rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' \
