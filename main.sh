@@ -50,6 +50,16 @@ function sparse_checkout_lede(){
   sparse_checkout $lede_dir "https://github.com/coolsnowwolf/lede" "$lede_pkg"
   cp -rv $lede_dir/package/lean/ddns-scripts_aliyun/update_aliyun_com.sh package/ddns-scripts-aliyun/files/
 
+  
+  lede_luci_dir=feeds/coolsnowwolf/luci
+  lede_luci_pkg="applications/luci-app-socat applications/luci-app-nfs"
+  sparse_checkout $lede_luci_dir "https://github.com/coolsnowwolf/luci" "$lede_luci_pkg"
+
+  for t in $lede_luci_pkg;do
+    rm -rf luci/$(basename $t)
+    cp -rv $lede_luci_dir/$t luci/
+  done
+
 }
 
 function sparse_checkout_immortalwrt(){
