@@ -100,11 +100,10 @@ jobs:
         run: |
           openwrt_branch_number=$(echo ${{ matrix.branch }} | sed 's|openwrt-||')
 
-          artifact_packages_rel=
+          artifact_packages_rel=releases/packages-${openwrt_branch_number}
+          
           if [ "${{ matrix.branch }}" == "main" ];then
             artifact_packages_rel=snapshots/packages
-          else
-            artifact_packages_rel=releases/packages-${openwrt_branch_number}
           fi
 
           artifact_packages_bin=/builder/bin/download
@@ -154,7 +153,7 @@ jobs:
             for t in `find -maxdepth 1 -type d -not -path . -exec basename {} \;`;do
               plugin_rel=$t/plugin
               mkdir -p $plugin_rel
-              find $t \( -name "*.ipk" -o -name "*.apk" \) -and \( -not -path '*plugin/*' \) -exec cp -rv {} ${plugin_rel} \;
+              find $t \( -name "*.ipk" -o -name "*.apk" \) -and \( -not -path '*plugin/*' \) -exec cp -r {} ${plugin_rel} \;
               rsync -avmR --include-from=/builder/include-packages --include=*/ --exclude=* --delete $plugin_rel ${{ steps.set_env.outputs.download_packages_dir }}
             done
           )
