@@ -146,16 +146,16 @@ jobs:
           luci-app-openclash*
           " > include-packages
 
-          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude='*' \
+          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude=* \
             rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_packages_bin }}
           
           (
             cd ${{ steps.set_env.outputs.artifact_packages_dir }}
-            for t in `find -maxdepth 1 -type d -not -path .`;do
+            for t in `find -maxdepth 1 -type d -not -path . -exec basename {} \;`;do
               plugin_rel=$t/plugin
               mkdir -p $plugin_rel
               find $t \( -name "*.ipk" -o -name "*.apk" \) -and \( -not -path '*plugin/*' \) -exec cp -rv {} ${plugin_rel} \;
-              cp --parents -rv $plugin_rel ${{ steps.set_env.outputs.download_packages_dir }}
+              rsync -avmR --include-from=/builder/include-packages --include=*/ --exclude=* --delete $plugin_rel ${{ steps.set_env.outputs.download_packages_dir }}
             done
           )
 
