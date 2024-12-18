@@ -62,9 +62,6 @@ jobs:
           fetch-depth: 0
       - name: Determine packages
         run: |
-          EXTRA_FEEDS="src-git|openclash|https://github.com/vernesong/OpenClash.git;master"
-          echo "EXTRA_FEEDS=$EXTRA_FEEDS" >> $GITHUB_ENV
-          
           PACKAGES=
           INPUT_PACKAGES="${{ inputs.packages }}"
           if [[ "$INPUT_PACKAGES" =~ "luci" ]];then
@@ -118,11 +115,6 @@ jobs:
 
           for t in $PACKAGES;do
             find bin/packages/${{ matrix.arch }}/packages \( -name "$t*.ipk" -o -name "$t*.apk" \) -exec cp -rv {} ${artifact_dir} \; || true
-          done
-
-          for EXTRA_FEED in $EXTRA_FEEDS; do
-              EXTRA_FEED_NAME="$(echo "$EXTRA_FEED" | cut -d'|' -f2)"
-              find bin/packages/${{ matrix.arch }}/$EXTRA_FEED_NAME \( -name "*.ipk" -o -name "*.apk" \) -exec cp -rv {} ${artifact_dir} \; || true
           done
 
           find bin/packages/${{ matrix.arch }}/packages_ci \( -name "*.ipk" -o -name "*.apk" \) -exec cp -rv {} ${artifact_dir} \; || true
