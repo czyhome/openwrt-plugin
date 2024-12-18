@@ -113,10 +113,6 @@ jobs:
           artifact_dir=bin/artifact/${{ matrix.arch }}/plugin
           mkdir -p ${artifact_dir}
 
-          for t in $PACKAGES;do
-            find bin/packages/${{ matrix.arch }}/packages \( -name "$t*.ipk" -o -name "$t*.apk" \) -exec cp -rv {} ${artifact_dir} \; || true
-          done
-
           find bin/packages/${{ matrix.arch }}/packages_ci \( -name "*.ipk" -o -name "*.apk" \) -exec cp -rv {} ${artifact_dir} \; || true
 
       - name: Store packages
