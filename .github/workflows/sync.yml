@@ -142,8 +142,6 @@ jobs:
           chmod 600 rsync-immortalwrt-password
 
           echo "
-          luci-app-socat*
-          luci-app-nfs*
           *vlmcsd*
           " > include-packages
 
