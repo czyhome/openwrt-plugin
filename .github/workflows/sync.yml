@@ -106,32 +106,32 @@ jobs:
             artifact_packages_rel=snapshots/packages
           fi
 
-          artifact_packages_bin=/builder/bin/download
-          artifact_packages_dir=${artifact_packages_bin}/$artifact_packages_rel
+          artifact_dir=/builder/bin/download
+          artifact_packages_dir=${artifact_dir}/$artifact_packages_rel
 
-          download_packages_bin=/data/download
-          download_packages_dir=${download_packages_bin}/$artifact_packages_rel
+          download_dir=/data/download
+          download_packages_dir=${download_dir}/$artifact_packages_rel
 
           echo "openwrt_branch_number=${openwrt_branch_number}" >> "$GITHUB_OUTPUT"
 
           echo "artifact_packages_rel=${artifact_packages_rel}" >> "$GITHUB_OUTPUT"
 
-          echo "artifact_packages_bin=${artifact_packages_bin}" >> "$GITHUB_OUTPUT"
+          echo "artifact_dir=${artifact_dir}" >> "$GITHUB_OUTPUT"
           echo "artifact_packages_dir=${artifact_packages_dir}" >> "$GITHUB_OUTPUT"
 
-          echo "download_packages_bin=${download_packages_bin}" >> "$GITHUB_OUTPUT"
+          echo "download_dir=${download_dir}" >> "$GITHUB_OUTPUT"
           echo "download_packages_dir=${download_packages_dir}" >> "$GITHUB_OUTPUT"
 
       - name: Setup
         working-directory: /builder
         shell: su buildbot -c "bash {0}"
         run: |
+          mkdir -p ${{ steps.set_env.outputs.artifact_dir }}
+          mkdir -p ${{ steps.set_env.outputs.download_packages_dir }}
+
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
           [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
           make defconfig
-
-          mkdir -p ${{ steps.set_env.outputs.artifact_packages_bin }}
-          mkdir -p ${{ steps.set_env.outputs.download_packages_dir }}
 
       - name: Sync
         working-directory: /builder
@@ -146,7 +146,7 @@ jobs:
           " > include-packages
 
           rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude=* \
-            rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_packages_bin }}
+            rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_dir }}
           
           (
             cd ${{ steps.set_env.outputs.artifact_packages_dir }}
