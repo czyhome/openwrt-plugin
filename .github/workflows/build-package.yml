@@ -149,11 +149,11 @@ jobs:
         working-directory: /builder
         shell: su buildbot -c "bash {0}"
         run: |
+          mkdir -p ${{ steps.set_env.outputs.download_packages_dir }}
+          
           openwrt_mirror=https://mirrors.pku.edu.cn/openwrt
           [ ! -f setup.sh ] || UPSTREAM_URL=${openwrt_mirror} bash setup.sh
           make defconfig
-
-          mkdir -p ${{ steps.set_env.outputs.download_packages_dir }}
 
       - name: Download artifact
         uses: actions/download-artifact@v4
