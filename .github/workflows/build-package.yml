@@ -3,8 +3,8 @@ name: Build packages
 on:
   push:
     paths:
-      - luci/**
-      - package/**
+      # - luci/**
+      # - package/**
   workflow_dispatch:
     inputs:
       packages:
