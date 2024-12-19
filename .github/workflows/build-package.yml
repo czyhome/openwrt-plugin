@@ -1,6 +1,10 @@
 name: Build packages
 
 on:
+  push:
+    paths:
+      - luci/**
+      - package/**
   workflow_dispatch:
     inputs:
       packages:
