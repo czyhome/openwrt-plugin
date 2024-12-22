@@ -115,7 +115,7 @@ function buildAsuRequest(request_hash) {
     defaults: $("#uci-defaults-content").value,
     version_code: $("#image-code").innerText,
     version: $("#versions").value,
-    diff_packages: true,
+    diff_packages: false,
     client: "ofs/" + ofs_version,
   });
   var method = "POST";
