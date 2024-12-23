@@ -13,6 +13,7 @@
       "luci-compat",
       "luci-proto-wireguard",
       "qrencode",
+      "luci-app-attendedsysupgrade",
       "luci-app-nlbwmon",
       "luci-app-snmpd",
       "luci-app-qos",
