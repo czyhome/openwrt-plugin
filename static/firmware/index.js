@@ -111,6 +111,7 @@ function buildAsuRequest(request_hash) {
   var body = JSON.stringify({
     profile: current_device.id,
     target: current_device.target,
+    rootfs_size_mb: $("#rootfs-partsize").value || null,
     packages: split($("#asu-packages").value),
     defaults: $("#uci-defaults-content").value,
     version_code: $("#image-code").innerText,
