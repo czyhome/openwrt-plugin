@@ -3,7 +3,7 @@
     "profiles": {
         "xunlong_orangepi-zero3": {
             "image_builder_config": [
-                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024"
+                "ROOTFS_PARTSIZE=1024"
             ],
             "install_packages": [
                 "{{ simple | join(' ') }}",
