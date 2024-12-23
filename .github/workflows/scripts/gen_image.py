@@ -26,16 +26,11 @@ if __name__ == '__main__':
     profiles_obj = json.load(open(target_profiles_file, 'r'))
     profiles = profiles_obj['profiles']
 
-    config_file = pathlib.Path(args.openwrt_dir).joinpath(".config")
-    config_bak_file = pathlib.Path(args.openwrt_dir).joinpath(".config.bak")
-    config_bak_file.write_text(config_file.read_text())
-
     for pk, pv in profiles.items():
-        config_file.write_text(config_bak_file.read_text())
         cmd_arr = [
             f"cd {args.openwrt_dir};",
             "make image",
-            f"PROFILE=\"{pk}\""
+            f"PROFILE={pk}"
         ]
         image_builder_config = pv.get("image_builder_config", [])
 
@@ -47,7 +42,7 @@ if __name__ == '__main__':
         packages_str = " ".join(packages)
         
         if packages:
-            cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
+            cmd_arr.append(f"PACKAGES={packages_str}")
             
         if image_builder_config:
             cmd_arr.append(" ".join(image_builder_config))
