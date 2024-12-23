@@ -3,7 +3,7 @@
     "profiles": {
         "generic": {
             "image_builder_config": [
-                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024",
+                "ROOTFS_PARTSIZE=1024",
                 "CONFIG_VMDK_IMAGES=y"
             ],
             "install_packages": [
