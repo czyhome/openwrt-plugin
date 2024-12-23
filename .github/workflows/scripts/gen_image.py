@@ -38,16 +38,20 @@ if __name__ == '__main__':
             f"PROFILE=\"{pk}\""
         ]
         image_builder_config = pv.get("image_builder_config", [])
-        if image_builder_config:
-            config_file.open(mode="a+", encoding="utf-8").write('\n'.join(image_builder_config))
 
         packages = pv.get("install_packages", [])
         for i,t in enumerate(packages):
             t_result=Template(t).render(global_profiles_obj["packages"])
             packages[i] = t_result
+
         packages_str = " ".join(packages)
+        
         if packages:
             cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
+            
+        if image_builder_config:
+            cmd_arr.append(" ".join(image_builder_config))
+
         cmd_str = " ".join(cmd_arr)
         os.system(f"echo \'{cmd_str}\'")
         os.system(cmd_str)
