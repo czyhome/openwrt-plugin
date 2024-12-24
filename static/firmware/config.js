@@ -8,7 +8,7 @@ var config = {
   image_url: "https://openwrt-download.czy21.com",
 
   // Insert snapshot versions (optional)
-  show_snapshots: true,
+  show_snapshots: false,
 
   // Info link URL (optional)
   info_url: "https://openwrt.org/start?do=search&id=toh&q={title} @toh",

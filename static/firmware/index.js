@@ -4,11 +4,13 @@ let current_device = {};
 let current_language = undefined;
 let current_language_json = undefined;
 let url_params = undefined;
-const ofs_version = "%GIT_VERSION%";
+const ofs_version = "";
 
 let progress = {
   "tr-init": 10,
+  "tr-container-setup": 15,
   "tr-download-imagebuilder": 20,
+  "tr-validate-manifest": 30,
   "tr-unpack-imagebuilder": 40,
   "tr-calculate-packages-hash": 60,
   "tr-building-image": 80,
@@ -786,19 +788,19 @@ function setup_uci_defaults() {
 }
 
 function insertSnapshotVersions(versions) {
-  // for (const version of versions.slice()) {
-  //   let branch = version.split(".").slice(0, -1).join(".") + "-SNAPSHOT";
-  //   if (!versions.includes(branch)) {
-  //     versions.push(branch);
-  //   }
-  // }
-  versions.push("SNAPSHOT");
+  for (const version of versions.slice()) {
+    let branch = version.split(".").slice(0, -1).join(".") + "-SNAPSHOT";
+    if (!versions.includes(branch)) {
+      versions.push(branch);
+    }
+  }
 }
 
 async function init() {
   url_params = new URLSearchParams(window.location.search);
-  
+
   $("#all-downloads a").href = config.image_url;
+
   $("#ofs-version").innerText = ofs_version;
 
   if (typeof config.asu_url !== "undefined") {
@@ -829,6 +831,12 @@ async function init() {
 
       if (config.show_snapshots) {
         insertSnapshotVersions(versions);
+      }
+
+      versions.push("SNAPSHOT");
+
+      if (config.upcoming_version != "") {
+        versions.push(obj.upcoming_version);
       }
 
       return {
