@@ -42,7 +42,7 @@ if __name__ == '__main__':
         packages_str = " ".join(packages)
         
         if packages:
-            cmd_arr.append(f"PACKAGES={packages_str}")
+            cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
             
         if image_builder_config:
             cmd_arr.append(" ".join(image_builder_config))
