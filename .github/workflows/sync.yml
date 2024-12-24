@@ -142,16 +142,22 @@ jobs:
         run: |
           echo 'immortalwrt-org' > rsync-immortalwrt-password
           chmod 600 rsync-immortalwrt-password
-          archs="${{ join(fromJSON(needs.setup.outputs.archs),' ') }}"
+          archs="${{ join(fromJson(needs.setup.outputs.archs),' ') }}"
           packages="*vlmcsd* luci-app-openclash*"
 
-          echo "
-          *vlmcsd*
-          luci-app-openclash*
-          " > include-packages
+          echo -n "" > include-archs-packages
+          for a in $archs;do
+            for p in $packages;do
+              echo "*/$a/*/$p" >> include-archs-packages
+            done
+          done
 
-          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-packages --include=*/ --exclude=* \
-            rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_dir }}
+          echo -n "" > include-packages
+          for p in $packages;do
+            echo "$p" >> include-packages
+          done
+
+          rsync --password-file=rsync-immortalwrt-password -avmR --include-from=include-archs-packages --include=*/ --exclude=* rsync://firmwarepublic@rsync-mirror.infra.immortalwrt.org/firmware-public/${{ steps.set_env.outputs.artifact_packages_rel }} ${{ steps.set_env.outputs.artifact_dir }}
           
           (
             cd ${{ steps.set_env.outputs.artifact_packages_dir }}
