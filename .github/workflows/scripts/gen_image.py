@@ -38,15 +38,13 @@ if __name__ == '__main__':
         for i,t in enumerate(packages):
             t_result=Template(t).render(global_profiles_obj["packages"])
             packages[i] = t_result
-
-        packages_str = " ".join(packages)
         
         if packages:
-            cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
+            cmd_arr.append(f"PACKAGES=\"{' '.join(packages)}\"")
             
         if image_builder_config:
-            cmd_arr.append(" ".join(image_builder_config))
+            cmd_arr.append(' '.join(image_builder_config))
 
-        cmd_str = " ".join(cmd_arr)
+        cmd_str = ' '.join(cmd_arr)
         os.system(f"echo \'{cmd_str}\'")
         os.system(cmd_str)
