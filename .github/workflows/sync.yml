@@ -15,6 +15,7 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
+      archs: ${{ steps.set_env.outputs.archs }}
       branchs: ${{ steps.set_env.outputs.branchs }}
       openwrt_builder_volume: ${{ steps.set_env.outputs.openwrt_builder_volume }}
     steps:
@@ -43,6 +44,8 @@ jobs:
           echo "branchs=$JSON" >> $GITHUB_OUTPUT
 
           echo "openwrt_builder_volume=${{ vars.OPENWRT_BUILDER_VOLUME }}" >> "$GITHUB_OUTPUT"
+
+          python3 -B ./.github/workflows/scripts/get_targets.py | while read v;do echo "$v" >> "$GITHUB_OUTPUT"; done
 
   plugin:
     name: Plugin
@@ -139,6 +142,8 @@ jobs:
         run: |
           echo 'immortalwrt-org' > rsync-immortalwrt-password
           chmod 600 rsync-immortalwrt-password
+          archs="${{ join(fromJSON(needs.setup.outputs.archs),' ') }}"
+          packages="*vlmcsd* luci-app-openclash*"
 
           echo "
           *vlmcsd*
