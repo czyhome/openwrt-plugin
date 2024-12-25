@@ -653,10 +653,8 @@ function updateImages(mobj) {
       hide("#asu-log");
       hide("#asu-buildstatus");
       // Pre-select ASU packages.
-      // $("#asu-packages").value = mobj.default_packages
-      //   .concat(mobj.device_packages)
-      //   .concat(config.asu_extra_packages || [])
-      //   .join(" ");
+      $("#default-packages").value = mobj.default_packages.concat(mobj.device_packages).join(" ");
+      $("#asu-packages").value = (mobj.custom_packages || []).join(" ");
     }
 
     translate();
