@@ -40,7 +40,7 @@ if __name__ == '__main__':
             packages[i] = t_result
         
         if packages:
-            cmd_arr.append(f"PACKAGES=\"{' '.join(packages)}\" CUSTOM_PACKAGES=\"{' '.join(packages)}\"")
+            cmd_arr.append(f"PACKAGES=\"{' '.join(packages)}\"")
             
         if image_builder_config:
             cmd_arr.append(' '.join(image_builder_config))
