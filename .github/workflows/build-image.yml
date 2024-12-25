@@ -127,7 +127,7 @@ jobs:
       - name: Generate image
         shell: su buildbot -c "bash {0}"
         run: |
-          sed -i -e '/device_packages/a\\t\"custom_packages\": getenv(\"PACKAGES\","").split(),' scripts/json_add_image_info.py
+          sed -i -e '/device_packages/a\\t\"custom_packages\": getenv(\"PACKAGES\","").split(),' /builder/scripts/json_add_image_info.py
           python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
 
       - name: Generate version
