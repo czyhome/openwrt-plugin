@@ -129,7 +129,7 @@ jobs:
         run: |
           (
             cd /builder
-            sed -i -e '/device_packages/a\\t\"custom_packages\": getenv(\"USER_PACKAGES\","").split(),' scripts/json_add_image_info.py
+            sed -i -e '/device_packages/a\\t\"user_packages\": getenv(\"USER_PACKAGES\","").split(),' scripts/json_add_image_info.py
             make clean
           )
           python3 -B .github/workflows/scripts/gen_image.py --openwrt-dir /builder --config config --target ${{ matrix.target }}/${{ matrix.subtarget }}
