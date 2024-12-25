@@ -2,20 +2,20 @@
     "arch_packages": "aarch64_generic",
     "profiles": {
         "friendlyarm_nanopi-r2s": {
-            "image_builder_config": [
+            "user_configs": [
                 "ROOTFS_PARTSIZE=1024"
             ],
-            "install_packages": [
+            "user_packages": [
                 "{{ simple | join(' ') }}",
                 "{{ common | join(' ') }}",
                 "luci-app-openclash"
             ]
         },
         "friendlyarm_nanopi-r4s": {
-            "image_builder_config": [
+            "user_configs": [
                 "ROOTFS_PARTSIZE=1024"
             ],
-            "install_packages": [
+            "user_packages": [
                 "{{ simple | join(' ') }}",
                 "{{ common | join(' ') }}",
                 "{{ docker | join(' ') }}",
@@ -23,10 +23,10 @@
             ]
         },
         "friendlyarm_nanopi-r5s": {
-            "image_builder_config": [
+            "user_configs": [
                 "ROOTFS_PARTSIZE=1024"
             ],
-            "install_packages": [
+            "user_packages": [
                 "{{ simple | join(' ') }}",
                 "{{ common | join(' ') }}",
                 "{{ docker | join(' ') }}",
