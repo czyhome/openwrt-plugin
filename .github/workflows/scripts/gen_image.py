@@ -26,28 +26,25 @@ if __name__ == '__main__':
     profiles_obj = json.load(open(target_profiles_file, 'r'))
     profiles = profiles_obj['profiles']
 
-    config_file = pathlib.Path(args.openwrt_dir).joinpath(".config")
-    config_bak_file = pathlib.Path(args.openwrt_dir).joinpath(".config.bak")
-    config_bak_file.write_text(config_file.read_text())
-
     for pk, pv in profiles.items():
-        config_file.write_text(config_bak_file.read_text())
         cmd_arr = [
             f"cd {args.openwrt_dir};",
             "make image",
-            f"PROFILE=\"{pk}\""
+            f"PROFILE={pk}"
         ]
         image_builder_config = pv.get("image_builder_config", [])
-        if image_builder_config:
-            config_file.open(mode="a+", encoding="utf-8").write('\n'.join(image_builder_config))
 
         packages = pv.get("install_packages", [])
         for i,t in enumerate(packages):
             t_result=Template(t).render(global_profiles_obj["packages"])
             packages[i] = t_result
-        packages_str = " ".join(packages)
+        
         if packages:
-            cmd_arr.append(f"PACKAGES=\"{packages_str}\"")
-        cmd_str = " ".join(cmd_arr)
+            cmd_arr.append(f"PACKAGES=\"{' '.join(packages)}\"")
+            
+        if image_builder_config:
+            cmd_arr.append(' '.join(image_builder_config))
+
+        cmd_str = ' '.join(cmd_arr)
         os.system(f"echo \'{cmd_str}\'")
         os.system(cmd_str)

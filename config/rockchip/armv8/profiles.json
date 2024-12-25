@@ -3,7 +3,7 @@
     "profiles": {
         "friendlyarm_nanopi-r2s": {
             "image_builder_config": [
-                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024"
+                "ROOTFS_PARTSIZE=1024"
             ],
             "install_packages": [
                 "{{ simple | join(' ') }}",
@@ -13,7 +13,7 @@
         },
         "friendlyarm_nanopi-r4s": {
             "image_builder_config": [
-                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024"
+                "ROOTFS_PARTSIZE=1024"
             ],
             "install_packages": [
                 "{{ simple | join(' ') }}",
@@ -24,7 +24,7 @@
         },
         "friendlyarm_nanopi-r5s": {
             "image_builder_config": [
-                "CONFIG_TARGET_ROOTFS_PARTSIZE=1024"
+                "ROOTFS_PARTSIZE=1024"
             ],
             "install_packages": [
                 "{{ simple | join(' ') }}",

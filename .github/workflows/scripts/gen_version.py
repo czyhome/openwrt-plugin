@@ -25,6 +25,7 @@ def gen_overview(release_name, release_dir):
     overview_file.write_text(json.dumps(overview_obj))
     targets_file.write_text(json.dumps(targets_obj))
 
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -38,16 +39,21 @@ if __name__ == '__main__':
     artifact_releases_dir = artifact_dir.joinpath("releases")
     artifact_snapshots_dir = artifact_dir.joinpath("snapshots")
 
-    version_list = []
+    versions = []
     for t in sorted(filter(lambda f: f.is_dir(), artifact_releases_dir.glob("[0-9]*")), reverse=True, key=lambda x: x.name):
         gen_overview(t.name, t)
-        version_list.append(t.name)
-    stable_version = version_list[0]
+        versions.append(t.name)
 
+    stable_versions = list(filter(lambda v: 'rc' not in v, versions))
+    stable_version = stable_versions[0]
     artifact_versions_obj = {
         'stable_version': stable_version,
-        'versions_list': version_list
+        'versions_list': stable_versions,
     }
+
+    upcoming_versions = list(filter(lambda v: 'rc' in v, versions))
+    if upcoming_versions:
+        artifact_versions_obj['upcoming_version'] = upcoming_versions[0]
     artifact_versions_file.write_text(json.dumps(artifact_versions_obj))
 
     # snapshot
