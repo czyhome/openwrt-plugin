@@ -2,10 +2,10 @@
   "arch_packages": "mipsel_24kc",
   "profiles": {
     "d-team_newifi-d2": {
-      "image_builder_config": [
+      "user_configs": [
         "CONFIG_LUCI_LANG_zh_Hans=y"
       ],
-      "install_packages": [
+      "user_packages": [
         "-dnsmasq",
         "bash",
         "dnsmasq-full",
