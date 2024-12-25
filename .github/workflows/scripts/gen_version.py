@@ -4,11 +4,13 @@ import pathlib
 
 
 def gen_overview(release_name, release_dir):
-    version_overview_obj = {
+    overview_obj = {
         "release": release_name,
         "profiles": []
     }
-    version_overview_file = release_dir.joinpath(".overview.json")
+    targets_obj = {}
+    overview_file = release_dir.joinpath(".overview.json")
+    targets_file = release_dir.joinpath(".targets.json")
     for p in release_dir.rglob("profiles.json"):
         profile_obj = json.loads(p.read_text())
         profile_obj_profiles: dict[str, dict] = profile_obj["profiles"]
@@ -18,8 +20,10 @@ def gen_overview(release_name, release_dir):
                 "titles": pv.get("titles"),
                 "target": profile_obj["target"]
             }
-            version_overview_obj["profiles"].append(t_overview)
-    version_overview_file.write_text(json.dumps(version_overview_obj))
+            overview_obj["profiles"].append(t_overview)
+        targets_obj[profile_obj["target"]] = profile_obj["arch_packages"]
+    overview_file.write_text(json.dumps(overview_obj))
+    targets_file.write_text(json.dumps(targets_obj))
 
 
 if __name__ == '__main__':
