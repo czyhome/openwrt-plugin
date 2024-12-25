@@ -2,11 +2,11 @@
     "arch_packages": "x86_64",
     "profiles": {
         "generic": {
-            "image_builder_config": [
+            "user_configs": [
                 "ROOTFS_PARTSIZE=1024",
                 "CONFIG_VMDK_IMAGES=y"
             ],
-            "install_packages": [
+            "user_packages": [
                 "{{ simple | join(' ') }}",
                 "{{ common | join(' ') }}",
                 "{{ docker | join(' ') }}",

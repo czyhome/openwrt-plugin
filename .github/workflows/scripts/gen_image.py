@@ -32,9 +32,9 @@ if __name__ == '__main__':
             "make image",
             f"PROFILE={pk}"
         ]
-        image_builder_config = pv.get("image_builder_config", [])
+        user_configs = pv.get("user_configs", [])
 
-        packages = pv.get("install_packages", [])
+        packages = pv.get("user_packages", [])
         for i,t in enumerate(packages):
             t_result=Template(t).render(global_profiles_obj["packages"])
             packages[i] = t_result
@@ -42,8 +42,8 @@ if __name__ == '__main__':
         if packages:
             cmd_arr.append(f"PACKAGES=\"{' '.join(packages)}\"")
             
-        if image_builder_config:
-            cmd_arr.append(' '.join(image_builder_config))
+        if user_configs:
+            cmd_arr.append(' '.join(user_configs))
 
         cmd_str = ' '.join(cmd_arr)
         os.system(f"echo \'{cmd_str}\'")

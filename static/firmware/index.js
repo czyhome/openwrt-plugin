@@ -654,7 +654,8 @@ function updateImages(mobj) {
       hide("#asu-buildstatus");
       // Pre-select ASU packages.
       $("#default-packages").value = mobj.default_packages.concat(mobj.device_packages).join(" ");
-      $("#asu-packages").value = (mobj.custom_packages || []).join(" ");
+      console.log(mobj)
+      $("#asu-packages").value = (mobj.user_packages || []).join(" ");
     }
 
     translate();
@@ -720,6 +721,7 @@ function changeModel(version, overview, title) {
         mobj["images"] = mobj["profiles"][entry.id]["images"];
         mobj["titles"] = mobj["profiles"][entry.id]["titles"];
         mobj["device_packages"] = mobj["profiles"][entry.id]["device_packages"];
+        mobj["user_packages"] = mobj["profiles"][entry.id]["user_packages"];
         updateImages(mobj);
         current_device = {
           version: version,
