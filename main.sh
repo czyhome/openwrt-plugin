@@ -13,15 +13,20 @@ function cp_pkg(){
 
 function cp_pkg_var(){
   keys="PKG_VERSION PKG_RELEASE PKG_HASH PKG_MIRROR_HASH"
+  pkg_name=$(basename $(dirname $1))
   source_makefile=$1
-  target_makefile=package/$(basename $(dirname $source_makefile))/Makefile
+  target_makefile=package/${pkg_name}/Makefile
 
   if [ -f "$target_makefile" ];then
     for k in $keys;do
-      v=$(sed -n "s|$k:=\(.*\)|\1|p" $source_makefile)
-      sed -i "s|$k:=.*|$k:=$v|" $target_makefile
+      v=$(sed -n "s|^$k:=.*|\0|p" $source_makefile)
+      sed -i "s|^$k:=.*|$v|" $target_makefile
     done
-  else 
+    if [ "${pkg_name}" == "adguardhome" ];then
+      frontend_hash=$(sed -n "s|^[[:space:]]*HASH:=\(.*\)|\0|p" $source_makefile)
+      sed -i "s|^[[:space:]]*HASH:=.*|$frontend_hash|" $target_makefile
+    fi
+  else
     echo "$target_makefile not found"
   fi
 }
@@ -76,7 +81,6 @@ function sparse_checkout_immortalwrt(){
 
 function sparse_checkout_official(){
 
-  ##
   official_packages_dir=feeds/openwrt/packages
   official_packages_pkg="net/dnsproxy"
   sparse_checkout $official_packages_dir "https://github.com/openwrt/packages" "$official_packages_pkg" $([ "$branch" == "main" ] && echo master || echo $branch)
