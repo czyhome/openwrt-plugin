@@ -1,8 +1,6 @@
 name: Sync
 
 on:
-  schedule:
-    - cron: '0 1 * * *'
   push:
     paths:
       - '.github/workflows/scripts/**'
